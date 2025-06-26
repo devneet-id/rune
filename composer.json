@@ -1,5 +1,5 @@
 {
-  "name": "anwarachilles/rune",
+  "name": "devneet/rune",
   "description": "Rune is a versatile, modular, and maintainable PHP framework designed to make your application development smooth and scalable.",
   "type": "library",
   "license": "MIT",
@@ -12,8 +12,16 @@
     {
       "name": "AnwarAchilles",
       "email": "hudorianwar07@gmail.com"
+    },
+    {
+      "name": "DEVNEET Team",
+      "email": "opensource@devneet.org"
     }
   ],
+  "support": {
+    "issues": "https://github.com/devneet/rune/issues",
+    "source": "https://github.com/devneet/rune"
+  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
