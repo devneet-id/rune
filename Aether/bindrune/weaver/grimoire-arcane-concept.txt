@@ -1,0 +1,15 @@
+{{COLOR-PRIMARY}}{{ICON-PRIMARY}} Key Concepts and Terminology{{COLOR-DEFAULT}}
+  {{COLOR-DANGER}}Manifest{{COLOR-DEFAULT}}
+  is the foundational class or mechanism in the Rune framework that initiates and manages the system's primary components—Entities, Essences, and Ether. It acts as the entry point for initializing and controlling the core infrastructure needed for other runes to function. The ARISE class ensures that the system's components are properly set up and ready for use in various operations.
+
+  {{COLOR-DANGER}}ETHER{{COLOR-DEFAULT}}
+  refers to the constant or abstract layer that connects all components within the Rune framework. It facilitates communication between Entities and Essences, enabling the system to coordinate and execute tasks seamlessly. Ether is like the invisible force that empowers and sustains interactions between different parts of the framework, making sure everything runs in harmony.
+
+  {{COLOR-DANGER}}ESSENCE{{COLOR-DEFAULT}}
+  represents the core data or configuration that drives the functionality of the Rune framework. It defines the essential attributes, values, or settings that entities rely on to perform specific operations. In essence, it's the "soul" or "data layer" that gives life to the system's actions and operations.
+
+  {{COLOR-DANGER}}ENTITY{{COLOR-DEFAULT}}
+  is the fundamental building block within the Rune framework. Each entity represents a distinct object or component that can interact with other entities and execute tasks based on the given Essence and Ether. Entities can be anything from objects to modules, and their behavior is defined by the system’s configuration and logic.
+
+  {{COLOR-DANGER}}PHANTASM{{COLOR-DEFAULT}}
+  refers to a transient or ephemeral component within the Rune system. It is a temporary construct, often used during runtime to perform specific tasks or actions. Unlike Entities, which are permanent and have a defined role within the system, Phantasms are created dynamically and serve short-lived, task-specific purposes. They disappear after fulfilling their function, making them similar to "ghosts" that exist only as needed in the flow of the system. Phantasms are part of Rune's flexible architecture, allowing for quick, responsive operations without affecting the overall structure.

@@ -1,0 +1,26 @@
+{{color-danger}}©{{color-end}}Project Rune {{color-secondary}}———{{color-end}} DEVNEET-ID {{color-danger}}::{{color-end}} @anwarachilles{{color-default}}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+██ ▄▄ ██ ▄▄▀█▄ ▄██ ▄▀▄ ██ ▄▄▄ █▄ ▄██ ▄▄▀██ ▄▄▄██
+██ █▀▀██ ▀▀▄██ ███ █ █ ██ ███ ██ ███ ▀▀▄██ ▄▄▄██
+██ ▀▀▄██ ██ █▀ ▀██ ███ ██ ▀▀▀ █▀ ▀██ ██ ██ ▀▀▀██
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+{{color-info}}{{ICON-INFO}}{{COLOR-SECONDARY}}{{LABEL-INFO}}Carefull use rune BETA/DEPRECATED.
+{{COLOR-SECONDARY}}
+Grimoire is your gateway to understanding
+system structure and flow. It lets you read
+how everything connects and moves behind the
+scenes.
+{{color-default}}
+
+{{color-danger}}::{{color-default}} A V A L I A B L E{{color-danger}}.{{color-default}}{{color-default}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --rune {{color-success}}{{icon-success}}
+    {{color-secondary}}:::: Select single rune to read.
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --runes {{color-success}}{{icon-success}}
+    {{color-secondary}}:::: Result all rune.
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --arcane {{color-success}}{{icon-success}}
+    {{color-secondary}}:::: See what your sistem do in processing.
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --arcane-clean {{color-success}}{{icon-success}}
+    {{color-secondary}}:::: Clean all arcane

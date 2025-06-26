@@ -1,0 +1,4 @@
+<?php
+
+
+$GLOBALS['WEAVER'] = true;

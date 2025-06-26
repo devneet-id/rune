@@ -1,0 +1,14 @@
+<?php
+/*
+ * Act. 0 - Awakening the Rune
+ * THE VOID
+ *
+ * From the silence of nothingness, a forgotten rune awakens. 
+ * The Void stirs... and the world begins to tremble.
+ * 
+ * */
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Rune\Aether\Manifest as Aether;
+
+Aether::awakening();

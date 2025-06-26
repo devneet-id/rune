@@ -1,0 +1,36 @@
+{{color-danger}}©{{color-end}}Project Rune {{color-secondary}}———{{color-end}} DEVNEET-ID {{color-danger}}::{{color-end}} @anwarachilles{{color-default}}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+██ ▄▄▄ ██ ▄▄▄██ ▀██ █▄▄ ▄▄█▄ ▄██ ▀██ ██ ▄▄▄██ ████
+██▄▄▄▀▀██ ▄▄▄██ █ █ ███ ████ ███ █ █ ██ ▄▄▄██ ████
+██ ▀▀▀ ██ ▀▀▀██ ██▄ ███ ███▀ ▀██ ██▄ ██ ▀▀▀██ ▀▀ █
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+{{COLOR-SECONDARY}}
+Your Sentinel helps build your app, monitor
+performance, and keep things running.
+Confused or need help with runes? Sentinel's
+got your back.
+{{COLOR-DEFAULT}}
+
+{{color-danger}}::{{color-default}} A V A L I A B L E{{color-danger}}.{{color-default}}{{color-default}}
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --altar {{color-success}}{{icon-success}}
+    {{color-secondary}}::: :Run the altar
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --inspect {{color-danger}}{{icon-danger}}
+    {{color-secondary}}:::: Inspection the rune for miss linked rune.
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --invoke {{color-success}}{{icon-success}}
+    {{color-secondary}}:::: Invoke the rune to your workspace.
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --revoke {{color-success}}{{icon-success}}
+    {{color-secondary}}:::: Revoke the rune in your workspace.
+
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --codex {{color-danger}}{{icon-danger}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --cronicle {{color-danger}}{{icon-danger}}
+
+{{color-danger}}::{{color-default}} A D V A N C E D{{color-danger}}.{{color-default}}{{color-default}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --create-rune {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --remove-rune {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --phantasm-fix-node {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --phantasm-fix-note {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --phantasm-fix-need {{color-success}}{{icon-success}}

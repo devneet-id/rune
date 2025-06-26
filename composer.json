@@ -1,0 +1,22 @@
+{
+  "name": "anwarachilles/rune",
+  "description": "Rune is a versatile, modular, and maintainable PHP framework designed to make your application development smooth and scalable.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Rune\\": "./"
+    }
+  },
+  "authors": [
+    {
+      "name": "AnwarAchilles",
+      "email": "hudorianwar07@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.1"
+  }
+}

@@ -1,0 +1,33 @@
+<?php
+/* {{COPYRIGHT}} */
+new RUNE_{{HASH-APP}}();
+class RUNE_{{HASH-APP}}
+{
+  private $CONSTRUCT = '{{CONSTRUCT}}';
+  private $MANIFEST = '{{MANIFEST}}';
+  public function __construct() { if($this->manifest('construct')->AUTORUN){$this->run();} }
+  private function HTML_HEAD_{{HASH-APP}}()
+  {
+    return '{{HTML-HEAD}}';
+  }
+  private function HTML_BODY_{{HASH-APP}}()
+  {
+    return '{{HTML}}';
+  }
+  private function CSS_{{HASH-APP}}()
+  {
+    return '{{CSS}}';
+  }
+  public function JS_{{HASH-APP}}()
+  {
+    return '{{JS}}';
+  }
+  public function PHP_{{HASH-APP}}()
+  {
+    return '{{PHP}}';
+  }
+  public function run(){ $this->__installation_{{HASH-APP}}("PHP",$this->PHP_{{HASH-APP}}());$this->__installation_{{HASH-APP}}("CSS",$this->CSS_{{HASH-APP}}());$this->__installation_{{HASH-APP}}("JS",$this->JS_{{HASH-APP}}());$this->__installation_{{HASH-APP}}("HTML-HEAD",$this->HTML_HEAD_{{HASH-APP}}());$this->__installation_{{HASH-APP}}("HTML-BODY",$this->HTML_BODY_{{HASH-APP}}());eval("?>".$this->__encryption($this->CONSTRUCT,FALSE)."<?php");}
+  public function manifest($prefix){$DATA=json_decode($this->__encryption($this->MANIFEST,FALSE));if(isset($DATA->$prefix)){return $DATA->$prefix;}}
+  private function __installation_{{HASH-APP}}($prefix,$bundle){$ENTRY=[];foreach($bundle as $entries){$ENTRY[]=$this->__encryption($entries,FALSE);}$SOURCE=implode("\n",$ENTRY);$CONSTRUCT=$this->__encryption($this->CONSTRUCT,FALSE);$CONSTRUCT=str_replace("@{".strtoupper($prefix)."}",$SOURCE,$CONSTRUCT);$this->CONSTRUCT=$this->__encryption($CONSTRUCT,TRUE);}
+  private function __encryption($data,$state){$TYPE='{{ENCRYPTION}}';if($state){if($TYPE=='base64'){return base64_encode($data);}if($TYPE=='gzip'){return gzencode($data);}}else{if($TYPE=='base64'){return base64_decode($data);}if($TYPE=='gzip'){return gzdecode($data);}}}
+}

@@ -1,0 +1,19 @@
+<?php
+/* {{COPYRIGHT}} */
+{{PHP}}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+{{HTML-HEAD}}
+  <style>
+{{CSS}}
+  </style>
+</head>
+<body>
+  {{HTML}}
+  <script>
+{{JS}}
+  </script>
+</body>
+</html>
