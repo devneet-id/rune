@@ -1,0 +1,7 @@
+{{nl}}
+{{color-danger}}::{{color-default}} M O N A R C H{{color-danger}}.{{color-default}}{{color-default}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --create-rune {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --remove-rune {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --phantasm-fix-node {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --phantasm-fix-note {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --phantasm-fix-need {{color-success}}{{icon-success}}

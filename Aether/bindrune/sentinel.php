@@ -12,30 +12,33 @@ use Rune\Specter\Manifest as Specter;
 
 // sentinel
 Chanter::cast('sentinel', function() {
-  global $AETHER_ARISED;
 
-  $header = Weaver::item(__DIR__ . '/weaver/sentinel-header.txt');
-  $header = Weaver::bind($header, [
+  // prepare cast template
+  $template = Weaver::item(__DIR__ . '/weaver/sentinel-header.txt');
+  $template .= Weaver::item(__DIR__.'/weaver/sentinel-cast-avaliable.txt');
+  if (defined('BEING_MONARCH')) {
+    $template .= Weaver::item(__DIR__.'/weaver/sentinel-cast-monarch.txt');
+  }
+  $template = Weaver::bind($template, [
     'AETHER-FILE'=> AETHER_FILE,
   ]);
   
-
+  // output the template
   if (aether_has_entity('whisper')) {
     whisper_clear();
-    Whisper::echo($header);
+    Whisper::echo($template);
   }else {
-    aether_whisper($header);
+    aether_whisper($template);
   }
 
+  // spell of testing
   if (Chanter::spell('test')) {
     Whisper::clear(true);
     Whisper::echo("\n S E N T I N E L {{color-danger}}::{{color-end}} INVOKE");
     Whisper::echo("\n{{color-success}}{{icon-success}} Successfully Invoked");
   }
 
-
-
-  /* FOR RUNE BINDER */
+  // todo get all rune
   $avalaible_rune = function() {
     $result = [];
     foreach (glob(AETHER_RUNE_LOCATION . '/*') as $rune) {
@@ -47,8 +50,7 @@ Chanter::cast('sentinel', function() {
   };
 
   /* ALTAR
-   *
-   *  */
+   * */
   $processing__altar = function() {
     if (!file_exists(AETHER_REPO . '/altar.php')) {
       Forger::move([
@@ -63,23 +65,14 @@ Chanter::cast('sentinel', function() {
   if (Chanter::spell('altar')) {
     $processing__altar();
   }
-  
-
-
 
   /* INSPECT
-   *
-   *  */
-  
+   * */
   if (Chanter::spell('inspect')) {
     $active_runes = aether_arised();
 
     Whisper::clear()::echo('{{COLOR-DANGER}} Under Development {{nl}}');
   }
-  
-
-
-
 
   /* INVOKE
    * todo invoke manifest & arise to rune
@@ -140,9 +133,9 @@ Chanter::cast('sentinel', function() {
 
       
       Forger::item(AETHER_REPO . '/'. AETHER_FILE, $rune);
-      Whisper::clear(true);
-      Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
-      Whisper::echo("{{color-success}}{{icon-success}} Successfully do Invoked with '$manifest' {{nl}}");
+      return true;
+    }else {
+      return false;
     }
   };
   if (Chanter::spell('invoke')) {
@@ -154,7 +147,12 @@ Chanter::cast('sentinel', function() {
       $input = Whisper::call('Give us the rune name: ');
     }
     if ($input) {
-      $processing_invoke($input);
+      Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
+      if ($processing_invoke($input)) {
+        Whisper::echo("{{color-success}}{{icon-success}} Successfully do Invoked with '$manifest' {{nl}}");
+      }else {
+        Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Invoked with '$manifest' {{nl}}");
+      }
     }
   }
 
@@ -225,9 +223,9 @@ Chanter::cast('sentinel', function() {
       }
       
       Forger::item(AETHER_REPO . '/'. AETHER_FILE, $rune);
-      Whisper::clear(true);
-      Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
-      Whisper::echo("{{color-success}}{{icon-success}} Successfully do Revoke with '$manifest' {{nl}}");
+      return true;
+    }else {
+      return false;
     }
   };
   if (Chanter::spell('revoke')) {
@@ -241,7 +239,12 @@ Chanter::cast('sentinel', function() {
       $input = Whisper::call('Give us the rune name: ');
     }
     if ($input) {
-      $processing_revoke($input);
+      Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
+      if ( $processing_revoke($input) ) {
+        Whisper::echo("{{color-success}}{{icon-success}} Successfully do Revoke with '$manifest' {{nl}}");
+      }else {
+        Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Revoke with '$manifest' {{nl}}");
+      }
     }
   }
 
@@ -267,8 +270,7 @@ Chanter::cast('sentinel', function() {
 
   /* 
    * FOR RUNE BUILDER (PRIVATE)
-   * 
-   *  */
+   * */
 
   /* CREATE RUNE */
   $processing__create_rune = function($name, $repo) {
@@ -311,7 +313,7 @@ Chanter::cast('sentinel', function() {
   };
   if (Chanter::spell('create-rune')) {
     // check bindrune
-    if (!file_exists(AETHER_REPO . '/.bindrune/')) {
+    if (!file_exists(AETHER_REPO . '/@monarch/')) {
       Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
       die();
     }
@@ -329,7 +331,7 @@ Chanter::cast('sentinel', function() {
     
     // set data
     $name = ucfirst(strtolower($name));
-    $repo = AETHER_REPO . '/.bindrune/' . $name . '/';
+    $repo = AETHER_REPO . '/@monarch/' . $name . '/';
 
     // processing
     $processing__create_rune($name, $repo);
@@ -349,7 +351,7 @@ Chanter::cast('sentinel', function() {
   };
   if (Chanter::spell('remove-rune')) {
     // check bindrune
-    if (!file_exists(AETHER_REPO . '/.bindrune/')) {
+    if (!file_exists(AETHER_REPO . '/@monarch/')) {
       Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
       die();
     }
@@ -367,7 +369,7 @@ Chanter::cast('sentinel', function() {
     
     // set data
     $name = ucfirst(strtolower($name));
-    $repo = AETHER_REPO . '/.bindrune/' . $name . '/';
+    $repo = AETHER_REPO . '/@monarch/' . $name . '/';
 
     // processing
     if ($processing__remove_rune($name, $repo) ) {
@@ -385,106 +387,6 @@ Chanter::cast('sentinel', function() {
 
 
 
-  /* PHANTASM FIX LIST (DEPRECATED) */
-  $processing__phantasm_fix_list = function($name) {
-    $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
-    $phantasm = new $phantasm_class();
-
-    $selected = '';
-    foreach (aether_arised() as $manifest) {
-      $basename = str_replace('Rune\\', '', $manifest);
-      $basename = str_replace('\\Manifest', '', $basename);
-      
-      if ($basename == $name) {
-        $selected = str_replace('Manifest', 'Phantasm', $manifest);
-      }
-    }
-
-    $phantasm = new $selected();
-
-    if (isset($phantasm->origin)) {
-      
-      $read_ether = Forger::item($phantasm->origin . '/Ether.php');
-      preg_match_all("/define\(\s*['\"]([^'\"]+)['\"]\s*,/", $read_ether, $matches);
-      $find_ether = $matches[1];
-
-      $read_essence = Forger::item($phantasm->origin . '/Essence.php');
-      preg_match_all("/\\\$GLOBALS\\[['\"]([^'\"]+)['\"]\\]/", $read_essence, $matches);
-      $find_essence = $matches[1];
-
-      $name_entity = strtoupper($name);
-      $read_entity = Forger::item($phantasm->origin . '/Entity.php');
-      preg_match_all('/function\s+(.*'.$name_entity.'.*)\s*\([^\)]*\)/i', $read_entity, $matches);
-      $find_entity = $matches[1];
-
-      $read_manifest = Forger::item($phantasm->origin . '/Manifest.php');
-      preg_match_all('/\bstatic\s+function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/', $read_manifest, $matches);
-      // Gabungkan nama function + isi paramnya
-      $find_manifest = array_map(function ($name, $params) {
-          return $name . '(' . $params . ')';
-      }, $matches[1], $matches[2]);
-
-
-      $read_phantasm = Forger::item($phantasm->origin . '/Phantasm.php');
-      $templates_phantasm = preg_replace('/(public\s\$list\s*=\s*)(\[[\s\S]*?\]);/', '{{list}}', $read_phantasm);
-      
-      $old_list = $phantasm->list;
-
-      $list = [
-        'ether' => $find_ether,
-        'essence' => $find_essence,
-        'entity' => $find_entity,
-        'manifest' => $find_manifest,
-      ];
-      $maps = [];
-      foreach ($list as $key => $row) {
-        foreach ($row as $value) {
-          $maps[] = [
-            'type' => $key,
-            'call' => $value,
-            'note' => '',
-          ];
-        }
-      }
-
-      $combined = array_merge($maps, $old_list);
-      $final = [];
-      foreach ($combined as $item) {
-        $final[$item['call']] = $item; // key = 'call', auto timpa kalau udah ada
-      }
-      $maps = array_values($final); // Reset index biar rapi
-
-
-      
-      $templates = 'public $list = [' . PHP_EOL;
-      foreach ($maps as $row) {
-        $templates .= "    [" . PHP_EOL;
-        $templates .= "      'type' => '$row[type]'," . PHP_EOL;
-        $templates .= "      'call' => '$row[call]'," . PHP_EOL;
-        $templates .= "      'note' => '$row[note]'," . PHP_EOL;
-        $templates .= "    ]," . PHP_EOL;
-      }
-      $templates .= '  ];' . PHP_EOL;
-      
-      $template = weaver_bind($templates_phantasm, 'list', $templates);
-      
-      Forger::item($phantasm->origin . '/Phantasm.php', $template);
-
-      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
-    }else {
-      Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
-    }
-  };
-  if (Chanter::spell('phantasm-fix-list')) {
-    if (Chanter::spell('phantasm-fix-list') !== '1') {
-      $name = Chanter::spell('phantasm-fix-list');
-    }else {
-      $name = Whisper::call('Give us the rune name: ');
-    }
-    $name = ucfirst(strtolower($name));
-    
-    $processing__phantasm_fix_list($name);
-  }
   /* PHANTASM FIX NODE */
   $processing__phantasm_fix_node = function($name) {
     $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
@@ -596,88 +498,7 @@ Chanter::cast('sentinel', function() {
   }
 
 
-  /* PHANTASM FIX NEED (DEPRECATED) */
-  $processing__phantasm_fix_need = function ($name) {
-    $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
-    $phantasm = new $phantasm_class();
-
-    $rune_list = function() {
-      $manifests = [];
-      // internal rune
-      foreach (glob(AETHER_RUNE_LOCATION . '/*') as $manifest) {
-        if (is_dir($manifest)) {
-          $manifests[] = basename($manifest);
-        }
-      }
-      // external rune
-      if (file_exists(AETHER_REPO . '/.bindrune')) {
-        foreach (glob(AETHER_REPO . '/.bindrune/*') as $manifest) {
-          if (is_dir($manifest)) {
-            $manifests[] = basename($manifest);
-          }
-        }
-      }
-      return $manifests;
-    };
-
-    $rune_finds = [
-      $phantasm->origin.'/Ether.php',
-      $phantasm->origin.'/Essence.php',
-      $phantasm->origin.'/Entity.php',
-      $phantasm->origin.'/Manifest.php',
-    ];
-    $founds = [];
-    foreach ($rune_finds as $rf) {
-      $content = Forger::item($rf);
-      foreach ($rune_list() as $rune) {
-        $phantasm_class_select = 'Rune\\' . $rune . '\\Phantasm';
-        $phantasm_select = new $phantasm_class_select();
-        
-        if ($phantasm_select->main !== $phantasm->main) {
-          $found_state = false;
-          $rune_line = [];
-          foreach ($phantasm_select->list as $item) {
-            $pattern = preg_quote($item['call'], '/');
-            if (preg_match("/$pattern/i", $content)) {
-              $found_state = true;
-              $rune_line[] = $item['type'];
-              // $founds[$phantasm_select->main] = $rune_line;
-            }
-          }
-          if ($found_state) {
-            $founds[$phantasm_select->main] = [
-              $phantasm_select->main,
-              implode(':', array_unique($rune_line)),
-              $phantasm_select->version,
-            ];
-          }
-        }
-      }
-    }
-    
-    $read_phantasm = Forger::item($phantasm->origin . '/Phantasm.php');
-    $templates_phantasm_need = preg_replace('/(public\s\$need\s*=\s*)(\[[\s\S]*?\]);/', '{{list}}', $read_phantasm);
-    $templates = 'public $need = [' . PHP_EOL;
-    foreach ($founds as $row) {
-      $templates .= "    ['$row[0]', '$row[1]', $row[2]]," . PHP_EOL;
-    }
-    $templates .= '  ];' . PHP_EOL;
-    
-    $template = weaver_bind($templates_phantasm_need, 'list', $templates);
-    
-    Forger::item($phantasm->origin . '/Phantasm.php', trim($template));
-    Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
-  };
-  if (Chanter::spell('phantasm-fix-need')) {
-    if (Chanter::spell('phantasm-fix-need') !== '1') {
-      $name = Chanter::spell('phantasm-fix-need');
-    }else {
-      $name = Whisper::call('Give us the rune name: ');
-    }
-    $name = ucfirst(strtolower($name));
-    
-    $processing__phantasm_fix_need($name);
-  }
+  /* PHANTASM FIX LINK */
   $processing__phantasm_fix_link = function ($name) {
     $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
     $phantasm = new $phantasm_class();
@@ -691,8 +512,8 @@ Chanter::cast('sentinel', function() {
         }
       }
       // external rune
-      if (file_exists(AETHER_REPO . '/.bindrune')) {
-        foreach (glob(AETHER_REPO . '/.bindrune/*') as $manifest) {
+      if (file_exists(AETHER_REPO . '/@monarch')) {
+        foreach (glob(AETHER_REPO . '/@monarch/*') as $manifest) {
           if (is_dir($manifest)) {
             $manifests[] = basename($manifest);
           }

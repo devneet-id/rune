@@ -32,7 +32,7 @@ class Being {
     $loader->register(true);
 
     // define to system
-    define('IS_MONARCH', true);
+    define('BEING_MONARCH', true);
   }
 
   public static function energy() {
