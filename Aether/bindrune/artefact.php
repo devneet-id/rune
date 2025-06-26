@@ -40,7 +40,7 @@ Chanter::cast('artefact', function() {
     
     $template .= $prefix_newPage;
     $rune_source = Forger::item(AETHER_FILE);
-    $template .= cipher_encode(cipher_base64($rune_source));
+    $template .= Cipher::runic(Cipher::base64($rune_source));
     // aether_dd($template);
     
     if (file_exists(AETHER_ECHOES)) {
@@ -78,20 +78,13 @@ Chanter::cast('artefact', function() {
     $part = explode($prefix_newPage, $file);
     
     if (isset($part[1])) {
-      $base = cipher_base64(cipher_decode($part[1]), true);
+      $base = Cipher::base64(Cipher::runic($part[1], true), true);
       Forger::item($target, $base);
     }
     
     $code = (!empty($part[2])) ? explode(PHP_EOL, $part[2]) : [];
     foreach ($code as $row) {
       keeper_shard_revoke($row);
-      // $row = json_decode(cipher_base64(cipher_decode($row), true));
-
-      // foreach ($row->items as $item) {
-      //   $source = cipher_base64($item->source, true);
-      //   Forger::fix(Forger::trace((AETHER_REPO . $item->dirname)));
-      //   Forger::item(AETHER_REPO . $item->target, $source);
-      // }
     }
 
     Whisper::clear()::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}}{{LABEL-SUCCESS}}Artefact successfully revoked. {{nl}}");
@@ -108,30 +101,6 @@ Chanter::cast('artefact', function() {
       $processing_revoke($link);
     }
   }
-  // if (Chanter::spell('revoke_option')) {
-  //   $link = Chanter::spell('revoke_option');
-  //   if ($link) {
-  //     $target = str_replace('.rune', '', $link);
-  //     $file = Forger::item($link);
-  //     $part = explode(PHP_EOL.PHP_EOL, $file);
-
-  //     $base = cipher_base64(cipher_decode($part[1]), true);
-  //     Forger::item($target);
-  //     Forger::item($target, $base);
-
-  //     $code = explode(PHP_EOL, $part[2]);
-  //     foreach ($code as $row) {
-  //       $row = json_decode(cipher_base64(cipher_decode($row), true));
-
-  //       foreach ($row->items as $item) {
-  //         $source = cipher_base64($item->source, true);
-  //         Forger::fix(Forger::trace((AETHER_REPO . $item->dirname);
-  //         Forger::item(AETHER_REPO . $item->target);
-  //         Forger::item(AETHER_REPO . $item->target, $source);
-  //       }
-  //     }      
-  //   }
-  // }
 
 
 

@@ -165,7 +165,7 @@ function keeper_shard_invoke( Object $forger_info ) {
   $source = cipher_base64($source);
   
   $file = cipher_base64($patch.PHP_EOL.$source);
-  $file = cipher_encode($file);
+  $file = cipher_runic($file);
 
   // not use
   $rune_name = str_replace('/', '-', $forger_info->target . '.rune');
@@ -185,7 +185,7 @@ function keeper_shard_get( Array $file_maps ) {
   return true;
 }
 function keeper_shard_revoke( String $raw_source ) {
-  $file = cipher_decode($raw_source);
+  $file = cipher_runic($raw_source, true);
   $file = cipher_base64($file, true);
   $file = explode(PHP_EOL, $file);
   

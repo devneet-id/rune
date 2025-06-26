@@ -107,7 +107,7 @@ Chanter::cast('grimoire', function() {
     Whisper::echo("{{tab}}{{color-default}}[U]{{color-secondary}} $phantasm->user {{nl}}");
 
     // check if rune is tandalone or link
-    Whisper::echo("\n{{tab}}{{color-danger}}::{{color-end}}N E E D {{nl}}");
+    Whisper::echo("\n{{tab}}{{color-danger}}::{{color-end}}L I N K {{nl}}");
     if (count($phantasm->link) == 0) {
       Whisper::echo("{{tab}}{{tab}}{{color-info}} (THIS RUNE IS STANDALONE) {{nl}}");
     }

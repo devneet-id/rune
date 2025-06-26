@@ -5,11 +5,13 @@
  * Represents constants and rules for this domain.
  */
 
-define('CIPHER', '');
+define('CIPHER', true);
 
-define('CIPHER_ALL_VARIANTS', ['default', 'elder_futhark', 'younger_futhark', 'anglo_saxon_futhorc']);
+define('CIPHER_RUNIC_LIST', [
+  'default', 'elder_futhark', 'younger_futhark', 'anglo_saxon_futhorc'
+]);
 
-define('CIPHER_VARIANT', [
+define('CIPHER_RUNIC', [
   'default'=> [
     'a' => 'ᚨ', 'b' => 'ᛒ', 'c' => 'ᚲ', 'd' => 'ᛞ',
     'e' => 'ᛖ', 'f' => 'ᚠ', 'g' => 'ᚷ', 'h' => 'ᚺ',

@@ -11,21 +11,13 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 0.2;
+  public $version = 1.0;
   
   public $main = 'Cipher';
 
-  public $mark = 'BETA';
-
   public $link = [
-    ['Specter', 'manifest', 1.3],
-    ['Crafter', 'manifest', 1.2],
-    ['Forger', 'manifest', 1.6],
-    ['Keeper', 'manifest', 1.6],
-    ['Weaver', 'manifest', 1.2],
-    ['Whisper', 'manifest', 1.5],
+    ['Aether', 'ether:essence:entity', 1.9],
   ];
-
 
   public $node = [
     [
@@ -35,12 +27,12 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'ether',
-      'call' => 'CIPHER_ALL_VARIANTS',
+      'call' => 'CIPHER_RUNIC_LIST',
       'note' => '',
     ],
     [
       'type' => 'ether',
-      'call' => 'CIPHER_VARIANT',
+      'call' => 'CIPHER_RUNIC',
       'note' => '',
     ],
     [
@@ -65,12 +57,17 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_encode',
+      'call' => 'cipher_runic',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_decode',
+      'call' => 'cipher_runic_encode',
+      'note' => '',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'cipher_runic_decode',
       'note' => '',
     ],
     [
@@ -80,13 +77,20 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_arises($x="")',
+      'call' => 'id( String $prefix = \'\', $entropy = false )',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'base64( String $text, Int $isDecode = 0 )',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'runic( String $text, Bool $isDecode = false )',
       'note' => '',
     ],
   ];
-
-
-
 
   public function awakening() {}
   
