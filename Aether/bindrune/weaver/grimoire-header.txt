@@ -16,7 +16,7 @@ scenes.
 {{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --rune {{color-success}}{{icon-success}}
     {{color-secondary}}:::: Select single rune to read.
 
-{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --runes {{color-success}}{{icon-success}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --rune-all {{color-success}}{{icon-success}}
     {{color-secondary}}:::: Result all rune.
 
 {{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} grimoire --arcane {{color-success}}{{icon-success}}
