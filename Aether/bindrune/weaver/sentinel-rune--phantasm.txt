@@ -18,15 +18,11 @@ class Phantasm extends \Rune\Phantasm {
   public $link = [];
 
   public $node = [
-    // manifest
     [
       'type' => 'manifest',
       'call' => '_arise()',
       'note'=> '',
     ],
-    // ether
-    // essence
-    // entity
   ];
 
   public function awakening() {}

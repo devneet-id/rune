@@ -13,7 +13,11 @@ Chanter::cast('rune', function() {
   global $CHANTER_ECHO;
   
   foreach ($CHANTER_ECHO as $key => $echo) {
-    $list_chanter[] = 'php ' . AETHER_FILE . ' ' . $echo[1];
+    $text = '{{color-info}} ∙ {{color-secondary}}php ' . AETHER_FILE . '{{color-end}} ' . $echo[1];
+    if (!empty($echo[2])) {
+      $text .= '{{nl}}{{tab}}{{tab}}{{color-secondary}}::: ' . $echo[2] . '{{color-end}}{{nl}}';
+    }
+    $list_chanter[] = $text;
   }
 
   $base_cast = [];
@@ -28,9 +32,8 @@ Chanter::cast('rune', function() {
   $registered_cast = implode(PHP_EOL, $list_chanter);
   
 
-  $base_cast = str_replace('php '.AETHER_FILE, '{{color-info}} ∙ {{color-secondary}}php '.AETHER_FILE.'{{color-end}}', $base_cast);
-  $registered_cast = str_replace('php '.AETHER_FILE, '{{color-info}} ∙ {{color-secondary}}php '.AETHER_FILE.'{{color-end}}', $registered_cast);
-
+  // $base_cast = str_replace('php '.AETHER_FILE, '{{color-info}} ∙ {{color-secondary}}php '.AETHER_FILE.'{{color-end}}', $base_cast);
+  // $registered_cast = str_replace('php '.AETHER_FILE, '{{color-info}} ∙ {{color-secondary}}php '.AETHER_FILE.'{{color-end}}', $registered_cast);
 
   $echoes_state = '{{color-secondary}}';
   $echoes_check = '{{color-success}}√{{color-secondary}}';

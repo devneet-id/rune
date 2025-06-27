@@ -5,4 +5,4 @@
  * Represents globals and base data for this domain
  */
 
-$GLOBALS['{{name-upper}}'] = '';
+$GLOBALS['{{name-upper}}'] = true;

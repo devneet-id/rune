@@ -14,7 +14,7 @@ class Manifest extends \Rune\Manifest {
   public static function _arise() {}
 
   
-  public static function origin() {
+  public static function origin( $flags = 0 ) {
     global $AETHER_PHANTASM;
 
     gc_collect_cycles();

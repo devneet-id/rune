@@ -34,8 +34,3 @@ define('AETHER_ECHOES_ARCANES', AETHER_ECHOES_RUNE.'/arcanes.txt');
 define('AETHER_ECHOES_ARTEFACT', AETHER_ECHOES_RUNE.'/artefacts/');
 
 define('AETHER_PHP_VERSION', '8.1.10');
-
-
-/* ECHOES
- * migration to Keeper, only keeper have access to echoes
- *  */

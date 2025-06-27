@@ -17,8 +17,8 @@ things organized and consistent.
 {{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} artefact --revoke {{color-success}}{{icon-success}}
     {{color-secondary}}:::: Revoke the selected artefact to your workspace
 
-{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} artefact --inspect {{color-danger}}{{icon-danger}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} artefact --inspect {{color-success}}{{icon-success}}
     {{color-secondary}}:::: Inspect some artefact before deploy it
 
-{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} artefact --shard-clean {{color-danger}}{{icon-danger}}
+{{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} artefact --shard-clean {{color-success}}{{icon-success}}
     {{color-secondary}}:::: Clean all your shards

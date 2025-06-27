@@ -240,29 +240,29 @@ function chanter_spell_has( String $name ) {
  * todo set echo in chanter */
 
 #NOTE: Saves an echo message for the current cast if its valid.
-function chanter_echo( String $echo ) {
-  global $CHANTER_ECHO;
-  global $CHANTER_ARG;
-  global $CHANTER_ARG_CAST;
-  global $CHANTER_ARG_SPELL;
+// function chanter_echo( String $echo ) {
+//   global $CHANTER_ECHO;
+//   global $CHANTER_ARG;
+//   global $CHANTER_ARG_CAST;
+//   global $CHANTER_ARG_SPELL;
 
-  if (is_string(!empty($CHANTER_ARG_CAST))) {
-    $CHANTER_ECHO[$CHANTER_ARG_CAST] = $echo;
+//   if (is_string(!empty($CHANTER_ARG_CAST))) {
+//     $CHANTER_ECHO[$CHANTER_ARG_CAST] = $echo;
   
-    $return = true;
-  }else {
-    $return = false;
-  }
+//     $return = true;
+//   }else {
+//     $return = false;
+//   }
 
-  aether_arcane("Chanter.entity.chanter_echo");
-  return $return;
-}
+//   aether_arcane("Chanter.entity.chanter_echo");
+//   return $return;
+// }
 
 #NOTE: Adds notes to the echo data if the entry doesn’t exist yet.
 function chanter_echo_set( String $arg, String $notes ) {
   global $CHANTER_ECHO;
 
-  if (!isset($CHANTER_ECHO[$arg])) {
+  if (isset($CHANTER_ECHO[$arg])) {
     $CHANTER_ECHO[$arg][2] = $notes;
   }
   

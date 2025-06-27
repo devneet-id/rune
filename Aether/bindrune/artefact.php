@@ -103,6 +103,99 @@ Chanter::cast('artefact', function() {
   }
 
 
+  /* INSPECT
+   * */
+  $processing__inspect_raw = function($link) {
+    $link = 'rune.php.rune';
+
+    $prefix_newPage = PHP_EOL.'- - - - -'.PHP_EOL;
+    $prefix_item = PHP_EOL;
+
+    $target = str_replace('.rune', '', $link);
+    $file = Forger::item($link);
+    $part = explode($prefix_newPage, $file);
+
+    $result = [];
+    
+    // head
+    $result['head'] = $part[0];
+
+    // rune
+    $rune = strlen($part[1]);
+    $result['size'] = $rune;
+    $result['rune'] = aether_formatFileSize($rune);
+
+    // item
+    $item = [];
+    if (!empty($part[2])) {
+      foreach (explode($prefix_item, $part[2]) as $row) {
+        $row = Cipher::base64(Cipher::runic($row, true), true);
+        $row = explode($prefix_item, $row);
+
+        $data = json_decode($row[0]);
+        $size = strlen($row[1]);
+
+        $result['size'] += $size;
+        $item[] = [
+          'file'=> $data->target,
+          'type'=> $data->ext,
+          'size'=> aether_formatFileSize($size)
+        ];
+      }
+    }
+    $result['item'] = $item;
+    $result['size'] = aether_formatFileSize($result['size']);
+
+    return (object) $result;
+  };
+  $processing__inspect = function($link) use ($processing__inspect_raw) {
+    $result = $processing__inspect_raw($link);
+
+    // aether_dd($result);
+    Whisper::clear(true);
+    Whisper::echo("ARTEFACT {{COLOR-DANGER}}::{{COLOR-END}} INSPECT \n");
+    Whisper::echo("\n");
+    Whisper::echo(weaver_wrap_echo($result->head, 50, "{{tab}}"));
+    Whisper::echo("\n\n");
+    
+    Whisper::echo("{{tab}} {{color-danger}}::{{color-end}}S T A T");
+    Whisper::echo("\n{{tab}} - Total Size: {{color-success}}$result->size");
+    Whisper::echo("\n{{tab}} - Rune Size: {{color-success}}$result->rune");
+    Whisper::echo("\n\n");
+
+    Whisper::echo("{{tab}} {{color-danger}}::{{color-end}}I T E M \n");
+    foreach ($result->item as $item) {
+      $item = (object) $item;
+      $type = strtoupper($item->type);
+      $file = str_replace(DIRECTORY_SEPARATOR, '', $item->file);
+
+      Whisper::echo("{{tab}} - ");
+      Whisper::echo("{{color-default}}$type");
+      Whisper::echo("{{tab}}{{color-success}}$item->size");
+      Whisper::echo("{{tab}}{{COLOR-SECONDARY}}$file");
+      Whisper::echo("\n");
+    }
+  };
+  if (Chanter::spell('inspect')) {
+    Whisper::clear();
+    if (Chanter::spell('inspect') !== '1') {
+      $link = Chanter::spell('inspect');
+    }else {
+      Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}}{{LABEL-INFO}}You will inspect the artefact, Where the artefact?{{nl}}");
+      $link = Whisper::call('File location: ');
+    }
+    if ($link) {
+      $processing__inspect($link);
+    }
+  }
+
+
+  /* SHARD CLEAN */
+  if (Chanter::spell('shard-clean')) {
+    keeper_shard_clean();
+    Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}}{{LABEL-SUCCESS}}Shards successfully cleaned");
+  }
+
 
 
   if (Chanter::spell('shards')) {

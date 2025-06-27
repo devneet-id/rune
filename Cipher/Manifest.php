@@ -33,7 +33,7 @@ class Manifest extends \Rune\Manifest {
     $return = cipher_runic($text, $isDecode);
 
     aether_arcane('Cipher.manifest.runic');
-    return $text;
+    return $return;
   }
 
 }

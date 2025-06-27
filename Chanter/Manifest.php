@@ -84,11 +84,15 @@ class Manifest extends \Rune\Manifest {
   }
 
   // Outputs the given text and returns it
-  public static function echo( String $text ) {
-    chanter_echo($text);
-    
+  public static function echo( String $cast, String $notes = '' ) {
+    if (!empty($notes)) {
+      $return = chanter_echo_set($cast, $notes);
+    }else {
+      $return = chanter_echo_get($cast);
+    }
+
     aether_arcane("Chanter.manifest.echo");
-    return $text;
+    return $return;
   }
 
 }
