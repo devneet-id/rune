@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.9;
+  public $version = '1.10';
   
   public $main = 'Chanter';
 
@@ -15,56 +15,56 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Encapsulates processes and CLI-style operations to maintain immutability—structures input, spell logic, and execution flow into controlled, traceable, and reusable command definitions.';
 
   public $link = [
-    ['Aether', 'essence:entity', 1.13],
-    ['Whisper', 'ether', 1.7],
-    ['Specter', 'ether:essence', 1.4],
+    ['Aether', 'essence:entity', '1.13'],
+    ['Whisper', 'ether:essence', '1.8'],
+    ['Specter', 'ether:essence', '1.5'],
   ];
 
   public $node = [
     [
       'type' => 'ether',
       'call' => 'CHANTER',
-      'note' => '',
+      'note' => 'Main ether',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER',
-      'note' => '',
+      'note' => 'Main essence',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG',
-      'note' => '',
+      'note' => 'Stores full CLI argument string as a single line',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARGS',
-      'note' => '',
+      'note' => 'Stores full CLI argument string as an array',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_CAST',
-      'note' => '',
+      'note' => 'Holds parsed cast-related arguments from CLI',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_SPELL',
-      'note' => '',
+      'note' => 'Contains full list of separated CLI arguments',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_LIST',
-      'note' => '',
+      'note' => 'Contains full list of separated CLI arguments',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_CAST',
-      'note' => '',
+      'note' => 'Stores all available cast definitions',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_CAST_LIST',
-      'note' => '',
+      'note' => 'List of registered cast names or keys',
     ],
     [
       'type' => 'essence',
@@ -74,7 +74,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'essence',
       'call' => 'CHANTER_ECHO',
-      'note' => '',
+      'note' => 'Holds text or data to be echoed after cast execution',
     ],
     [
       'type' => 'entity',
@@ -94,7 +94,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_arg_rebase()',
-      'note' => '',
+      'note' => 'Checks if a specific spell name exists in the global $CHANTER_ARG_SPELL array and its value is not equal to',
     ],
     [
       'type' => 'entity',
@@ -139,12 +139,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_spell_has( String $name )',
-      'note' => '',
+      'note' => 'Missing return statement – function does not return the result.',
     ],
     [
       'type' => 'entity',
       'call' => 'chanter_echo( String $echo )',
-      'note' => 'Saves an echo message for the current cast if its valid.',
+      'note' => '',
     ],
     [
       'type' => 'entity',
@@ -164,32 +164,32 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => '',
+      'note' => 'middleware arise',
     ],
     [
       'type' => 'manifest',
       'call' => '_aether_awaken_before()',
-      'note' => '',
+      'note' => 'middleware from aether awaken',
     ],
     [
       'type' => 'manifest',
       'call' => 'awaken()',
-      'note' => '',
+      'note' => 'Prepares and executes a spell casting based on provided arguments or from file.',
     ],
     [
       'type' => 'manifest',
       'call' => 'cast( String $args, ?Callable $callable = NULL )',
-      'note' => '',
+      'note' => 'Gets or sets a spell cast definition based on input and returns the result.',
     ],
     [
       'type' => 'manifest',
       'call' => 'spell( String $name, $values = NULL )',
-      'note' => '',
+      'note' => 'Gets or sets a spell definition by name and returns the result.',
     ],
     [
       'type' => 'manifest',
       'call' => 'echo( String $cast, String $notes = "" )',
-      'note' => '',
+      'note' => 'Outputs the given text and returns it',
     ],
   ];
 

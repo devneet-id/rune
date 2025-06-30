@@ -5,12 +5,15 @@
  * Represents constants and rules for this domain.
  */
 
+#NOTE: Acts as a flag to indicate that the CIPHER system is enabled.
 define('CIPHER', true);
 
+#NOTE: Contains a list of supported runic cipher variants for encoding/decoding
 define('CIPHER_RUNIC_LIST', [
   'default', 'elder_futhark', 'younger_futhark', 'anglo_saxon_futhorc'
 ]);
 
+#NOTE: Holds the character mapping tables for each runic cipher variant (e.g., default, elder futhark, etc).
 define('CIPHER_RUNIC', [
   'default'=> [
     'a' => 'ᚨ', 'b' => 'ᛒ', 'c' => 'ᚲ', 'd' => 'ᛞ',

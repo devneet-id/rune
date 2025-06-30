@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.8;
+  public $version = '1.9';
   
   public $main = 'Whisper';
 
@@ -15,11 +15,11 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles user-facing output through styled messages, prompts, and echoes—focused on delivering clear, customizable system feedback and visual communication.';
 
   public $link = [
-    ['Aether', 'essence:entity', 1.13],
-    ['Weaver', 'entity', 1.4],
+    ['Aether', 'essence:entity', '1.14'],
+    ['Weaver', 'entity', '1.5'],
+    ['Crafter', 'ether:essence', '1.5'],
   ];
 
-  
   public $node = [
     [
       'type' => 'ether',
@@ -109,11 +109,6 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'whisper_call( String $prompt )',
-      'note' => '',
-    ],
-    [
-      'type' => 'entity',
-      'call' => 'whisper_drain()',
       'note' => '',
     ],
     [

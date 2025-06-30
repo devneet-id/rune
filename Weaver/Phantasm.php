@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
   
-  public $version = 1.4;
+  public $version = '1.5';
 
   public $main = 'Weaver';
 
@@ -15,19 +15,20 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for advanced string manipulation, data binding, and template weaving—transforming raw data into structured text with flexible, context-aware logic.';
 
   public $link = [
-    ['Aether', 'essence:entity', 1.13],
+    ['Aether', 'essence:entity', '1.14'],
+    ['Crafter', 'ether:essence', '1.5'],
   ];
 
   public $node = [
     [
       'type' => 'essence',
       'call' => 'WEAVER',
-      'note' => '',
+      'note' => 'main essence',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver',
-      'note' => '',
+      'note' => 'main entity',
     ],
     [
       'type' => 'entity',
@@ -37,17 +38,17 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'weaver_bind',
-      'note' => '',
+      'note' => 'Replace a variable placeholder in a template with given data',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_bind_extract',
-      'note' => '',
+      'note' => 'Extract all variable placeholders from a template string',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_bind_multiple',
-      'note' => '',
+      'note' => 'Bind multiple placeholders in a template using key-value data',
     ],
     [
       'type' => 'entity',
@@ -57,62 +58,62 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'weaver_item',
-      'note' => '',
+      'note' => 'Load and bind a template file with dynamic data replacements',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_wrap_echo',
-      'note' => '',
+      'note' => 'Wrap and prefix text lines with a divider for formatted echo output',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_min',
-      'note' => '',
+      'note' => 'Minify content by removing whitespace, comments, and unnecessary characters',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_min_css',
-      'note' => '',
+      'note' => 'Minify CSS content by removing whitespace, comments, and unnecessary characters',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_min_js',
-      'note' => '',
+      'note' => 'Minify JavaScript content by stripping out whitespace and simplifying expressions',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_min_html',
-      'note' => '',
+      'note' => 'Minify HTML content by collapsing spaces and removing unnecessary tags or breaks',
     ],
     [
       'type' => 'entity',
       'call' => 'weaver_min_php',
-      'note' => '',
+      'note' => 'Minify PHP code by trimming extra whitespace and cleaning up the syntax',
     ],
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => '',
+      'note' => 'Optional lifecycle method for internal post-arise logic.',
     ],
     [
       'type' => 'manifest',
       'call' => '_aether_awaken()',
-      'note' => '',
+      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
     ],
     [
       'type' => 'manifest',
       'call' => 'awaken()',
-      'note' => '',
+      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [
       'type' => 'manifest',
       'call' => 'bind( String $template, $searchOrArray, String $data="" )',
-      'note' => '',
+      'note' => 'Bind one or multiple variables into a template string',
     ],
     [
       'type' => 'manifest',
       'call' => 'item( $source )',
-      'note' => '',
+      'note' => 'Load a template file into memory and optionally assign it an alias',
     ],
     [
       'type' => 'manifest',
@@ -122,7 +123,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'bind( $template, $search, $data )',
-      'note' => '',
+      'note' => 'Bind one or multiple variables into a template string',
     ],
     [
       'type' => 'manifest',

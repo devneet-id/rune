@@ -1,18 +1,24 @@
 <?php
 
-
+#NOTE: main entity
 function weaver() {
   return true;
 }
-
-// function weaver_load( $source ) {
-//   return file_get_contents($source);
-// }
+#NOTE: Wrap and prefix text lines with a divider for formatted echo output
+function weaver_wrap_echo($text, $wrap, $divider) {
+  $lines = wordwrap($text, $wrap, "\n");
+  $wrapped = explode("\n", $lines);
+  foreach ($wrapped as &$line) {
+    $line = $divider . $line;
+  }
+  return implode("\n", $wrapped);
+}
 
 
 /* BIND
  * todo binding string
  *  */
+#NOTE: Replace a variable placeholder in a template with given data
 function weaver_bind( $template, $search, $data ) {
   global $WEAVER_BOND;
 
@@ -30,7 +36,7 @@ function weaver_bind( $template, $search, $data ) {
   aether_arcane('Weaver.entity.weaver_bind');
   return $template;
 }
-
+#NOTE: Extract all variable placeholders from a template string
 function weaver_bind_extract( $value ) {
   // get the {{var}}
   $matches = [];
@@ -40,7 +46,7 @@ function weaver_bind_extract( $value ) {
   aether_arcane('Weaver.entity.weaver_bind_extract');
   return $vars;
 }
-
+#NOTE: Bind multiple placeholders in a template using key-value data
 function weaver_bind_multiple( $template, $datas ) {
   $datas = weaver_bond_combine($datas);
 
@@ -57,6 +63,7 @@ function weaver_bind_multiple( $template, $datas ) {
 /* BOND
  * todo bond all weaver bind
  *  */
+#NOTE: Merge and store new template data into the global weaver bond
 function weaver_bond_combine( $datas ) {
   global $WEAVER_BOND;
   
@@ -66,7 +73,7 @@ function weaver_bond_combine( $datas ) {
   aether_arcane('Weaver.entity.weaver_bond_combine');
   return $return;
 }
-
+#NOTE: Set a single key-value pair into the global weaver bond
 function weaver_bond_set( $key, $value ) {
   global $WEAVER_BOND;
 
@@ -75,6 +82,7 @@ function weaver_bond_set( $key, $value ) {
   aether_arcane('Weaver.entity.weaver_bond_set');
   return true;
 }
+#NOTE: Get a stored value from the global weaver bond using its key
 function weaver_bond_get( $key ) {
   global $WEAVER_BOND;
 
@@ -94,6 +102,7 @@ function weaver_bond_get( $key ) {
 /* ITEM
  * todo get, set & stacking item
  *  */
+#NOTE: Load and bind a template file with dynamic data replacements
 function weaver_item( $source, $datas = [] ) {
   $item = file_get_contents($source);
   $item = weaver_bind($item, $datas);
@@ -101,6 +110,7 @@ function weaver_item( $source, $datas = [] ) {
   aether_arcane('Weaver.entity.weaver_item');
   return $item;
 }
+#NOTE: Load a template file and store it in memory, optionally using an alias
 function weaver_item_set( $source, $alias = '' ) {
   global $WEAVER_ITEM;
 
@@ -114,6 +124,7 @@ function weaver_item_set( $source, $alias = '' ) {
   aether_arcane('Weaver.entity.weaver_item_set');
   return $item;
 }
+#NOTE: Retrieve a stored template from memory by its alias or file path
 function weaver_item_get( $find_source_alias ) {
   global $WEAVER_ITEM;
 
@@ -129,17 +140,7 @@ function weaver_item_get( $find_source_alias ) {
 }
 
 
-function weaver_wrap_echo($text, $wrap, $divider) {
-    $lines = wordwrap($text, $wrap, "\n"); // Wrap dengan newline
-    $wrapped = explode("\n", $lines);      // Pecah jadi array per baris
 
-    // Tambahkan divider di depan tiap baris
-    foreach ($wrapped as &$line) {
-        $line = $divider . $line;
-    }
-
-    return implode("\n", $wrapped); // Gabungkan lagi jadi string utuh
-  }
 
 
 
@@ -147,6 +148,7 @@ function weaver_wrap_echo($text, $wrap, $divider) {
 /* WEBS
  * 
  * */
+#NOTE: Minify content by removing whitespace, comments, and unnecessary characters
 function weaver_min( $input, $type='html' ) {
   $type = strtolower($type);
   if($type == 'html') return weaver_min_html( $input );
@@ -155,7 +157,7 @@ function weaver_min( $input, $type='html' ) {
   elseif($type == 'php') return weaver_min_php( $input );
   else return $input;
 }
-
+#NOTE: Minify CSS content by removing whitespace, comments, and unnecessary characters
 function weaver_min_css( $input ) {
   if(trim($input) === "") return $input;
   return preg_replace(
@@ -197,7 +199,7 @@ function weaver_min_css( $input ) {
     ),
   $input);
 }
-
+#NOTE: Minify JavaScript content by stripping out whitespace and simplifying expressions
 function weaver_min_js( $input ) {
   if(trim($input) === "") return $input;
 
@@ -239,7 +241,7 @@ function weaver_min_js( $input ) {
 
   return $minifiedCode;
 }
-
+#NOTE: Minify HTML content by collapsing spaces and removing unnecessary tags or breaks
 function weaver_min_html($input) {
   if (trim($input) === "") {
       return $input;
@@ -300,7 +302,7 @@ function weaver_min_html($input) {
 
   return $input;
 }
-
+#NOTE: Minify PHP code by trimming extra whitespace and cleaning up the syntax
 function weaver_min_php($input) {
   // Hapus komentar baris (//) tanpa menghapus karakter lain di dalam string
   $input = preg_replace('/(?<!:|\'|")\/\/[^\n]*/', '', $input);

@@ -729,14 +729,6 @@ Chanter::cast('sentinel', function() {
     }
     // set data
     $name = ucfirst(strtolower($name));
-    // fixing link
-    $linkFixed = $processing__phantasm_fix_link($name);
-    if ($linkFixed) {
-      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Link fixed for phantasm: $name {{nl}}");
-    } else {
-      Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix link for phantasm: $name {{nl}}");
-    }
-
     // fixing node
     $nodeFixed = $processing__phantasm_fix_node($name);
     if ($nodeFixed) {
@@ -744,7 +736,13 @@ Chanter::cast('sentinel', function() {
     } else {
       Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix node for phantasm: $name {{nl}}");
     }
-
+    // fixing link
+    $linkFixed = $processing__phantasm_fix_link($name);
+    if ($linkFixed) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Link fixed for phantasm: $name {{nl}}");
+    } else {
+      Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix link for phantasm: $name {{nl}}");
+    }
     // fixing note
     $noteFixed = $processing__phantasm_fix_note($name);
     if ($noteFixed) {
@@ -752,7 +750,6 @@ Chanter::cast('sentinel', function() {
     } else {
       Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix note for phantasm: $name {{nl}}");
     }
-
     // update phantasm
     $updatePhantasm = $processing__phantasm_up($name);
     if ($updatePhantasm) {

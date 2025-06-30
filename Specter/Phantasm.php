@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.5;
+  public $version = '1.6';
   
   public $main = 'Specter';
 
@@ -20,73 +20,74 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Enables out-of-process operations through soul-like abstractions—designed for managing complex, asynchronous, or decoupled executions by temporarily separating logic from the main flow while maintaining active control.';
 
   public $link = [
-    ['Keeper', 'ether', 1.7],
-    ['Aether', 'ether', 1.13],
-    ['Weaver', 'entity', 1.3],
-    ['Forger', 'entity', 1.8],
-    ['Whisper', 'ether', 1.7],
+    ['Keeper', 'ether', '1.8'],
+    ['Aether', 'ether', '1.14'],
+    ['Weaver', 'entity', '1.4'],
+    ['Crafter', 'ether:essence', '1.5'],
+    ['Forger', 'entity', '1.9'],
+    ['Whisper', 'ether:essence', '1.8'],
   ];
 
   public $node = [
     [
       'type' => 'ether',
       'call' => 'SPECTER',
-      'note' => '',
+      'note' => 'main ether',
     ],
     [
       'type' => 'ether',
       'call' => 'SPECTER_ECHOES_SOUL',
-      'note' => '',
+      'note' => 'Path to the file where Specter"s soul data (state/configuration) is stored.',
     ],
     [
       'type' => 'ether',
       'call' => 'SPECTER_ECHOES_CAST',
-      'note' => '',
+      'note' => 'Path to the file where Specter"s cast data (execution history/config) is stored.',
     ],
     [
       'type' => 'ether',
       'call' => 'SPECTER_CAST_DEFAULT',
-      'note' => '',
+      'note' => 'Default structure for a Specter cast, indicating execution state and options.',
     ],
     [
       'type' => 'ether',
       'call' => 'SPECTER_CAST_ARG_DEFAULT',
-      'note' => '',
+      'note' => 'Default command-line options for Specter cast executions.',
     ],
     [
       'type' => 'ether',
       'call' => 'SPECTER_SEER_OPTION',
-      'note' => '',
+      'note' => 'Default configuration for Specter Seer, mainly controlling loop speed and delays.',
     ],
     [
       'type' => 'essence',
       'call' => 'SPECTER',
-      'note' => '',
+      'note' => 'main essence',
     ],
     [
       'type' => 'essence',
       'call' => 'SPECTER_ITEMS',
-      'note' => '',
+      'note' => 'Holds the list of all registered Specter items.',
     ],
     [
       'type' => 'essence',
       'call' => 'SPECTER_STATS',
-      'note' => '',
+      'note' => 'Stores runtime statistics for Specter items.',
     ],
     [
       'type' => 'essence',
       'call' => 'SPECTER_SOUL',
-      'note' => '',
+      'note' => 'Stores the soul data of the Specter, usually persistent state or configuration.',
     ],
     [
       'type' => 'essence',
       'call' => 'SPECTER_CAST',
-      'note' => '',
+      'note' => 'Contains casting records and arguments used when Specter runs external processes.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter()',
-      'note' => '',
+      'note' => 'main entity',
     ],
     [
       'type' => 'entity',
@@ -96,52 +97,52 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'specter_soul_set( String $name, Mixed $value )',
-      'note' => '',
+      'note' => 'Sets a soul value and persists it through the keeper.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_soul_get( String $name )',
-      'note' => '',
+      'note' => 'Retrieves a soul value and refreshes the in-memory state.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_soul_save( $name, $value = null )',
-      'note' => '',
+      'note' => 'Loads and syncs soul data from keeper, optionally updates a value.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_soul_remove( String $name )',
-      'note' => '',
+      'note' => 'Removes a soul value from both memory and keeper storage.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_cast_set( string $arg, array $options = [] )',
-      'note' => '',
+      'note' => 'Executes a command with given options across platforms and logs the cast state.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_cast_get( string $arg )',
-      'note' => '',
+      'note' => 'Retrieves cast state by argument from keeper storage.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_cast_save( $arg, $alive = true, $option = [] )',
-      'note' => '',
+      'note' => 'Saves the cast command and its metadata to keeper storage.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_seer_set(?Callable $condition)',
-      'note' => '',
+      'note' => 'Continuously calls a condition callback with spinner frames until stopped or glitch is detected.',
     ],
     [
       'type' => 'entity',
       'call' => 'specter_exit( String $arg )',
-      'note' => '',
+      'note' => 'Marks a casted specter command as no longer active.',
     ],
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => '',
+      'note' => 'Optional lifecycle method for internal post-arise logic.',
     ],
     [
       'type' => 'manifest',
@@ -151,42 +152,42 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => '_aether_awaken()',
-      'note' => '',
+      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
     ],
     [
       'type' => 'manifest',
       'call' => 'awaken()',
-      'note' => '',
+      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [
       'type' => 'manifest',
       'call' => 'observer( $repo, $callback )',
-      'note' => '',
+      'note' => 'Start observing changes in a directory and trigger callback on modification',
     ],
     [
       'type' => 'manifest',
       'call' => 'devserver( $configure )',
-      'note' => '',
+      'note' => 'Launch a local PHP development server with configurable host, port, and router',
     ],
     [
       'type' => 'manifest',
       'call' => 'soul( String $name, Mixed $value = NULL )',
-      'note' => '',
+      'note' => 'Store or retrieve a named soul value (persistent memory)',
     ],
     [
       'type' => 'manifest',
       'call' => 'cast( String $arg, Array $options = [] )',
-      'note' => '',
+      'note' => 'Register or run a terminal command cast with optional behavior settings',
     ],
     [
       'type' => 'manifest',
       'call' => 'seer( ?Callable $callback )',
-      'note' => '',
+      'note' => 'Start a visual loop animation until a stop condition or glitch is met',
     ],
     [
       'type' => 'manifest',
       'call' => 'exit( String $arg )',
-      'note' => '',
+      'note' => 'Mark a previously casted command as inactive (used to exit the cast lifecycle)',
     ],
   ];
 

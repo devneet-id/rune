@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.13;
+  public $version = '1.14';
   
   public $main = 'Aether';
 
@@ -20,11 +20,11 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
   public $link = [
-    ['Weaver', 'essence', 1.3],
-    ['Chanter', 'ether:essence', 1.8],
-    ['Forger', 'essence', 1.7],
-    ['Keeper', 'essence', 1.6],
-    ['Whisper', 'ether', 1.7],
+    ['Weaver', 'essence', '1.4'],
+    ['Chanter', 'ether:essence', '1.10'],
+    ['Forger', 'essence', '1.8'],
+    ['Keeper', 'essence', '1.7'],
+    ['Whisper', 'ether:essence', '1.8'],
   ];
 
   public $node = [
@@ -181,37 +181,37 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'aether_formatFileSize',
-      'note' => '',
+      'note' => 'Convert a number of bytes into a human-readable file size (e.g. KB, MB)',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_stopwatch',
-      'note' => '',
+      'note' => 'Measure elapsed time since $AETHER_STOPWATCH was started (in seconds)',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_memoryusage',
-      'note' => '',
+      'note' => 'Get current and peak memory usage in bytes',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_exit',
-      'note' => '',
+      'note' => 'Exit the program with execution time and memory usage summary (supports pretty output with whisper)',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_has_entity',
-      'note' => '',
+      'note' => 'Check if a given function (entity) exists in the current environment',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_has_ether',
-      'note' => '',
+      'note' => 'Check if a constant (ether) is defined in the runtime',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_has_essence',
-      'note' => '',
+      'note' => 'Check if a global variable (essence) is set and exists',
     ],
     [
       'type' => 'entity',
@@ -226,7 +226,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'aether_dd',
-      'note' => '',
+      'note' => 'Dump and display debug information with colorized formatting, then exit',
     ],
     [
       'type' => 'entity',
@@ -241,27 +241,27 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'aether_arised',
-      'note' => '',
+      'note' => 'Get all unique arised runes from ether, essence, and entity',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_arcane',
-      'note' => '',
+      'note' => 'Track execution events with timestamp and elapsed time (arcane trace logging)',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_arcane_reset',
-      'note' => '',
+      'note' => 'Reset all arcane trace logs',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_arcane_enable',
-      'note' => '',
+      'note' => 'Enable arcane trace logging',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_arcane_disable',
-      'note' => '',
+      'note' => 'Disable arcane trace logging',
     ],
     [
       'type' => 'entity',

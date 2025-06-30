@@ -5,8 +5,10 @@
  * Represents constants and rules for this domain.
  */
 
+#NOTE: Flag to enable or indicate the Crafter system is active.
 define('CRAFTER', true);
 
+#NOTE: Defines available weaver templates for different language sets and output types (plain, class, function), used during bundling.
 define('CRAFTER_WEAVER', [
   [
     ['html','css','js','php'],
@@ -40,6 +42,7 @@ define('CRAFTER_WEAVER', [
   ],
 ]);
 
+#NOTE: Maps cluster types to variable placeholders used during template binding.
 define('CRAFTER_VARIABLE', [
   'head.html'=> 'HTML-HEAD',
   'html'=> 'HTML',
@@ -48,6 +51,7 @@ define('CRAFTER_VARIABLE', [
   'php'=> 'PHP',
 ]);
 
+#NOTE: Defines cleaning rules for each language type to remove unwanted wrappers or tags before bundling.
 define('CRAFTER_CLEANING', [
   'head.html'=> [
     '<!DOCTYPE>', '<!DOCTYPE html>',
@@ -78,6 +82,7 @@ define('CRAFTER_CLEANING', [
 
 /* RESETER
  * todo reset essence to default */
+#NOTE: Default seed configuration used when resetting the Crafter state.
 define('CRAFTER_RESET_SEED', [
   'TYPE'=> 'class',
   'LANGUAGE'=> ['html', 'css', 'js', 'php'],
@@ -88,16 +93,19 @@ define('CRAFTER_RESET_SEED', [
   'REPO'=> AETHER_REPO . '/',
 ]);
 
+#NOTE: Default empty structure for CRAFTER_SPARK used during reset.
 define('CRAFTER_RESET_SPARK', [
   'item' => '',
   'seed' => [],
   'shard' => [],
 ]);
 
+#NOTE: Default spark state, marking the crafter as not ready after reset.
 define('CRAFTER_RESET_SPARK_STATE', [
   'ready' => false,
 ]);
 
+#NOTE: Default empty cluster groups for each language type after reset.
 define('CRAFTER_RESET_SPARK_CLUSTER', [
   'head.html'=> [],
   'html'=> [],

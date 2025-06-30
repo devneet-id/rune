@@ -13,26 +13,18 @@ class Manifest extends \Rune\Manifest {
 
   // create next static method
 
-  public static function _arise() {
-    self::_setEchoes();
-  }
-  
-  private static function _setEchoes() {
-    forger_fix([
-      ['type'=>'item', 'target'=>SPECTER_ECHOES_SOUL],
-      ['type'=>'item', 'target'=>SPECTER_ECHOES_CAST],
-    ]);
+  #NOTE: Optional lifecycle method for internal post-arise logic.
+  public static function _arise() {}
 
-  }
-
-
+  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
   public static function _aether_awaken() {
     self::awaken();
   }
 
+  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
   public static function awaken() {}
 
-
+  #NOTE: Start observing changes in a directory and trigger callback on modification
   public static function observer( $repo, $callback ) {
     if (!file_exists($repo)) {
       whisper_echo("{{COLOR-DANGER}}{{ICON-WARNING}}{{label-warning}} Specter Repo not exits!! {{nl}}");
@@ -67,6 +59,7 @@ class Manifest extends \Rune\Manifest {
     });
   }
 
+  #NOTE: Launch a local PHP development server with configurable host, port, and router
   public static function devserver( $configure ) {
     $config = (object) $configure;
     
@@ -98,7 +91,7 @@ class Manifest extends \Rune\Manifest {
     shell_exec($command);
   }
 
-
+  #NOTE: Store or retrieve a named soul value (persistent memory)
   public static function soul( String $name, Mixed $value = NULL ) {
     if ($value) {
       specter_soul_set($name, $value);
@@ -111,6 +104,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Register or run a terminal command cast with optional behavior settings
   public static function cast( String $arg, Array $options = [] ) {
     if (is_array($options)) {
       specter_cast_set($arg, $options);
@@ -123,12 +117,14 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
+  #NOTE: Start a visual loop animation until a stop condition or glitch is met
   public static function seer( ?Callable $callback ) {
     specter_seer_set($callback);
 
     aether_arcane("Specter.manifest.seer");
   }
 
+  #NOTE: Mark a previously casted command as inactive (used to exit the cast lifecycle)
   public static function exit( String $arg ) {
     specter_cast_save( $arg, false );
   }

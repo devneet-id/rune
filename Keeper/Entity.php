@@ -14,6 +14,7 @@ function keeper() {
 /* ARCANE
  * todo manipulate arcane 
  * */
+#NOTE: Converts arcane log entries into a readable format with timing and state evaluation, then stores the result.
 function keeper_arcane_process() {
   global $AETHER_ARCANE;
   global $KEEPER_ARCANE;
@@ -53,18 +54,16 @@ function keeper_arcane_process() {
   return true;
 }
 
+#NOTE: Saves processed arcane log data into a timestamped file.
 function keeper_arcane_process_store( $datas ) {
   forger_item(KEEPER_ECHOES_ARCANES . '/' . date('Y-m-d--H-i-s') . '.txt', $datas);
 }
-
-function keeper_arcane_get() {
-}
-
 
 
 /* ITEM
  * todo keeper manipulate item (JSON)
  *  */
+#NOTE: Gets or sets a keeper item based on whether a value is provided.
 function keeper_item( String $name, $value = '' ) {
   if (empty($value)) {
     $return = keeper_item_get($name);
@@ -76,6 +75,7 @@ function keeper_item( String $name, $value = '' ) {
   return $return;
 }
 
+#NOTE: Saves a value as a formatted JSON file under the given name.
 function keeper_item_set( String $name, $value ) {
   $datas = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
   $datas = str_replace("    ", "  ", $datas);
@@ -85,6 +85,7 @@ function keeper_item_set( String $name, $value ) {
   return true;
 }
 
+#NOTE: Retrieves and decodes a JSON file by name into a usable value.
 function keeper_item_get( String $name ) {
   $datas = forger_item(KEEPER_ECHOES . '/' . $name . '.json');
   $return = json_decode($datas);
@@ -98,6 +99,7 @@ function keeper_item_get( String $name ) {
 /* ECHO
  * todo keeper echoes all of the system
  *  */
+#NOTE: Reads or writes a raw file inside a given repository, depending on whether a value is provided.
 function keeper_echo( String $repo, String $name, $value = '' ) {
   if (empty($value)) {
     $return = keeper_echo_get($repo, $name);
@@ -108,7 +110,7 @@ function keeper_echo( String $repo, String $name, $value = '' ) {
   aether_arcane('Keeper.entity.keeper_echo');
   return $return;
 }
-
+#NOTE: Ensures the target repository exists, then saves the given value as a plain file.
 function keeper_echo_set( String $repo, String $name, $value ) {
   forger_fix([ 'target'=> $repo, 'type'=> 'repo' ]);
   forger_item($repo . '/' . $name, $value);
@@ -116,7 +118,7 @@ function keeper_echo_set( String $repo, String $name, $value ) {
   aether_arcane('Keeper.entity.keeper_echo_set');
   return true;
 }
-
+#NOTE: Reads and returns the contents of a plain file from the given repository.
 function keeper_echo_get( String $repo, String $name ) {
   $datas = forger_item($repo . '/' . $name);
   return $datas;
@@ -126,6 +128,7 @@ function keeper_echo_get( String $repo, String $name ) {
 /* SHARDS
  * todo managements file as shards
  *  */
+#NOTE: Handles shard storage or restoration based on revoke flag.
 function keeper_shard( Array $file_maps, Bool $is_revoke = false ) {
   if ($is_revoke) {
     keeper_shard_get($file_maps);
@@ -133,6 +136,7 @@ function keeper_shard( Array $file_maps, Bool $is_revoke = false ) {
     keeper_shard_set($file_maps);
   }
 }
+#NOTE: Traces files, collects valid items, and stores them as encoded rune shards.
 function keeper_shard_set( Array $file_maps ) {
   $map = [];
   foreach ($file_maps as $row) {
@@ -156,6 +160,7 @@ function keeper_shard_set( Array $file_maps ) {
   aether_arcane('Keeper.entity.keeper_shard_set');
   return true;
 }
+#NOTE: Encodes file metadata and content into base64 then runic format, and saves it as a shard.
 function keeper_shard_invoke( Object $forger_info ) {
   $patch = '';
   $source = '';
@@ -175,6 +180,7 @@ function keeper_shard_invoke( Object $forger_info ) {
   aether_arcane('Keeper.entity.keeper_shard_invoke');
   return true;
 }
+#NOTE: Retrieves and restores files from saved rune shards by name.
 function keeper_shard_get( Array $file_maps ) {
   foreach ($file_maps as $name) {
     $file = forger_item(KEEPER_ECHOES_SHARDS . '/' . $name . '.rune');
@@ -184,6 +190,7 @@ function keeper_shard_get( Array $file_maps ) {
   aether_arcane('Keeper.entity.keeper_shard_get');
   return true;
 }
+#NOTE: Decodes and rewrites a file from its stored runic shard format.
 function keeper_shard_revoke( String $raw_source ) {
   $file = cipher_runic($raw_source, true);
   $file = cipher_base64($file, true);
@@ -199,6 +206,7 @@ function keeper_shard_revoke( String $raw_source ) {
   aether_arcane('Keeper.entity.keeper_shard_revoke');
   return true;
 }
+#NOTE: Cleans all stored shards and resets the shard repository.
 function keeper_shard_clean() {
   forger_clean(KEEPER_ECHOES_SHARDS, true);
   forger_repo(KEEPER_ECHOES_SHARDS);
@@ -211,6 +219,7 @@ function keeper_shard_clean() {
 /* GLITCH
  * todo hidden error end report to keeper
  *  */
+#NOTE: Initializes custom error, exception, and shutdown handlers to capture and log all glitches into a file.
 function keeper_glitch_boot() {  
   forger_item(KEEPER_ECHOES_GLITCH, '');
   
@@ -258,15 +267,13 @@ function keeper_glitch_boot() {
   ini_set('display_errors', '0');
   error_reporting(E_ALL);
 }
-
+#NOTE: Dumps the current glitch state for inspection.
 function keeper_glitch_detect() {
   global $KEEPER_GLITCH;
 
   aether_dd($KEEPER_GLITCH);
 }
-
-
-
+#NOTE: Checks if the glitch log file has content, indicating an error has occurred.
 function keeper_is_glitch() {
   if (filesize(KEEPER_ECHOES_GLITCH)) {
     return true;

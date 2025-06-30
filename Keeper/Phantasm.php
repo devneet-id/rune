@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.7;
+  public $version = '1.8';
   
   public $main = 'Keeper';
 
@@ -20,58 +20,59 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
   public $link = [
-    ['Aether', 'ether', 1.13],
-    ['Chanter', 'essence', 1.9],
-    ['Cipher', 'ether:entity', 1.4],
-    ['Forger', 'entity', 1.8],
-    ['Specter', 'ether:essence', 1.4],
+    ['Aether', 'ether', '1.14'],
+    ['Chanter', 'essence', '1.10'],
+    ['Cipher', 'ether:entity', '1.5'],
+    ['Forger', 'entity', '1.9'],
+    ['Specter', 'ether:essence', '1.5'],
+    ['Crafter', 'ether:essence', '1.5'],
   ];
 
   public $node = [
     [
       'type' => 'essence',
       'call' => 'KEEPER',
-      'note' => '',
+      'note' => 'main essence',
     ],
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES',
-      'note' => '',
+      'note' => 'Base directory for all Keeper-related output files and logs.',
     ],
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES_KEEPER',
-      'note' => '',
+      'note' => 'Path to the main keeper state file.',
     ],
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES_STATS',
-      'note' => '',
+      'note' => 'Path to the statistics log file for tracking system data.',
     ],
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES_ARCANE',
-      'note' => '',
+      'note' => 'Path to the active arcane log file containing process entries.',
     ],
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES_GLITCH',
-      'note' => '',
+      'note' => 'Path to the glitch log file for captured errors and exceptions.',
     ],
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES_ARCANES',
-      'note' => '',
+      'note' => 'Directory for archived arcane logs.',
     ],
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES_SHARDS',
-      'note' => '',
+      'note' => 'Directory for encoded shard backups.',
     ],
     [
       'type' => 'essence',
       'call' => 'KEEPER_ARCANE',
-      'note' => '',
+      'note' => 'Defines stepwatch thresholds for classifying performance stages in arcane processing (e.g., BURST to OVERCLOCK).',
     ],
     [
       'type' => 'entity',
@@ -81,12 +82,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'keeper_arcane_process',
-      'note' => '',
+      'note' => 'Converts arcane log entries into a readable format with timing and state evaluation, then stores the result.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_arcane_process_store',
-      'note' => '',
+      'note' => 'Saves processed arcane log data into a timestamped file.',
     ],
     [
       'type' => 'entity',
@@ -96,107 +97,107 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'keeper_item',
-      'note' => '',
+      'note' => 'Gets or sets a keeper item based on whether a value is provided.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_item_set',
-      'note' => '',
+      'note' => 'Saves a value as a formatted JSON file under the given name.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_item_get',
-      'note' => '',
+      'note' => 'Retrieves and decodes a JSON file by name into a usable value.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_echo',
-      'note' => '',
+      'note' => 'Reads or writes a raw file inside a given repository, depending on whether a value is provided.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_echo_set',
-      'note' => '',
+      'note' => 'Ensures the target repository exists, then saves the given value as a plain file.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_echo_get',
-      'note' => '',
+      'note' => 'Reads and returns the contents of a plain file from the given repository.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_shard',
-      'note' => '',
+      'note' => 'Handles shard storage or restoration based on revoke flag.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_shard_set',
-      'note' => '',
+      'note' => 'Traces files, collects valid items, and stores them as encoded rune shards.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_shard_invoke',
-      'note' => '',
+      'note' => 'Encodes file metadata and content into base64 then runic format, and saves it as a shard.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_shard_get',
-      'note' => '',
+      'note' => 'Retrieves and restores files from saved rune shards by name.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_shard_revoke',
-      'note' => '',
+      'note' => 'Decodes and rewrites a file from its stored runic shard format.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_shard_clean',
-      'note' => '',
+      'note' => 'Cleans all stored shards and resets the shard repository.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_glitch_boot',
-      'note' => '',
+      'note' => 'Initializes custom error, exception, and shutdown handlers to capture and log all glitches into a file.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_glitch_detect',
-      'note' => '',
+      'note' => 'Dumps the current glitch state for inspection.',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_is_glitch',
-      'note' => '',
+      'note' => 'Checks if the glitch log file has content, indicating an error has occurred.',
     ],
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => '',
+      'note' => 'Optional lifecycle method for internal post-arise logic.',
     ],
     [
       'type' => 'manifest',
       'call' => '_aether_awaken_after()',
-      'note' => '',
+      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
     ],
     [
       'type' => 'manifest',
       'call' => 'awaken()',
-      'note' => '',
+      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [
       'type' => 'manifest',
       'call' => 'echo( String $repo, String $name, $value = "" )',
-      'note' => '',
+      'note' => 'Reads or writes a raw file inside the given repo depending on value.',
     ],
     [
       'type' => 'manifest',
       'call' => 'item( String $name, $value = false )',
-      'note' => '',
+      'note' => 'Gets or sets a structured keeper item in JSON format.',
     ],
     [
       'type' => 'manifest',
       'call' => 'shard( Array $file_maps, Bool $is_revoke = false )',
-      'note' => '',
+      'note' => 'Saves or restores rune shard backups depending on revoke flag.',
     ],
   ];
 

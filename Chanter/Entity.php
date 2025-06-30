@@ -63,6 +63,7 @@ function chanter_arg_extract( String $newArg = '' ) {
   aether_arcane("Chanter.entity.chanter_arg_extract");
 }
 
+#NOTE: Checks if a specific spell name exists in the global $CHANTER_ARG_SPELL array and its value is not equal to
 function chanter_arg_rebase() {
   global $CHANTER_ARG_CAST;
   global $CHANTER_ARG_SPELL;
@@ -226,6 +227,7 @@ function chanter_spell_chain() {
   return $spell;
 }
 
+#NOTE: Missing return statement – function does not return the result.
 function chanter_spell_has( String $name ) {
   global $CHANTER_ARG_SPELL;
 
@@ -240,25 +242,6 @@ function chanter_spell_has( String $name ) {
 
 /* ECHO
  * todo set echo in chanter */
-
-#NOTE: Saves an echo message for the current cast if its valid.
-// function chanter_echo( String $echo ) {
-//   global $CHANTER_ECHO;
-//   global $CHANTER_ARG;
-//   global $CHANTER_ARG_CAST;
-//   global $CHANTER_ARG_SPELL;
-
-//   if (is_string(!empty($CHANTER_ARG_CAST))) {
-//     $CHANTER_ECHO[$CHANTER_ARG_CAST] = $echo;
-  
-//     $return = true;
-//   }else {
-//     $return = false;
-//   }
-
-//   aether_arcane("Chanter.entity.chanter_echo");
-//   return $return;
-// }
 
 #NOTE: Adds notes to the echo data if the entry doesn’t exist yet.
 function chanter_echo_set( String $arg, String $notes ) {

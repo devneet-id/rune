@@ -6,12 +6,16 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
   
+  #NOTE: Optional lifecycle method for internal post-arise logic.
   public static function _arise() {}
 
+  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
   public static function _aether_awaken() {}
 
+  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
   public static function awaken() {}
 
+  #NOTE: Print or return a formatted whisper message with color support
   public static function echo( String $message, Bool $asString = false ) {
     if ($asString) {
       $return = whisper_echo_get($message . '{{color-end}}');
@@ -24,6 +28,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Prompt user for input through STDIN with a whisper message
   public static function call( String $text ) {
     $result = whisper_call( $text );
     
@@ -31,6 +36,7 @@ class Manifest extends \Rune\Manifest {
     return $result;
   }
 
+  #NOTE: Start, process, or return a buffered whisper output (drain mode)
   public static function drain( Mixed $state_or_process, Bool $asString = false ) {
     if (is_callable($state_or_process)) {
       whisper_drain_start();
@@ -58,6 +64,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Clear terminal screen, optionally forcing it for cross-platform
   public static function clear( Bool $force = false ) {
     if ($force) {
       whisper_clear_force();

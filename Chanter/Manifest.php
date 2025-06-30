@@ -11,15 +11,15 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  // middleware arise
+  #NOTE: middleware arise
   public static function _arise() {}
 
-  // middleware aether awaken
+  #NOTE: middleware from aether awaken
   public static function _aether_awaken_before() {
     self::awaken();
   }
 
-  // Prepares and executes a spell casting based on provided arguments or from file.
+  #NOTE: Prepares and executes a spell casting based on provided arguments or from file.
   public static function awaken() {
     global $CHANTER_ARG;
     global $CHANTER_ARG_CAST;
@@ -28,7 +28,7 @@ class Manifest extends \Rune\Manifest {
     chanter_arg_extract();
     $spell = chanter_spell_chain();
     $cast = $CHANTER_ARG_CAST . ' ' . $spell;
-    // $cast = chanter_arg_rebase();
+    #NOTE: $cast = chanter_arg_rebase();
 
     if ($CHANTER_ARG == AETHER_FILE) {
       $run = chanter_cast_get('rune');
@@ -57,7 +57,7 @@ class Manifest extends \Rune\Manifest {
     aether_arcane("Chanter.manifest.awaken");
   }
 
-  // Gets or sets a spell cast definition based on input and returns the result.
+  #NOTE: Gets or sets a spell cast definition based on input and returns the result.
   public static function cast( String $args, ?Callable $callable = NULL ) {
     if (empty($callable)) {
       $return = chanter_cast_get($args);
@@ -70,7 +70,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
-  // Gets or sets a spell definition by name and returns the result.
+  #NOTE: Gets or sets a spell definition by name and returns the result.
   public static function spell( String $name, $values = NULL ) {
     if (empty($values)) {
       $return = chanter_spell_get($name);
@@ -83,7 +83,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
-  // Outputs the given text and returns it
+  #NOTE: Outputs the given text and returns it
   public static function echo( String $cast, String $notes = '' ) {
     if (!empty($notes)) {
       $return = chanter_echo_set($cast, $notes);

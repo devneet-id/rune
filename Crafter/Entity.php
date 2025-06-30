@@ -13,6 +13,7 @@ function crafter() {
 /* HELPER
  * list all helper
  *  */
+#NOTE: Resets all Crafter-related globals to their initial states using reset constants or empty values.
 function crafter_reset() {
   global $CRAFTER_ITEM;
   global $CRAFTER_SEED;
@@ -39,6 +40,7 @@ function crafter_reset() {
 /* SEED
  * todo set seed of the item
  * */
+#NOTE: Sets a value in the global CRAFTER_SEED array under the given name.
 function crafter_seed_set( String $name, Mixed $value ) {
   global $CRAFTER_SEED;
 
@@ -47,6 +49,7 @@ function crafter_seed_set( String $name, Mixed $value ) {
   aether_arcane("Crafter.entity.crafter_seed_set");
   return $value;
 }
+#NOTE: Retrieves a value from the global CRAFTER_SEED array by name.
 function crafter_seed_get( String $name ) {
   global $CRAFTER_SEED;
 
@@ -58,6 +61,7 @@ function crafter_seed_get( String $name ) {
 /* ITEM
  * todo crafter item 
  * */
+#NOTE: Registers a callable into the global CRAFTER_ITEM array under the given name.
 function crafter_item_set( String $name, ?Callable $callable ) {
   global $CRAFTER_ITEM;
 
@@ -66,6 +70,7 @@ function crafter_item_set( String $name, ?Callable $callable ) {
   aether_arcane("Crafter.entity.crafter_item_set");
   return true;
 }
+#NOTE: Executes a registered crafter item callable by name, then updates CRAFTER_SPARK and marks it as ready.
 function crafter_item_get( String $name ) {
   global $CRAFTER_ITEM;
   global $CRAFTER_SEED;
@@ -92,6 +97,7 @@ function crafter_item_get( String $name ) {
 /* SHARD
  * todo get shard and crafting shards
  *  */
+#NOTE: Registers a shard file along with optional injection, stores its info and path in global crafter shard arrays.
 function crafter_shard_set( String $file_path, ?Callable $injection = NULL ) {
   global $CRAFTER_SHARD;
   global $CRAFTER_SHARD_LIST;
@@ -106,6 +112,7 @@ function crafter_shard_set( String $file_path, ?Callable $injection = NULL ) {
   aether_arcane("Crafter.entity.crafter_shard_set");
   return $CRAFTER_SHARD;
 }
+#NOTE: Retrieves a shard file info from global crafter shard arrays.
 function crafter_shard_get( String $file_path, ?Callable $injection = NULL ) {
   global $CRAFTER_SHARD;
   global $CRAFTER_SHARD_LIST;
@@ -122,6 +129,7 @@ function crafter_shard_get( String $file_path, ?Callable $injection = NULL ) {
 
 /* SPARK
  *  */
+#NOTE: Executes full crafting process flow — ensures spark readiness, runs core processing steps, optional injection, and finalizes with keeper shard setup.
 function crafter_spark( String $name, ?Callable $injection = NULL ) {
   global $CRAFTER_SHARD;
   global $CRAFTER_SHARD_INJECTION;
@@ -155,7 +163,7 @@ function crafter_spark( String $name, ?Callable $injection = NULL ) {
   aether_arcane("Crafter.entity.crafter_spark");
   return true;
 }
-
+#NOTE: Displays crafting result summary including item name, output path, file size, and total shard used.
 function crafter_spark_message() {
   global $CRAFTER_SPARK;
   
@@ -168,7 +176,7 @@ function crafter_spark_message() {
   whisper_echo("{{color-success}}{{icon-success}}{{label-success}}Crafting '$name' has been Sparked!!");
   whisper_echo("\n{{color-info}}{{icon-info}}{{label-info}}Path=$file_path, Size=$file_size, Shard=$total_shard");
 }
-
+#NOTE: Processes each shard by injecting and clustering its content into the appropriate group based on file type or name.
 function crafter_spark_clustering() {
   global $CRAFTER_SPARK;
   global $CRAFTER_SPARK_CLUSTER;
@@ -196,7 +204,7 @@ function crafter_spark_clustering() {
   aether_arcane("Crafter.entity.crafter_spark_clustering");
   return true;
 }
-
+#NOTE: Cleans clustered shard contents by removing unwanted strings based on language-specific rules.
 function crafter_spark_cleaning() {
   global $CRAFTER_SPARK_CLUSTER;
 
@@ -217,7 +225,7 @@ function crafter_spark_cleaning() {
   aether_arcane("Crafter.entity.crafter_spark_cleaning");
   return true;
 }
-
+#NOTE: Binds cleaned shard clusters and metadata into a final distributable template using selected weaver and encryption.
 function crafter_spark_bundling() {
   global $CRAFTER_SPARK;
   global $CRAFTER_SPARK_DISTRIBUTE;
@@ -269,7 +277,7 @@ function crafter_spark_bundling() {
   aether_arcane("Crafter.entity.crafter_spark_bundling");
   return true;
 }
-
+#NOTE: Writes the bundled content to the distribution path defined in the crafter seed.
 function crafter_spark_distributing() {
   global $CRAFTER_SEED;
   global $CRAFTER_SPARK_DISTRIBUTE;

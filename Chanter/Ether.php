@@ -5,6 +5,6 @@
  * Represents constants and rules for this domain.
  */
 
-// Main ether
+#NOTE: Main ether
 define('CHANTER', true);
 

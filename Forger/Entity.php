@@ -4,7 +4,7 @@
  * ENTITY
  * Represents functions related to this domain.
  */
-
+#NOTE: Placeholder function for the Forger system, currently returns true.
 function forger() {
   return true;
 }
@@ -12,6 +12,7 @@ function forger() {
 
 /* TRACE
  * */
+#NOTE: Traces and resolves each part of a given path, tagging them as file ('item') or folder ('repo') along with their existence.
 function forger_trace( String $source_path ) {
   $source_path = str_replace('/', DIRECTORY_SEPARATOR, $source_path);
   $pathParts = explode(DIRECTORY_SEPARATOR, $source_path);
@@ -37,6 +38,8 @@ function forger_trace( String $source_path ) {
   aether_arcane('Forger.entity.forger_trace');
   return $targets;
 }
+
+#NOTE: Recursively traces a given path and all its children, returning structured info for both files and directories.
 function forger_trace_recursive(string $path): array {
   $result = [];
 
@@ -74,6 +77,7 @@ function forger_trace_recursive(string $path): array {
 
 /* SCAN
  * */
+#NOTE: Scans a directory for items, applies a callback to each, and returns the result list.
 function forger_scan( String $source_path, ?Callable $callback ) {
   $return = [];
   foreach (glob( $source_path . '/*' ) as $item) {
@@ -89,6 +93,7 @@ function forger_scan( String $source_path, ?Callable $callback ) {
 
 /* FIX
  * */
+#NOTE: Ensures all given paths exist by creating missing directories or files based on their type.
 function forger_fix( Array $source_path ) {
   foreach ($source_path as $source) {
     $state = (isset($source['ready'])) ? $source['ready'] : file_exists($source['target']);
@@ -112,6 +117,7 @@ function forger_fix( Array $source_path ) {
 
 /* MOVE
  * */
+#NOTE: Moves or clones items and repositories to their target paths, ensuring destination structure exists beforehand.
 function forger_move(Array $source_path) {
   foreach ($source_path as $source) {
     $type   = $source['type'] ?? null;
@@ -150,6 +156,7 @@ function forger_move(Array $source_path) {
 
 /* SORT
  * */
+#NOTE: Sorts traced paths by type priority and path length, placing prioritized types first and longer paths earlier.
 function forger_sort(array $trace, string $priority = 'item'): array {
   usort($trace, function($a, $b) use ($priority) {
     if ($a['type'] === $b['type']) {
@@ -167,6 +174,7 @@ function forger_sort(array $trace, string $priority = 'item'): array {
 
 /* CLEAN
  * */
+#NOTE: Cleans a file or directory; if forced as repo, recursively traces and removes all contained files and folders.
 function forger_clean( String $source_path, $force_repo = false ) {
   if ($force_repo) {
     // trace
@@ -197,6 +205,7 @@ function forger_clean( String $source_path, $force_repo = false ) {
 
 /* REPO
  * todo working with folder */
+#NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
 function forger_repo( String $source_path, ?Callable $callback = null ) {
   $trace = forger_trace( $source_path );
   forger_fix( $trace );
@@ -215,6 +224,7 @@ function forger_repo( String $source_path, ?Callable $callback = null ) {
 /* ITEM
  * todo working with file
  *  */
+#NOTE: Ensures the file exists, optionally writes content to it, and returns its contents.
 function forger_item( String $source_path, $content = false, $flags = 0 ) {
   $trace = forger_trace( $source_path );
   forger_fix( $trace );
@@ -230,6 +240,7 @@ function forger_item( String $source_path, $content = false, $flags = 0 ) {
 
 /* INFO
  * */
+#NOTE: Retrieves detailed information about a file or directory, including type, basename, name, extension, and path.
 function forger_info( String $source_path ) {
   if (file_exists($source_path)) {
     $file = pathinfo($source_path);
@@ -253,6 +264,7 @@ function forger_info( String $source_path ) {
 
 /* CLONE
  * */
+#NOTE: Recursively clones a directory and its contents to a target location, creating folders as needed and copying files.
 function forger_clone( string $from, string $to ): bool {
   if (!is_dir($from)) {
     echo "[x] Folder sumber tidak ditemukan: $from\n";
@@ -292,6 +304,7 @@ function forger_clone( string $from, string $to ): bool {
 
 
 /* Observer */
+#NOTE: Observes a directory recursively and returns the latest modification timestamp among all files.
 function forger_observer($path) {
   $lastModifiedTime = 0;
   foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $f) {

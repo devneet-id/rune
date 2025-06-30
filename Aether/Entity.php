@@ -4,7 +4,7 @@
  * ENTITY
  * Represents functions related to this domain.
  */
-
+#NOTE: Convert a number of bytes into a human-readable file size (e.g. KB, MB)
 function aether_formatFileSize($size, $precision = 2) {
   if ($size <= 0) return '0 B';
 
@@ -16,22 +16,20 @@ function aether_formatFileSize($size, $precision = 2) {
   aether_arcane('Aether.entity.aether_formatFileSize');
   return sprintf("%.{$precision}f%s", $scaledSize, $units[$base]);
 }
-
+#NOTE: Measure elapsed time since $AETHER_STOPWATCH was started (in seconds)
 function aether_stopwatch() {
   global $AETHER_STOPWATCH;
   $output = microtime(true) - $AETHER_STOPWATCH;
   aether_arcane('Aether.entity.aether_stopwatch');
   return $output;
 }
-
-
+#NOTE: Get current and peak memory usage in bytes
 function aether_memoryusage() {
   $output = [memory_get_usage(), memory_get_peak_usage()];
   aether_arcane("Aether.entity.aether_memoryusage");
   return $output;
 }
-
-
+#NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper)
 function aether_exit( $force = false ) {
   $memory = aether_memoryusage();
   $stopwatch = aether_stopwatch();
@@ -65,44 +63,20 @@ function aether_exit( $force = false ) {
   }
 }
 
-
-
-
+#NOTE: Check if a given function (entity) exists in the current environment
 function aether_has_entity( $function ) {
   return (function_exists($function)) ? true : false;
 }
+#NOTE: Check if a constant (ether) is defined in the runtime
 function aether_has_ether( $rune ) {
   return (defined($rune)) ? true : false;
 }
+#NOTE: Check if a global variable (essence) is set and exists
 function aether_has_essence( $rune ) {
   return (isset($GLOBALS[$rune])) ? true : false;
 }
 
-
-
-
-
-function aether_log( String $text ) {
-  // if (aether_has_entity('forger')) {
-  //   forger_folder(AETHER_REPO . '/.echoes');
-  //   forger_folder(AETHER_LOGS);
-  //   aether_arcane($text);
-  //   $text = '[' . date('Y-m-d H:i:s') . '] ' . $text;
-  //   $last = (forger_file(AETHER_LOGS.date('Y-m-d').'.txt')) ?: '';
-  //   $data = $last . PHP_EOL . $text;
-  //   $data = str_replace(PHP_EOL.PHP_EOL, PHP_EOL, $data);
-  //   forger_set(AETHER_LOGS.date('Y-m-d').'.txt', $data);
-  // }
-}
-
-function aether_log_clear() {
-  // if (aether_has_entity('forger')) {
-  //   forger_folder(AETHER_REPO . '/.echoes');
-  //   forger_folder(AETHER_LOGS);
-  //   forger_set(AETHER_LOGS.date('Y-m-d').'.txt', '');
-  // }
-}
-
+#NOTE: Dump and display debug information with colorized formatting, then exit
 function aether_dd($data) { 
   // print(PHP_EOL.'AETHER DUBGGING :: START'.PHP_EOL);
   ob_start();
@@ -151,7 +125,7 @@ function aether_whisper_echo( $text ) {
   aether_arcane("Aether.entity.aether_whisper_echo");
 }
 
-
+#NOTE: Get all unique arised runes from ether, essence, and entity
 function aether_arised() {
   global $AETHER_RUNE_ETHER;
   global $AETHER_RUNE_ESSENCE;
@@ -171,6 +145,7 @@ function aether_arised() {
 /* ARCANE
  * need: Forger, Keeper
  *  */
+#NOTE: Track execution events with timestamp and elapsed time (arcane trace logging)
 function aether_arcane(String $text, String $value = '') {
   global $AETHER_ARCANE;
   global $AETHER_STOPWATCH;
@@ -200,18 +175,21 @@ function aether_arcane(String $text, String $value = '') {
     }
   }
 }
+#NOTE: Reset all arcane trace logs
 function aether_arcane_reset() {
   global $AETHER_ARCANE;
 
   $AETHER_ARCANE = [];
   return true;
 }
+#NOTE: Enable arcane trace logging
 function aether_arcane_enable() {
   global $AETHER_ARCANE_STATE;
 
   $AETHER_ARCANE_STATE = true;
   return true;
 }
+#NOTE: Disable arcane trace logging
 function aether_arcane_disable() {
   global $AETHER_ARCANE_STATE;
 

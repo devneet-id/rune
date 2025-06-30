@@ -6,12 +6,16 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
+  #NOTE: Optional lifecycle method for internal post-arise logic.
   public static function _arise() {}
 
+  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
   public static function _aether_awaken() {}
 
+  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
   public static function awaken() {}
 
+  #NOTE: Bind one or multiple variables into a template string
   public static function bind( String $template, $searchOrArray, String $data='' ) {
     if (is_array($searchOrArray)) {
       $return = weaver_bind_multiple($template, $searchOrArray);
@@ -23,6 +27,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Set or retrieve a key-value bond for template variable storage
   public static function bond( String $key, Mixed $value ) {
     if (isset($value)) {
       $return = weaver_bond_set($key, $value);
@@ -34,6 +39,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Load a template file into memory and optionally assign it an alias
   public static function item( String $source, String $alias='' ) {
     if (!weaver_item_get($source)) {
       $return = weaver_item_set($source, $alias);
@@ -44,23 +50,5 @@ class Manifest extends \Rune\Manifest {
     aether_arcane('Weaver.manifest.item');
     return $return;
   }
-
-  // public static function load( $source ) {
-  //   return file_get_contents($source);
-  // }
-
-  // public static function bind( $template, $search, $data ) {
-  //   $search = strtoupper($search);
-  //   $parse = str_replace("{{ ".$search." }}", $data, $template);
-  //   $parse = str_replace("{{".$search."}}", $data, $template);
-  //   return $parse;
-  // }
-
-  // public static function bindAll( $template, $list) {
-  //   foreach ($list as $key => $value) {
-  //     $template = self::bind($template, $key, $value);
-  //   }
-  //   return $template;
-  // }
 
 }

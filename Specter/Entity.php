@@ -4,25 +4,16 @@
  * ENTITY
  * Represents functions related to this domain.
  */
-
+#NOTE: main entity
 function specter() {
   return true;
-}
-
-function specter_folder($path) {
-  $lastModifiedTime = 0;
-  foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $f) {
-    if (!$f->isFile()) continue;
-    $time = $f->getMTime();
-    $lastModifiedTime = max($lastModifiedTime, $time);
-  }
-  return $lastModifiedTime;
 }
 
 
 /* SOUL
  * todo spectering the spark
  * */
+#NOTE: Sets a soul value and persists it through the keeper.
 function specter_soul_set( String $name, Mixed $value ) {
   global $SPECTER_SOUL;
   
@@ -30,6 +21,7 @@ function specter_soul_set( String $name, Mixed $value ) {
 
   return $value;
 }
+#NOTE: Retrieves a soul value and refreshes the in-memory state.
 function specter_soul_get( String $name ) {
   global $SPECTER_SOUL;
 
@@ -43,6 +35,7 @@ function specter_soul_get( String $name ) {
   
   return $return;
 }
+#NOTE: Loads and syncs soul data from keeper, optionally updates a value.
 function specter_soul_save( $name, $value = null ) {
   global $SPECTER_SOUL;
   
@@ -63,6 +56,7 @@ function specter_soul_save( $name, $value = null ) {
 
   keeper_item_set('soul', $SPECTER_SOUL);
 }
+#NOTE: Removes a soul value from both memory and keeper storage.
 function specter_soul_remove( String $name ) {
   global $SPECTER_SOUL;
   
@@ -88,6 +82,7 @@ function specter_soul_remove( String $name ) {
 /* CAST
  * todo spectering the cast
  *  */
+#NOTE: Executes a command with given options across platforms and logs the cast state.
 function specter_cast_set( string $arg, array $options = [] ) {
   $arg = weaver_bind($arg, 'self', 'php ' . AETHER_FILE);
   $opt = array_merge(SPECTER_CAST_ARG_DEFAULT, $options);  
@@ -133,6 +128,7 @@ function specter_cast_set( string $arg, array $options = [] ) {
     }
   }
 }
+#NOTE: Retrieves cast state by argument from keeper storage.
 function specter_cast_get( string $arg ) {
   global $SPECTER_CAST;
 
@@ -154,6 +150,7 @@ function specter_cast_get( string $arg ) {
   
   return $return;
 }
+#NOTE: Saves the cast command and its metadata to keeper storage.
 function specter_cast_save( $arg, $alive = true, $option = [] ) {
   global $SPECTER_CAST;
 
@@ -194,6 +191,7 @@ function specter_cast_save( $arg, $alive = true, $option = [] ) {
 /* SEER
  * todo spectating changed
  *  */
+#NOTE: Continuously calls a condition callback with spinner frames until stopped or glitch is detected.
 function specter_seer_set(?Callable $condition) {
   $frames = ['-', '\\', '|', '/'];
   $targetSpeed = SPECTER_SEER_OPTION['speed'] / 1000 ?? 0.1;
@@ -223,10 +221,7 @@ function specter_seer_set(?Callable $condition) {
   }
 }
 
-
-
-
-
+#NOTE: Marks a casted specter command as no longer active.
 function specter_exit( String $arg ) {
   specter_cast_save( $arg, false );
 }

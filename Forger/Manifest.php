@@ -11,12 +11,16 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
+  #NOTE: Optional lifecycle method for internal post-arise logic.
   public static function _arise() {}
 
+  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
   public static function _aether_awaken() {}
 
+  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
   public static function awaken() {}
   
+  #NOTE: Traces and resolves each part of a given path, tagging them as file ('item') or folder ('repo') along with their existence.
   public static function trace( String $source_path ) {
     $return = forger_trace( $source_path );
 
@@ -24,6 +28,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
+  #NOTE: Scans a directory for items, applies a callback to each, and returns the result list.
   public static function scan( String $source_path, $callback ) {
     $return = forger_scan($source_path, $callback );
 
@@ -31,6 +36,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Retrieves detailed information about a file or directory, including type, basename, name, extension, and path.
   public static function info( String $source_path ) {
     $return = forger_info( $source_path );
 
@@ -38,6 +44,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
+  #NOTE: Ensures all given paths exist by creating missing directories or files based on their type.
   public static function fix( Array $source_path ) {
     $return = forger_fix( $source_path );
 
@@ -45,6 +52,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Cleans a file or directory; if forced as repo, recursively traces and removes all contained files and folders.
   public static function clean( String $source_path, bool $force = false ) {
     $return = forger_clean( $source_path, $force );
 
@@ -52,6 +60,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Moves or clones items and repositories to their target paths, ensuring destination structure exists beforehand.
   public static function move( Array $source_path ) {
     $return = forger_move( $source_path );
 
@@ -59,6 +68,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
+  #NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
   public static function repo( String $source_path, ?Callable $callback ) {
     $return = forger_repo( $source_path, $callback );
 
@@ -66,6 +76,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
+  #NOTE: Ensures the file exists, optionally writes content to it, and returns its contents.
   public static function item( String $source_path, $content = false ) {
     $return = forger_item( $source_path, $content );
 
@@ -73,6 +84,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Recursively clones a directory and its contents to a target location, creating folders as needed and copying files.
   public static function clone( string $from, string $to ) {
     $return = forger_clone( $from, $to );
 
@@ -80,6 +92,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Observes a directory recursively and returns the latest modification timestamp among all files.
   public static function observer( string $path ) {
     $return = forger_observer( $path );
 

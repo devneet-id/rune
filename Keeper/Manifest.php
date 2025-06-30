@@ -11,6 +11,7 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
+  #NOTE: Optional lifecycle method for internal post-arise logic.
   public static function _arise() {
     forger_fix([
       [
@@ -34,10 +35,12 @@ class Manifest extends \Rune\Manifest {
     keeper_glitch_boot();
   }
   
+  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
   public static function _aether_awaken_after() {
     self::awaken();
   }
   
+  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
   public static function awaken() {
     
     // $memory = aether_memoryusage();
@@ -55,17 +58,19 @@ class Manifest extends \Rune\Manifest {
   }
 
 
+  #NOTE: Reads or writes a raw file inside the given repo depending on value.
   public static function echo( String $repo, String $name, $value = '' ) {
-  if (empty($value)) {
-    $return = keeper_echo_get($repo, $name);
-  }else {
-    $return = keeper_echo_set($repo, $name, $value);
-  }
+    if (empty($value)) {
+      $return = keeper_echo_get($repo, $name);
+    }else {
+      $return = keeper_echo_set($repo, $name, $value);
+    }
 
-  aether_arcane('Keeper.manifest.echo');
-  return $return;
-}
+    aether_arcane('Keeper.manifest.echo');
+    return $return;
+  }
   
+  #NOTE: Gets or sets a structured keeper item in JSON format.
   public static function item( String $name, $value = false ) {
     if ($value === false) {
       $return = keeper_item_get($name);
@@ -77,6 +82,7 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Saves or restores rune shard backups depending on revoke flag.
   public static function shard( Array $file_maps, Bool $is_revoke = false ) {
     if ($is_revoke) {
       keeper_shard_get($file_maps);

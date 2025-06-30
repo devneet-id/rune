@@ -1,14 +1,16 @@
 <?php
 
-
+#NOTE: main essence
 $GLOBALS['WHISPER'] = true;
 
+#NOTE: Default text variables for whisper formatting (like newline, tab, etc.)
 $GLOBALS['WHISPER_VARS'] = [
   'NL'=> PHP_EOL,
   'TAB'=> '  ',
   'END'=> "\033[0;37m",
 ];
 
+#NOTE: ANSI color codes for CLI output styling used by whisper
 $GLOBALS['WHISPER_COLORS'] = [
   'PRIMARY'   => "\033[01;34m",
   'SECONDARY' => "\033[01;30m",
@@ -23,6 +25,7 @@ $GLOBALS['WHISPER_COLORS'] = [
   'END'       => "\033[0;37m",
 ];
 
+#NOTE: HTML span-based color definitions for web-based whisper output
 $GLOBALS['WHISPER_COLORS_WEBS'] = [
   'PRIMARY'   => '<span style="color: #0000ff">',
   'SECONDARY' => '<span style="color: #808080">',
@@ -36,6 +39,7 @@ $GLOBALS['WHISPER_COLORS_WEBS'] = [
   'DEFAULT'   => '<span style="color: #bfbfbf">',
 ];
 
+#NOTE: Default icon markers used in whisper output for each message type
 $GLOBALS['WHISPER_ICONS'] = [
   'PRIMARY'   => "[~]",
   'SECONDARY' => "[#]",
@@ -48,6 +52,7 @@ $GLOBALS['WHISPER_ICONS'] = [
   'DEBUG'     => "[^]",
 ];
 
+#NOTE: Default label prefixes for whisper messages
 $GLOBALS['WHISPER_LABELS'] = [
   'PRIMARY'   => "PRIMARY: ",
   'SECONDARY' => "SECONDARY: ",
@@ -60,6 +65,8 @@ $GLOBALS['WHISPER_LABELS'] = [
   'DEBUG'     => "DEBUG: ",
 ];
 
+#NOTE: Buffer to store whisper output when in drain mode
 $GLOBALS['WHISPER_DRAIN'] = [];
 
+#NOTE: State toggle to determine whether whisper is in drain mode
 $GLOBALS['WHISPER_DRAIN_STATE'] = false;
