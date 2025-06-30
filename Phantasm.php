@@ -16,8 +16,8 @@ class Phantasm {
 
   public $mark = 'VOID';
 
-  public $need = [];
+  public $link = [];
 
-  public $list = [];
+  public $node = [];
 
 }
