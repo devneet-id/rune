@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
   
-  public $version = 1.3;
+  public $version = 1.4;
 
   public $main = 'Weaver';
 
@@ -15,16 +15,8 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for advanced string manipulation, data binding, and template weaving—transforming raw data into structured text with flexible, context-aware logic.';
 
   public $link = [
-    ['Specter', 'ether:manifest', 1.3],
-    ['Aether', 'manifest', 1.9],
-    ['Chanter', 'manifest', 1.5],
-    ['Cipher', 'manifest', 0.2],
-    ['Crafter', 'manifest', 1.2],
-    ['Forger', 'manifest', 1.6],
-    ['Keeper', 'manifest', 1.6],
-    ['Whisper', 'manifest', 1.5],
+    ['Aether', 'essence:entity', 1.13],
   ];
-
 
   public $node = [
     [
@@ -114,7 +106,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'bind( String $template, $searchOrArray, String $data=\'\' )',
+      'call' => 'bind( String $template, $searchOrArray, String $data="" )',
       'note' => '',
     ],
     [
@@ -138,7 +130,6 @@ class Phantasm extends \Rune\Phantasm {
       'note' => '',
     ],
   ];
-
 
   public function awakening() {}
   

@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.4;
+  public $version = 1.5;
   
   public $main = 'Specter';
 
@@ -20,10 +20,10 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Enables out-of-process operations through soul-like abstractions—designed for managing complex, asynchronous, or decoupled executions by temporarily separating logic from the main flow while maintaining active control.';
 
   public $link = [
-    ['Keeper', 'ether', 1.6],
-    ['Aether', 'ether', 1.1],
+    ['Keeper', 'ether', 1.7],
+    ['Aether', 'ether', 1.13],
     ['Weaver', 'entity', 1.3],
-    ['Forger', 'entity', 1.6],
+    ['Forger', 'entity', 1.8],
     ['Whisper', 'ether', 1.7],
   ];
 

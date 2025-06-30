@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.2;
+  public $version = 1.4;
   
   public $main = 'Crafter';
 
@@ -20,19 +20,16 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Focused on dynamic creation and composition—designed to build, shape, and assemble various data structures or logic units through modular, seed-based, and spark-driven processes.';
 
   public $link = [
-    ['Aether', 'manifest', 1.9],
-    ['Specter', 'ether:manifest', 1.3],
-    ['Weaver', 'manifest', 1.2],
-    ['Cipher', 'manifest', 0.2],
-    ['Forger', 'manifest', 1.6],
-    ['Keeper', 'manifest', 1.6],
-    ['Whisper', 'manifest', 1.5],
-    ['Chanter', 'manifest', 1.5],
+    ['Aether', 'ether', 1.13],
+    ['Weaver', 'essence', 1.3],
+    ['Cipher', 'entity', 1.4],
+    ['Forger', 'entity', 1.7],
+    ['Keeper', 'essence:entity', 1.6],
   ];
 
   public $node = [
     [
-      'type' => 'essence',
+      'type' => 'ether',
       'call' => 'CRAFTER',
       'note' => '',
     ],
@@ -69,6 +66,11 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'ether',
       'call' => 'CRAFTER_RESET_SPARK_CLUSTER',
+      'note' => '',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'CRAFTER',
       'note' => '',
     ],
     [
@@ -118,72 +120,72 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter',
+      'call' => 'crafter()',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_reset',
+      'call' => 'crafter_reset()',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_seed_set',
+      'call' => 'crafter_seed_set( String $name, Mixed $value )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_seed_get',
+      'call' => 'crafter_seed_get( String $name )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_item_set',
+      'call' => 'crafter_item_set( String $name, ?Callable $callable )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_item_get',
+      'call' => 'crafter_item_get( String $name )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_shard_set',
+      'call' => 'crafter_shard_set( String $file_path, ?Callable $injection = NULL )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_shard_get',
+      'call' => 'crafter_shard_get( String $file_path, ?Callable $injection = NULL )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_spark',
+      'call' => 'crafter_spark( String $name, ?Callable $injection = NULL )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_spark_message',
+      'call' => 'crafter_spark_message()',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_spark_clustering',
+      'call' => 'crafter_spark_clustering()',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_spark_cleaning',
+      'call' => 'crafter_spark_cleaning()',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_spark_bundling',
+      'call' => 'crafter_spark_bundling()',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_spark_distributing',
+      'call' => 'crafter_spark_distributing()',
       'note' => '',
     ],
     [
@@ -222,7 +224,6 @@ class Phantasm extends \Rune\Phantasm {
       'note' => '',
     ],
   ];
-
 
   public function awakening() {}
   

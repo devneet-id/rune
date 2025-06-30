@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.7;
+  public $version = 1.9;
   
   public $main = 'Chanter';
 
@@ -15,7 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Encapsulates processes and CLI-style operations to maintain immutability—structures input, spell logic, and execution flow into controlled, traceable, and reusable command definitions.';
 
   public $link = [
-    ['Aether', 'essence:entity', 1.11],
+    ['Aether', 'essence:entity', 1.13],
     ['Whisper', 'ether', 1.7],
     ['Specter', 'ether:essence', 1.4],
   ];
@@ -24,57 +24,57 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'ether',
       'call' => 'CHANTER',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARGS',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_CAST',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_SPELL',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_LIST',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_CAST',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_CAST_LIST',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_SPELL',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ECHO',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'entity',
@@ -94,7 +94,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_arg_rebase()',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'entity',
@@ -139,7 +139,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_spell_has( String $name )',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'entity',
@@ -159,37 +159,37 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_whisper_drain( $run )',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => '_aether_awaken_before()',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => 'awaken()',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => 'cast( String $args, ?Callable $callable = NULL )',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => 'spell( String $name, $values = NULL )',
-      'note' => 'no note',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => 'echo( String $cast, String $notes = "" )',
-      'note' => 'no note',
+      'note' => '',
     ],
   ];
 

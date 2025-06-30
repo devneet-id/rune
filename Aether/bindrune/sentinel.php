@@ -665,7 +665,7 @@ Chanter::cast('sentinel', function() {
 
           preg_match($pattern, $source, $matches);
 
-          $note = $matches[1] ?? 'no note';
+          $note = $matches[1] ?? '';
           $node['note'] = $note;
           $renote[] = $node;
       }

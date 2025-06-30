@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.6;
+  public $version = 1.7;
   
   public $main = 'Keeper';
 
@@ -20,16 +20,12 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
   public $link = [
-    ['Aether', 'manifest:ether:entity', 1.9],
-    ['Specter', 'ether:manifest', 1.3],
-    ['Chanter', 'manifest', 1.5],
-    ['Cipher', 'manifest', 0.2],
-    ['Forger', 'essence:entity:manifest', 1.6],
-    ['Whisper', 'manifest', 1.5],
-    ['Crafter', 'manifest', 1.2],
-    ['Weaver', 'manifest', 1.2],
+    ['Aether', 'ether', 1.13],
+    ['Chanter', 'essence', 1.9],
+    ['Cipher', 'ether:entity', 1.4],
+    ['Forger', 'entity', 1.8],
+    ['Specter', 'ether:essence', 1.4],
   ];
-
 
   public $node = [
     [
@@ -189,7 +185,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'echo( String $repo, String $name, $value = \'\' )',
+      'call' => 'echo( String $repo, String $name, $value = "" )',
       'note' => '',
     ],
     [
@@ -203,7 +199,6 @@ class Phantasm extends \Rune\Phantasm {
       'note' => '',
     ],
   ];
-
 
   public function awakening() {}
   

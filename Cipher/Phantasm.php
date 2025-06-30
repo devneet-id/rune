@@ -11,12 +11,12 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.2;
+  public $version = 1.4;
   
   public $main = 'Cipher';
 
   public $link = [
-    ['Aether', 'ether:essence:entity', 1.9],
+    ['Aether', 'essence:entity', 1.13],
   ];
 
   public $node = [
@@ -77,7 +77,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'id( String $prefix = \'\', $entropy = false )',
+      'call' => 'id( String $prefix = "", $entropy = false )',
       'note' => '',
     ],
     [

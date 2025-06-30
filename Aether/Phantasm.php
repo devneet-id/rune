@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.11;
+  public $version = 1.13;
   
   public $main = 'Aether';
 
@@ -21,12 +21,11 @@ class Phantasm extends \Rune\Phantasm {
 
   public $link = [
     ['Weaver', 'essence', 1.3],
-    ['Chanter', 'ether:essence:entity', 1.6],
-    ['Forger', 'essence', 1.6],
+    ['Chanter', 'ether:essence', 1.8],
+    ['Forger', 'essence', 1.7],
     ['Keeper', 'essence', 1.6],
     ['Whisper', 'ether', 1.7],
   ];
-
 
   public $node = [
     [
@@ -295,8 +294,6 @@ class Phantasm extends \Rune\Phantasm {
       'note' => '',
     ],
   ];
-
-
 
   public function awakening() {}
   

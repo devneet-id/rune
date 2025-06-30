@@ -11,20 +11,22 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 0.1;
+  public $version = 0.2;
   
   public $main = 'Minister';
 
   public $mark = 'DEVELOPMENT';
 
-  public $link = [];
+  public $link = [
+    ['Aether', 'essence', 1.13],
+  ];
 
   public $node = [
     [
       'type' => 'manifest | entity | essence | ether',
       'call' => 'starter( $x )',
-      'note'=> '',
-    ]
+      'note' => '',
+    ],
   ];
 
   public function awakening() {}

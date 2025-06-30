@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.6;
+  public $version = 1.8;
   
   public $main = 'Forger';
 
@@ -20,16 +20,8 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for structured file and directory operations such as tracing, scanning, fixing, moving, and cloning. Enables content analysis and automated organization through dynamic, logic-driven routines.';
 
   public $link = [
-    ['Specter', 'ether:manifest', 1.3],
-    ['Aether', 'manifest', 1.9],
-    ['Chanter', 'manifest', 1.5],
-    ['Cipher', 'manifest', 0.2],
-    ['Crafter', 'manifest', 1.2],
-    ['Keeper', 'manifest', 1.6],
-    ['Weaver', 'manifest', 1.2],
-    ['Whisper', 'manifest', 1.5],
+    ['Aether', 'essence:entity', 1.13],
   ];
-
 
   public $node = [
     [
@@ -168,9 +160,6 @@ class Phantasm extends \Rune\Phantasm {
       'note' => '',
     ],
   ];
-
-
-
 
 
   public function awakening() {}
