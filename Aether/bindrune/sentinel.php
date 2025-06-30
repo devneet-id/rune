@@ -726,8 +726,8 @@ Chanter::cast('sentinel', function() {
     Whisper::clear(true);
     Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Auto \n");
     // run spell and call
-    if (Chanter::spell('phantasm-fix-note') !== '1') {
-      $name = Chanter::spell('phantasm-fix-note');
+    if (Chanter::spell('phantasm-fix') !== '1') {
+      $name = Chanter::spell('phantasm-fix');
     }else {
       $name = Whisper::call('Give us the rune name: ');
     }
