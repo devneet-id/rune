@@ -22,10 +22,10 @@ class Phantasm extends \Rune\Phantasm {
   public $link = [
     ['Keeper', 'ether', '1.8'],
     ['Aether', 'ether', '1.14'],
-    ['Weaver', 'entity', '1.4'],
+    ['Weaver', 'entity', '1.5'],
     ['Crafter', 'ether:essence', '1.5'],
     ['Forger', 'entity', '1.9'],
-    ['Whisper', 'ether:essence', '1.8'],
+    ['Whisper', 'ether:essence', '1.9'],
   ];
 
   public $node = [

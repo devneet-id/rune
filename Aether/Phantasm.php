@@ -20,11 +20,11 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
   public $link = [
-    ['Weaver', 'essence', '1.4'],
+    ['Weaver', 'essence', '1.5'],
     ['Chanter', 'ether:essence', '1.10'],
-    ['Forger', 'essence', '1.8'],
-    ['Keeper', 'essence', '1.7'],
-    ['Whisper', 'ether:essence', '1.8'],
+    ['Forger', 'essence', '1.9'],
+    ['Keeper', 'essence', '1.8'],
+    ['Whisper', 'ether:essence', '1.9'],
   ];
 
   public $node = [

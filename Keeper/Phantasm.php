@@ -24,7 +24,7 @@ class Phantasm extends \Rune\Phantasm {
     ['Chanter', 'essence', '1.10'],
     ['Cipher', 'ether:entity', '1.5'],
     ['Forger', 'entity', '1.9'],
-    ['Specter', 'ether:essence', '1.5'],
+    ['Specter', 'ether:essence', '1.6'],
     ['Crafter', 'ether:essence', '1.5'],
   ];
 

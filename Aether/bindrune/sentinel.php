@@ -759,6 +759,23 @@ Chanter::cast('sentinel', function() {
     }
   }
 
+  /* PHANTASM FIX LINK ALL */
+  if (Chanter::spell('phantasm-fix-link-all')) {
+    // header
+    Whisper::clear(true);
+    Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Link All \n");
+    // fixing link
+    foreach ( $avalaible_rune() as $name) {
+      // fixing link
+      $linkFixed = $processing__phantasm_fix_link($name);
+      if ($linkFixed) {
+        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Link fixed for phantasm: $name {{nl}}");
+      } else {
+        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix link for phantasm: $name {{nl}}");
+      }
+    }
+  }
+
   
 
 });
