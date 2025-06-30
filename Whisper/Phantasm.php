@@ -22,68 +22,48 @@ class Phantasm extends \Rune\Phantasm {
   
   public $node = [
     [
-      'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_awaken()',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => 'awaken()',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => 'emit( String $message, Bool $asString = false )',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => 'reap( String $text )',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => 'drain( ?Callable $callable, Array $option = [] )',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => 'clear( Bool $force = false )',
-      'note' => '',
-    ],
-    [
       'type' => 'ether',
       'call' => 'WHISPER',
       'note' => '',
     ],
     [
       'type' => 'essence',
-      'call' => '$WHISPER',
+      'call' => 'WHISPER',
       'note' => '',
     ],
     [
       'type' => 'essence',
-      'call' => '$WHISPER_VARS',
+      'call' => 'WHISPER_VARS',
       'note' => '',
     ],
     [
       'type' => 'essence',
-      'call' => '$WHISPER_COLORS',
+      'call' => 'WHISPER_COLORS',
       'note' => '',
     ],
     [
       'type' => 'essence',
-      'call' => '$WHISPER_ICONS',
+      'call' => 'WHISPER_COLORS_WEBS',
       'note' => '',
     ],
     [
       'type' => 'essence',
-      'call' => '$WHISPER_LABELS',
+      'call' => 'WHISPER_ICONS',
+      'note' => '',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'WHISPER_LABELS',
+      'note' => '',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'WHISPER_DRAIN',
+      'note' => '',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'WHISPER_DRAIN_STATE',
       'note' => '',
     ],
     [
@@ -133,7 +113,62 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'whisper_drain( callable $callback, array $option )',
+      'call' => 'whisper_drain()',
+      'note' => '',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'whisper_drain_start()',
+      'note' => '',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'whisper_drain_set( String $message )',
+      'note' => '',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'whisper_drain_get()',
+      'note' => '',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'whisper_drain_end()',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => '_arise()',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => '_aether_awaken()',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'awaken()',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'echo( String $message, Bool $asString = false )',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'call( String $text )',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'drain( Mixed $state_or_process, Bool $asString = false )',
+      'note' => '',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'clear( Bool $force = false )',
       'note' => '',
     ],
   ];
