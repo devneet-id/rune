@@ -91,11 +91,6 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_folder($path)',
-      'note' => '',
-    ],
-    [
-      'type' => 'entity',
       'call' => 'specter_soul_set( String $name, Mixed $value )',
       'note' => 'Sets a soul value and persists it through the keeper.',
     ],
@@ -143,11 +138,6 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'manifest',
       'call' => '_arise()',
       'note' => 'Optional lifecycle method for internal post-arise logic.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_setEchoes()',
-      'note' => '',
     ],
     [
       'type' => 'manifest',
