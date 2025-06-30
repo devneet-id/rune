@@ -403,16 +403,21 @@ Chanter::cast('sentinel', function() {
       $path = $phantasm->origin . '/Phantasm.php';
       $read_phantasm = Forger::item($path);
 
-      preg_match('/public\s+\$version\s*=\s*([\d.]+)/i', $read_phantasm, $matches);
+      preg_match('/public\s+\$version\s*=\s*[\'"]?([\d.]+)[\'"]?/i', $read_phantasm, $matches);
       $current_version = isset($matches[1]) ? $matches[1] : '1.0';
 
       $parts = explode('.', $current_version);
-      $major = isset($parts[0]) ? (int)$parts[0] : 1;
-      $minor = isset($parts[1]) ? (int)$parts[1] : 0;
-      $minor += 1;
+      $major = isset($parts[0]) ? $parts[0] : '1';
+      $minor = isset($parts[1]) ? $parts[1] : '0';
+
+      $minor = str_pad((string)((int)$minor + 1), strlen($minor), '0', STR_PAD_LEFT);
       $new_version = $major . '.' . $minor;
 
-      $updated = preg_replace('/(public\s+\$version\s*=\s*)[\d.]+/i', '${1}' . $new_version, $read_phantasm);
+      $updated = preg_replace(
+          '/(public\s+\$version\s*=\s*)[\'"]?[\d.]+[\'"]?/i',
+          '${1}\'' . $new_version . '\'',
+          $read_phantasm
+      );
 
       Forger::item($path, $updated);
 
@@ -592,7 +597,7 @@ Chanter::cast('sentinel', function() {
     $templates_phantasm_link = preg_replace('/(public\s\$link\s*=\s*)(\[[\s\S]*?\]);/', '{{TARGET}}', $read_phantasm);
     $templates = 'public $link = [' . PHP_EOL;
     foreach ($founds as $row) {
-      $templates .= "    ['$row[0]', '$row[1]', $row[2]]," . PHP_EOL;
+      $templates .= "    ['$row[0]', '$row[1]', '$row[2]']," . PHP_EOL;
     }
     $templates .= '  ];' . PHP_EOL;
     
@@ -656,11 +661,11 @@ Chanter::cast('sentinel', function() {
           } elseif ($type === 'entity') {
               $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*function\s+' . $escapedName . '\b/i';
           } elseif ($type === 'ether') {
-              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*const\s+' . $escapedName . '\b/i';
+            $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*define\s*\(\s*[\'"]' . $escapedName . '[\'"]/i';
           } elseif ($type === 'essence') {
-              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*define\s*\(\s*[\'"]' . $escapedName . '[\'"]/i';
+            $pattern = '/#NOTE:\s*(.*?)\s*\n\s*\$GLOBALS\[[\'"]' . $escapedName . '[\'"]\]\s*=\s*/i';
           } else {
-              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*' . $escapedName . '\b/i';
+            $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*' . $escapedName . '\b/i';
           }
 
           preg_match($pattern, $source, $matches);
