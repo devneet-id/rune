@@ -134,7 +134,7 @@ function whisper_drain_end() {
   $WHISPER_DRAIN = [];
   $WHISPER_DRAIN_STATE = false;
 
-  return whisper_drain_get();
+  return true;
 }
 
 

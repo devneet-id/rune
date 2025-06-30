@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.6;
+  public $version = 1.7;
   
   public $main = 'Chanter';
 
@@ -15,184 +15,183 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Encapsulates processes and CLI-style operations to maintain immutability—structures input, spell logic, and execution flow into controlled, traceable, and reusable command definitions.';
 
   public $link = [
-    ['Specter', 'ether:essence:entity:manifest', 1.3],
-    ['Whisper', 'manifest:ether', 1.5],
-    ['Aether', 'manifest:ether', 1.9],
-    ['Cipher', 'manifest', 0.2],
-    ['Crafter', 'manifest', 1.2],
-    ['Forger', 'manifest', 1.6],
-    ['Keeper', 'manifest', 1.6],
-    ['Weaver', 'manifest', 1.2],
+    ['Aether', 'essence:entity', 1.11],
+    ['Whisper', 'ether', 1.7],
+    ['Specter', 'ether:essence', 1.4],
   ];
 
   public $node = [
     [
       'type' => 'ether',
       'call' => 'CHANTER',
-      'note' => 'Main entity',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER',
-      'note' => 'Main entity',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG',
-      'note' => 'Sets or returns the current CLI argument string',
+      'note' => 'no note',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'CHANTER_ARGS',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_CAST',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_SPELL',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ARG_LIST',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_CAST',
-      'note' => 'Gets or registers a cast function based on the given arguments.',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_CAST_LIST',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_SPELL',
-      'note' => 'Gets or sets a spell by name depending on whether values are provided',
+      'note' => 'no note',
     ],
     [
       'type' => 'essence',
       'call' => 'CHANTER_ECHO',
-      'note' => 'Saves an echo message for the current cast if its valid.',
+      'note' => 'no note',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter',
+      'call' => 'chanter()',
       'note' => 'Main entity',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_arg',
+      'call' => 'chanter_arg( String $newArg = "" )',
       'note' => 'Sets or returns the current CLI argument string',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_arg_extract',
+      'call' => 'chanter_arg_extract( String $newArg = "" )',
       'note' => 'Parses CLI arguments into cast parts and spell options',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_cast',
+      'call' => 'chanter_arg_rebase()',
+      'note' => 'no note',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'chanter_cast( String $args, ?Callable $callable )',
       'note' => 'Gets or registers a cast function based on the given arguments.',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_cast_set',
+      'call' => 'chanter_cast_set( String $arg, ?Callable $callable )',
       'note' => 'Registers a new cast if it doesn’t already exist in the cast list.',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_cast_get',
+      'call' => 'chanter_cast_get( String $arg )',
       'note' => 'Returns a registered cast function or a fallback if not found',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_cast_has',
+      'call' => 'chanter_cast_has( String $arg )',
       'note' => 'Checks if a cast function exists for the given arguments',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_spell',
+      'call' => 'chanter_spell( String $name, $values = NULL )',
       'note' => 'Gets or sets a spell by name depending on whether values are provided',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_spell_set',
+      'call' => 'chanter_spell_set( String $name, String $value )',
       'note' => 'Registers or updates a spell with the given name and value',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_spell_get',
+      'call' => 'chanter_spell_get( String $name )',
       'note' => 'Retrieves the value of a spell argument if it exists',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_spell_chain',
+      'call' => 'chanter_spell_chain()',
       'note' => 'Builds a full CLI-style spell string from all current spell arguments',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_spell_has',
-      'note' => '',
+      'call' => 'chanter_spell_has( String $name )',
+      'note' => 'no note',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_echo',
+      'call' => 'chanter_echo( String $echo )',
       'note' => 'Saves an echo message for the current cast if its valid.',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_echo_set',
+      'call' => 'chanter_echo_set( String $arg, String $notes )',
       'note' => 'Adds notes to the echo data if the entry doesn’t exist yet.',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_echo_get',
+      'call' => 'chanter_echo_get( String $arg )',
       'note' => 'Retrieves the echo data for a given cast argument',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_whisper_drain',
-      'note' => '',
+      'call' => 'chanter_whisper_drain( $run )',
+      'note' => 'no note',
     ],
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'manifest',
       'call' => '_aether_awaken_before()',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'manifest',
       'call' => 'awaken()',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'manifest',
       'call' => 'cast( String $args, ?Callable $callable = NULL )',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'manifest',
       'call' => 'spell( String $name, $values = NULL )',
-      'note' => '',
+      'note' => 'no note',
     ],
     [
       'type' => 'manifest',
-      'call' => 'echo( String $text )',
-      'note' => '',
+      'call' => 'echo( String $cast, String $notes = "" )',
+      'note' => 'no note',
     ],
   ];
-
-
-
-
-
-
 
   public function awakening() {}
   

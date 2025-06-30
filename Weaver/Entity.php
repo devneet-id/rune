@@ -14,6 +14,8 @@ function weaver() {
  * todo binding string
  *  */
 function weaver_bind( $template, $search, $data ) {
+  global $WEAVER_BOND;
+
   $template = (!empty($template)) ? $template : '';
   $search = (!empty($search)) ? $search : '';
   $data = (!empty($data)) ? $data : '';
@@ -22,6 +24,8 @@ function weaver_bind( $template, $search, $data ) {
   $template = str_replace( strtolower("{{".$search."}}"), $data, $template);
   $template = str_replace( strtoupper("{{ ".$search." }}"), $data, $template);
   $template = str_replace( strtoupper("{{".$search."}}"), $data, $template);
+
+  weaver_bond_set($search, $data);
 
   aether_arcane('Weaver.entity.weaver_bind');
   return $template;
@@ -38,6 +42,8 @@ function weaver_bind_extract( $value ) {
 }
 
 function weaver_bind_multiple( $template, $datas ) {
+  $datas = weaver_bond_combine($datas);
+
   foreach ($datas as $search => $value) {
     $template = weaver_bind($template, $search, $value);
   }
@@ -46,11 +52,40 @@ function weaver_bind_multiple( $template, $datas ) {
   return $template;
 }
 
-// deprecated change to str_replace()
-function weaver_bind_custom( $template, $search, $data ) {
-  $search = $search;
-  $text = str_replace($search, $data, $template);
-  return $text;
+
+
+/* BOND
+ * todo bond all weaver bind
+ *  */
+function weaver_bond_combine( $datas ) {
+  global $WEAVER_BOND;
+  
+  $return = array_replace_recursive($WEAVER_BOND, $datas);
+  $WEAVER_BOND = $return;
+
+  aether_arcane('Weaver.entity.weaver_bond_combine');
+  return $return;
+}
+
+function weaver_bond_set( $key, $value ) {
+  global $WEAVER_BOND;
+
+  $WEAVER_BOND[$key] = $value;
+
+  aether_arcane('Weaver.entity.weaver_bond_set');
+  return true;
+}
+function weaver_bond_get( $key ) {
+  global $WEAVER_BOND;
+
+  if (isset($WEAVER_BOND[$key])) {
+    $return = $WEAVER_BOND[$key];
+  }else {
+    $return = '';
+  }
+
+  aether_arcane('Weaver.entity.weaver_bond_get');
+  return $return;
 }
 
 
@@ -59,12 +94,39 @@ function weaver_bind_custom( $template, $search, $data ) {
 /* ITEM
  * todo get, set & stacking item
  *  */
-function weaver_item( $source ) {
+function weaver_item( $source, $datas = [] ) {
   $item = file_get_contents($source);
+  $item = weaver_bind($item, $datas);
 
+  aether_arcane('Weaver.entity.weaver_item');
   return $item;
 }
+function weaver_item_set( $source, $alias = '' ) {
+  global $WEAVER_ITEM;
 
+  $item = file_get_contents($source);
+  if (!empty($alias)) {
+    $WEAVER_ITEM[$alias] = $item;
+  }else {
+    $WEAVER_ITEM[$source] = $item;
+  }
+
+  aether_arcane('Weaver.entity.weaver_item_set');
+  return $item;
+}
+function weaver_item_get( $find_source_alias ) {
+  global $WEAVER_ITEM;
+
+  if (isset($WEAVER_ITEM[$find_source_alias])) {
+    $item = $WEAVER_ITEM[$find_source_alias];
+    $return = $item;
+  }else {
+    $return = '';
+  }
+
+  aether_arcane('Weaver.entity.weaver_item_get');
+  return $return;
+}
 
 
 function weaver_wrap_echo($text, $wrap, $divider) {

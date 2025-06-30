@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.3;
+  public $version = 1.4;
   
   public $main = 'Specter';
 
@@ -20,21 +20,17 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Enables out-of-process operations through soul-like abstractions—designed for managing complex, asynchronous, or decoupled executions by temporarily separating logic from the main flow while maintaining active control.';
 
   public $link = [
-    ['Keeper', 'manifest', 1.6],
-    ['Aether', 'manifest:essence', 1.9],
-    ['Weaver', 'manifest', 1.2],
-    ['Chanter', 'manifest', 1.5],
-    ['Cipher', 'manifest', 0.2],
-    ['Crafter', 'manifest', 1.2],
-    ['Forger', 'essence:entity:manifest', 1.6],
-    ['Whisper', 'manifest:ether', 1.5],
+    ['Keeper', 'ether', 1.6],
+    ['Aether', 'ether', 1.1],
+    ['Weaver', 'entity', 1.3],
+    ['Forger', 'entity', 1.6],
+    ['Whisper', 'ether', 1.7],
   ];
-
 
   public $node = [
     [
       'type' => 'ether',
-      'call' => 'ETHER',
+      'call' => 'SPECTER',
       'note' => '',
     ],
     [
@@ -89,57 +85,57 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'specter',
+      'call' => 'specter()',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_folder',
+      'call' => 'specter_folder($path)',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_soul_set',
+      'call' => 'specter_soul_set( String $name, Mixed $value )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_soul_get',
+      'call' => 'specter_soul_get( String $name )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_soul_save',
+      'call' => 'specter_soul_save( $name, $value = null )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_soul_remove',
+      'call' => 'specter_soul_remove( String $name )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_cast_set',
+      'call' => 'specter_cast_set( string $arg, array $options = [] )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_cast_get',
+      'call' => 'specter_cast_get( string $arg )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_cast_save',
+      'call' => 'specter_cast_save( $arg, $alive = true, $option = [] )',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_seer_set',
+      'call' => 'specter_seer_set(?Callable $condition)',
       'note' => '',
     ],
     [
       'type' => 'entity',
-      'call' => 'specter_exit',
+      'call' => 'specter_exit( String $arg )',
       'note' => '',
     ],
     [
@@ -193,8 +189,6 @@ class Phantasm extends \Rune\Phantasm {
       'note' => '',
     ],
   ];
-
-
 
   public function awakening() {}
   

@@ -54,7 +54,7 @@ function aether_exit( $force = false ) {
 
     $total_rune = count(aether_arised());
     // aether_dd($arised);
-    whisper_echo("\n\n{{COLOR-SECONDARY}}{{ICON-INFO}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
+    whisper_echo("\n{{COLOR-SECONDARY}}{{ICON-INFO}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
   }else {
     print("\n\nRUNE: Execute={$end}s, Memory=$usage - ^$peak");
   }

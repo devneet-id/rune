@@ -4,14 +4,11 @@
  * ETHER
  * Represents constants and rules for this domain.
  */
-define('ETHER', true);
-
+define('SPECTER', true);
 
 define('SPECTER_ECHOES_SOUL', KEEPER_ECHOES.'/soul.json');
 
 define('SPECTER_ECHOES_CAST', KEEPER_ECHOES.'/cast.json');
-
-
 
 
 define('SPECTER_CAST_DEFAULT', [

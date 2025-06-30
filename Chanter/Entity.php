@@ -129,21 +129,23 @@ function chanter_cast_get( String $arg ) {
     $return = function() use ($CHANTER_ARG_CAST, $CHANTER_ECHO) {
       
       if (aether_has_entity('whisper')) {
-        whisper_echo("{{color-warning}}{{icon-warning}}{{label-warning}}Chanter cast with '$CHANTER_ARG_CAST' not found.");
+        whisper_echo("{{color-warning}}{{icon-warning}}{{label-warning}}Chanter cast with '$CHANTER_ARG_CAST' not found. \n");
       }else {
-        print("[!] Chanter cast with '$CHANTER_ARG_CAST' not found.");
+        print("[!] Chanter cast with '$CHANTER_ARG_CAST' not found. \n");
       }
-
-      whisper_echo("\n{{color-info}}{{icon-info}}{{label-info}}You mean: ");
+      
+      $castFound = '';
       foreach (array_keys($CHANTER_ECHO) as $cast) {
         similar_text($cast, $CHANTER_ARG_CAST, $persen);
 
         if ($persen >= 70) { #NOTE: ambil yang mirip banget aja, bisa diatur sendiri
-          if (aether_has_entity('whisper')) {
-            whisper_echo("{{color-info}}{$cast}, ");
-          }
+          $castFound .= $cast.', ';
           break; #NOTE: cukup ambil satu yang paling relevan dulu
         }
+      }
+      if (aether_has_entity('whisper')) {
+        // whisper_echo("{{color-info}}{$cast}, ");
+        whisper_echo("{{color-info}}{{icon-info}}{{label-info}}You mean: $castFound \n");
       }
 
     };

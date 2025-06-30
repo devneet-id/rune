@@ -27,7 +27,7 @@ class Manifest extends \Rune\Manifest {
   public static function call( String $text ) {
     $result = whisper_call( $text );
     
-    aether_arcane('Whisper.manifest.drain');
+    aether_arcane('Whisper.manifest.call');
     return $result;
   }
 
@@ -49,11 +49,12 @@ class Manifest extends \Rune\Manifest {
       }
     }
     
-    if (!$asString) {
+    if ($asString==false && $state_or_process==false) {
       self::echo($return);
+      return true;
     }
     
-    aether_arcane('Whisper.manifest.latch');
+    aether_arcane('Whisper.manifest.drain');
     return $return;
   }
 

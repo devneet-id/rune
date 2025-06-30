@@ -46,6 +46,14 @@ Chanter::cast('sentinel', function() {
         $result[] = basename($rune);
       }
     }
+    // external rune
+    if (file_exists(AETHER_REPO . '/@monarch')) {
+      foreach (glob(AETHER_REPO . '/@monarch/*') as $rune) {
+        if (is_dir($rune)) {
+          $result[] = basename($rune);
+        }
+      }
+    }
     return $result;
   };
 
@@ -386,23 +394,57 @@ Chanter::cast('sentinel', function() {
 
 
 
+  /* PHANTASM UP */
+  $processing__phantasm_up = function($name) {
+    $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
+    $phantasm = new $phantasm_class();
+
+    if (isset($phantasm->origin)) {
+      $path = $phantasm->origin . '/Phantasm.php';
+      $read_phantasm = Forger::item($path);
+
+      preg_match('/public\s+\$version\s*=\s*([\d.]+)/i', $read_phantasm, $matches);
+      $current_version = isset($matches[1]) ? $matches[1] : '1.0';
+
+      $parts = explode('.', $current_version);
+      $major = isset($parts[0]) ? (int)$parts[0] : 1;
+      $minor = isset($parts[1]) ? (int)$parts[1] : 0;
+      $minor += 1;
+      $new_version = $major . '.' . $minor;
+
+      $updated = preg_replace('/(public\s+\$version\s*=\s*)[\d.]+/i', '${1}' . $new_version, $read_phantasm);
+
+      Forger::item($path, $updated);
+
+      return true;
+    }else {
+      return false;
+    }
+  };
+  if (Chanter::spell('phantasm-up')) {
+    // header
+    Whisper::clear(true);
+    Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Up \n");
+    // run spell and call
+    if (Chanter::spell('phantasm-up') !== '1') {
+      $name = Chanter::spell('phantasm-up');
+    }else {
+      $name = Whisper::call('Give us the rune name: ');
+    }
+    // set data
+    $name = ucfirst(strtolower($name));
+    // processing
+    if ( $processing__phantasm_up($name) ) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
+    }else {
+      Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
+    }
+  }
 
   /* PHANTASM FIX NODE */
   $processing__phantasm_fix_node = function($name) {
     $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
     $phantasm = new $phantasm_class();
-
-    $selected = '';
-    foreach (aether_arised() as $manifest) {
-      $basename = str_replace('Rune\\', '', $manifest);
-      $basename = str_replace('\\Manifest', '', $basename);
-      
-      if ($basename == $name) {
-        $selected = str_replace('Manifest', 'Phantasm', $manifest);
-      }
-    }
-
-    $phantasm = new $selected();
 
     if (isset($phantasm->origin)) {
       
@@ -416,15 +458,20 @@ Chanter::cast('sentinel', function() {
 
       $name_entity = strtoupper($name);
       $read_entity = Forger::item($phantasm->origin . '/Entity.php');
-      preg_match_all('/function\s+(.*'.$name_entity.'.*)\s*\([^\)]*\)/i', $read_entity, $matches);
-      $find_entity = $matches[1];
+      preg_match_all('/function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/i', $read_entity, $matches);
+      $find_entity = array_filter(array_map(function ($func, $params) use ($name_entity) {
+          if (stripos($func, $name_entity) !== false) {
+              return $func . '(' . $params . ')';
+          }
+          return null;
+      }, $matches[1], $matches[2]));
 
       $read_manifest = Forger::item($phantasm->origin . '/Manifest.php');
-      preg_match_all('/\bstatic\s+function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/', $read_manifest, $matches);
-      // Gabungkan nama function + isi paramnya
+      preg_match_all('/\bstatic\s+function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/i', $read_manifest, $matches);
       $find_manifest = array_map(function ($name, $params) {
           return $name . '(' . $params . ')';
       }, $matches[1], $matches[2]);
+
 
 
       $read_phantasm = Forger::item($phantasm->origin . '/Phantasm.php');
@@ -441,19 +488,11 @@ Chanter::cast('sentinel', function() {
         foreach ($row as $value) {
           $maps[] = [
             'type' => $key,
-            'call' => $value,
+            'call' => str_replace("'", '"', $value),
             'note' => '',
           ];
         }
       }
-
-      // $old_node = $phantasm->node;
-      // $combined = array_merge($maps, $old_node);
-      // $final = [];
-      // foreach ($combined as $item) {
-      //   $final[$item['call']] = $item; // key = 'call', auto timpa kalau udah ada
-      // }
-      // $maps = array_values($final); // Reset index biar rapi
       
       $templates = 'public $node = [' . PHP_EOL;
       foreach ($maps as $row) {
@@ -467,7 +506,7 @@ Chanter::cast('sentinel', function() {
       
       $template = weaver_bind($templates_phantasm, 'node', $templates);
       
-      Forger::item($phantasm->origin . '/Phantasm.php', $template);
+      Forger::item($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template));
 
       return true;
     }else {
@@ -477,18 +516,15 @@ Chanter::cast('sentinel', function() {
   if (Chanter::spell('phantasm-fix-node')) {
     // header
     Whisper::clear(true);
-    Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Remove Rune\n");
-
+    Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Node \n");
     // run spell and call
     if (Chanter::spell('phantasm-fix-node') !== '1') {
       $name = Chanter::spell('phantasm-fix-node');
     }else {
       $name = Whisper::call('Give us the rune name: ');
     }
-
     // set data
     $name = ucfirst(strtolower($name));
-    
     // processing
     if ( $processing__phantasm_fix_node($name) ) {
       Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
@@ -497,31 +533,12 @@ Chanter::cast('sentinel', function() {
     }
   }
 
-
   /* PHANTASM FIX LINK */
-  $processing__phantasm_fix_link = function ($name) {
+  $processing__phantasm_fix_link = function ($name) use ($avalaible_rune) {
     $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
     $phantasm = new $phantasm_class();
 
-    $rune_list = function() {
-      $manifests = [];
-      // internal rune
-      foreach (glob(AETHER_RUNE_LOCATION . '/*') as $manifest) {
-        if (is_dir($manifest)) {
-          $manifests[] = basename($manifest);
-        }
-      }
-      // external rune
-      if (file_exists(AETHER_REPO . '/@monarch')) {
-        foreach (glob(AETHER_REPO . '/@monarch/*') as $manifest) {
-          if (is_dir($manifest)) {
-            $manifests[] = basename($manifest);
-          }
-        }
-      }
-      return $manifests;
-    };
-    
+    $rune_list = $avalaible_rune();
 
     $rune_finds = [
       $phantasm->origin.'/Ether.php',
@@ -533,22 +550,33 @@ Chanter::cast('sentinel', function() {
     $founds = [];
     foreach ($rune_finds as $rf) {
       $content = Forger::item($rf);
-      foreach ($rune_list() as $rune) {
+      foreach ($rune_list as $rune) {
         $phantasm_class_select = 'Rune\\' . $rune . '\\Phantasm';
         $phantasm_select = new $phantasm_class_select();
-        
+
         if ($phantasm_select->main !== $phantasm->main) {
           $found_state = false;
           $rune_line = [];
+
           foreach ($phantasm_select->node as $item) {
+            $type = $item['type'];
             $pattern = preg_quote($item['call'], '/');
-            if (preg_match("/$pattern/i", $content)) {
+
+            if ($type === 'entity') {
+              $match = preg_match("/\\b$pattern\\s*\\(/i", $content);
+            } elseif ($type === 'manifest') {
+              $match = preg_match("/\\b$phantasm_select->main::\\s*$pattern\\b/i", $content);
+            } else {
+              $match = preg_match("/\\b$pattern\\b/i", $content);
+            }
+
+            if ($match) {
               $found_state = true;
-              $rune_line[] = $item['type'];
-              // $founds[$phantasm_select->main] = $rune_line;
+              $rune_line[] = $type;
             }
           }
-          if ($found_state) {
+
+          if ($found_state && !isset($founds[$phantasm_select->main])) {
             $founds[$phantasm_select->main] = [
               $phantasm_select->main,
               implode(':', array_unique($rune_line)),
@@ -569,20 +597,29 @@ Chanter::cast('sentinel', function() {
     
     $template = weaver_bind($templates_phantasm_link, 'TARGET', $templates);
     
-    Forger::item($phantasm->origin . '/Phantasm.php', trim($template));
-    Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
+    Forger::item($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template));
+
+    return true;
   };
   if (Chanter::spell('phantasm-fix-link')) {
+    // header
+    Whisper::clear(true);
+    Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Node \n");
+    // run spell and call
     if (Chanter::spell('phantasm-fix-link') !== '1') {
       $name = Chanter::spell('phantasm-fix-link');
     }else {
       $name = Whisper::call('Give us the rune name: ');
     }
+    // set data
     $name = ucfirst(strtolower($name));
-    
-    $processing__phantasm_fix_link($name);
+    // processing
+    if ( $processing__phantasm_fix_link($name) ) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
+    }else {
+      Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
+    }
   }
-
   
   /* PHANTASM FIX NOTE */
   $processing__phantasm_fix_note = function ($name) {
@@ -611,21 +648,37 @@ Chanter::cast('sentinel', function() {
       $source = $sourcing; // source code penuh
 
       foreach ($phantasm->node as $node) {
-        $search = $node['call']; // call kayak: echo( String $text )
+          $type = $node['type'];
+          $call = $node['call'];
 
-        // Escape regex biar aman
-        $escapedName = preg_quote($search, '/');
+          // Ambil hanya nama fungsinya aja (sebelum tanda kurung)
+          if (preg_match('/^([a-zA-Z0-9_]+)\s*\(/', $call, $fnMatch)) {
+              $funcName = $fnMatch[1];
+          } else {
+              $funcName = $call; // fallback
+          }
 
-        // Bikin pola regex: cari komentar #NOTE: sebelum deklarasi fungsi yang cocok dengan call
-        $pattern = '/#NOTE:\s*(.*?)\s*\n\s*(?:public\s+|private\s+|protected\s+|static\s+|function\s+)?(?:function\s+|const\s+|define\s*\(\s*)?' . $escapedName . '\b/i';
+          $escapedName = preg_quote($funcName, '/');
 
-        preg_match($pattern, $source, $matches);
+          // Pola regex tergantung type
+          if ($type === 'manifest') {
+              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*function\s+' . $escapedName . '\b/i';
+          } elseif ($type === 'entity') {
+              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*function\s+' . $escapedName . '\b/i';
+          } elseif ($type === 'ether') {
+              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*const\s+' . $escapedName . '\b/i';
+          } elseif ($type === 'essence') {
+              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*define\s*\(\s*[\'"]' . $escapedName . '[\'"]/i';
+          } else {
+              $pattern = '/#NOTE:\s*(.*?)\s*(?:\n\s*)*.*' . $escapedName . '\b/i';
+          }
 
-        $note = $matches[1] ?? ''; // isi komentar yang ditemukan
-        $node['note'] = $note;
-        $renote[] = $node;
+          preg_match($pattern, $source, $matches);
+
+          $note = $matches[1] ?? 'no note';
+          $node['note'] = $note;
+          $renote[] = $node;
       }
-
 
       $read_phantasm = Forger::item($phantasm->origin . '/Phantasm.php');
       $templates_phantasm = preg_replace('/(public\s\$node\s*=\s*)(\[[\s\S]*?\]);/', '{{node}}', $read_phantasm);
@@ -640,28 +693,79 @@ Chanter::cast('sentinel', function() {
       $templates .= '  ];' . PHP_EOL;
       $template = weaver_bind($templates_phantasm, 'node', $templates);
 
-      Forger::item($phantasm->origin . '/Phantasm.php', $template);
+      Forger::item($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template));
 
-      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm '$name' {{nl}}");
+      return true;
     }else {
-      Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
+      return false;
     }
   };
   if (Chanter::spell('phantasm-fix-note')) {
+    // header
+    Whisper::clear(true);
+    Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Note \n");
+    // run spell and call
     if (Chanter::spell('phantasm-fix-note') !== '1') {
       $name = Chanter::spell('phantasm-fix-note');
     }else {
       $name = Whisper::call('Give us the rune name: ');
     }
+    // set data
     $name = ucfirst(strtolower($name));
-    
-    $processing__phantasm_fix_note($name);
+    // processing
+    if ( $processing__phantasm_fix_note($name) ) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
+    }else {
+      Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
+    }
   }
 
+  /* PHANTASM FIX */
+  if (Chanter::spell('phantasm-fix')) {
+    // header
+    Whisper::clear(true);
+    Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Auto \n");
+    // run spell and call
+    if (Chanter::spell('phantasm-fix-note') !== '1') {
+      $name = Chanter::spell('phantasm-fix-note');
+    }else {
+      $name = Whisper::call('Give us the rune name: ');
+    }
+    // set data
+    $name = ucfirst(strtolower($name));
+    // fixing link
+    $linkFixed = $processing__phantasm_fix_link($name);
+    if ($linkFixed) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Link fixed for phantasm: $name {{nl}}");
+    } else {
+      Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix link for phantasm: $name {{nl}}");
+    }
 
+    // fixing node
+    $nodeFixed = $processing__phantasm_fix_node($name);
+    if ($nodeFixed) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Node fixed for phantasm: $name {{nl}}");
+    } else {
+      Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix node for phantasm: $name {{nl}}");
+    }
 
+    // fixing note
+    $noteFixed = $processing__phantasm_fix_note($name);
+    if ($noteFixed) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Note fixed for phantasm: $name {{nl}}");
+    } else {
+      Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix note for phantasm: $name {{nl}}");
+    }
+
+    // update phantasm
+    $updatePhantasm = $processing__phantasm_up($name);
+    if ($updatePhantasm) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Update phantasm: $name {{nl}}");
+    } else {
+      Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to update phantasm: $name {{nl}}");
+    }
+  }
 
   
-
 
 });

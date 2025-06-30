@@ -62,4 +62,10 @@ class Manifest extends \Rune\Manifest {
     require_once __DIR__ . '/bindrune/awakening/index.php';
   }
 
+  public static function exit( $force = false )
+  {
+    aether_arcane("Aether.manifest.exit");
+    aether_exit(true);
+  }
+
 }

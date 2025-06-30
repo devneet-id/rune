@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.5;
+  public $version = 1.7;
   
   public $main = 'Whisper';
 

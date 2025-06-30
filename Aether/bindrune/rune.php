@@ -31,10 +31,6 @@ Chanter::cast('rune', function() {
   $base_cast = implode(PHP_EOL, $base_cast);
   $registered_cast = implode(PHP_EOL, $list_chanter);
   
-
-  // $base_cast = str_replace('php '.AETHER_FILE, '{{color-info}} ∙ {{color-secondary}}php '.AETHER_FILE.'{{color-end}}', $base_cast);
-  // $registered_cast = str_replace('php '.AETHER_FILE, '{{color-info}} ∙ {{color-secondary}}php '.AETHER_FILE.'{{color-end}}', $registered_cast);
-
   $echoes_state = '{{color-secondary}}';
   $echoes_check = '{{color-success}}√{{color-secondary}}';
   if (aether_has_entity('keeper')) {
@@ -62,15 +58,6 @@ Chanter::cast('rune', function() {
   }
 
   $header = Weaver::item(__DIR__ . '/weaver/rune-header.txt');
-
-  // $color = 'danger';
-  // $header = str_replace('╚', '{{color-'.$color.'}}╚{{color-end}}', $header);
-  // $header = str_replace('═', '{{color-'.$color.'}}═{{color-end}}', $header);
-  // $header = str_replace('╔', '{{color-'.$color.'}}╔{{color-end}}', $header);
-  // $header = str_replace('║', '{{color-'.$color.'}}║{{color-end}}', $header);
-  // $header = str_replace('╝', '{{color-'.$color.'}}╝{{color-end}}', $header);
-  // $header = str_replace('╗', '{{color-'.$color.'}}╗{{color-end}}', $header);
-  
   $header = Weaver::bind($header, [
     'FILE'=> AETHER_FILE,
     'REPO'=> AETHER_REPO,
@@ -79,8 +66,6 @@ Chanter::cast('rune', function() {
     'ECHOES'=> $echoes_state,
     'BASE-CAST'=> $base_cast,
     'REGISTERED-CAST'=> $registered_cast,
-    // 'FAMILIAR'=> $checkFamiliar,
-    // 'FAMILIAR'=> 'NONE',
     'TOTAL-RUNE'=> count(aether_arised()),
     'RUNE-ETHER'=> count($AETHER_RUNE_ETHER),
     'RUNE-ESSENCE'=> count($AETHER_RUNE_ESSENCE),
@@ -88,14 +73,14 @@ Chanter::cast('rune', function() {
   ]);
 
   if (aether_has_entity('chanter')) {
-    if (Chanter::spell('rune')) {
+    if (Chanter::spell('resonance')) {
       if (aether_has_entity('keeper')) {
         $memory = aether_memoryusage();
         keeper_item('rune', [
           'FILE'=> AETHER_FILE,
           'REPO'=> AETHER_REPO,
           'VERSION'=> AETHER_VERSION,
-          'CAST'=> $keeper_cast,
+          'CAST'=> $CHANTER_ECHO,
           'SIZE'=> filesize(AETHER_FILE),
           'MEMORY'=> [$memory[0], $memory[1]],
           'RUNE'=> aether_arised(),

@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = 1.9;
+  public $version = 1.11;
   
   public $main = 'Aether';
 
@@ -20,15 +20,13 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
   public $link = [
-    ['Keeper', 'manifest', 1.6],
-    ['Specter', 'ether:manifest', 1.3],
-    ['Weaver', 'manifest', 1.2],
-    ['Chanter', 'manifest', 1.6],
-    ['Forger', 'manifest', 1.6],
-    ['Whisper', 'manifest', 1.5],
-    ['Cipher', 'manifest', 0.2],
-    ['Crafter', 'manifest', 1.2],
+    ['Weaver', 'essence', 1.3],
+    ['Chanter', 'ether:essence:entity', 1.6],
+    ['Forger', 'essence', 1.6],
+    ['Keeper', 'essence', 1.6],
+    ['Whisper', 'ether', 1.7],
   ];
+
 
   public $node = [
     [

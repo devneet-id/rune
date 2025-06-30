@@ -104,15 +104,14 @@ Chanter::cast('grimoire', function() {
     Whisper::echo("{{tab}}{{color-default}}[U]{{color-secondary}} $phantasm->user {{nl}}");
 
     // check if rune is tandalone or link
-    Whisper::echo("\n{{tab}}{{color-danger}}::{{color-end}}L I N K {{nl}}");
+    Whisper::echo("{{tab}}{{color-danger}}::{{color-end}}L I N K {{nl}}");
     if (count($phantasm->link) == 0) {
       Whisper::echo("{{tab}}{{tab}}{{color-info}} (THIS RUNE IS STANDALONE) {{nl}}");
     }
     foreach ($phantasm->link as $link) {
       Whisper::echo("{{tab}}{{tab}}{{COLOR-DEFAULT}}$link[0]");
       Whisper::echo("{{tab}}{{COLOR-DANGER}}$link[1]");
-      Whisper::echo("{{tab}}{{COLOR-SECONDARY}}v$link[2]^");
-      Whisper::echo("{{nl}}");
+      Whisper::echo("{{tab}}{{COLOR-SECONDARY}}v$link[2]^{{nl}}");
     }
     
     // node of phantasm

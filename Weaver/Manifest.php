@@ -13,7 +13,6 @@ class Manifest extends \Rune\Manifest {
   public static function awaken() {}
 
   public static function bind( String $template, $searchOrArray, String $data='' ) {
-
     if (is_array($searchOrArray)) {
       $return = weaver_bind_multiple($template, $searchOrArray);
     }else {
@@ -24,8 +23,23 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
-  public static function item( $source ) {
-    $return = weaver_item($source);
+  public static function bond( String $key, Mixed $value ) {
+    if (isset($value)) {
+      $return = weaver_bond_set($key, $value);
+    }else {
+      $return = weaver_bond_get($key);
+    }
+
+    aether_arcane('Weaver.manifest.bond');
+    return $return;
+  }
+
+  public static function item( String $source, String $alias='' ) {
+    if (!weaver_item_get($source)) {
+      $return = weaver_item_set($source, $alias);
+    }else {
+      $return = weaver_item_get($source);
+    }
 
     aether_arcane('Weaver.manifest.item');
     return $return;

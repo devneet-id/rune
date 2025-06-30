@@ -62,16 +62,16 @@ Chanter::cast('awakening', function() {
     $part = explode($prefix_newPage, $file);
     
     if (isset($part[1])) {
-      $base = cipher_base64(cipher_decode($part[1]), true);
+      $base = Cipher::base64(Cipher::runic($part[1], true), true);
       Forger::item($target, $base);
     }
     
     $code = (!empty($part[2])) ? explode(PHP_EOL, $part[2]) : [];
     foreach ($code as $row) {
-      $row = json_decode(cipher_base64(cipher_decode($row), true));
+      $row = json_decode(Cipher::base64(Cipher::runic($row, true), true));
 
       foreach ($row->items as $item) {
-        $source = cipher_base64($item->source, true);
+        $source = Cipher::base64($item->source, true);
         Forger::fix(Forger::trace((AETHER_REPO . $item->dirname)));
         Forger::item(AETHER_REPO . $item->target, $source);
       }

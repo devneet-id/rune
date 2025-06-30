@@ -19,7 +19,7 @@ $GLOBALS['CHANTER_ARG_CAST'] = [];
 #NOTE: Contains full list of separated CLI arguments
 $GLOBALS['CHANTER_ARG_SPELL'] = [];
 
-
+#NOTE: Contains full list of separated CLI arguments
 $GLOBALS['CHANTER_ARG_LIST'] = [];
 
 
