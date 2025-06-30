@@ -627,17 +627,6 @@ Chanter::cast('sentinel', function() {
     $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
     $phantasm = new $phantasm_class();
 
-    $selected = '';
-    foreach (aether_arised() as $manifest) {
-      $basename = str_replace('Rune\\', '', $manifest);
-      $basename = str_replace('\\Manifest', '', $basename);
-      
-      if ($basename == $name) {
-        $selected = str_replace('Manifest', 'Phantasm', $manifest);
-      }
-    }
-
-    $phantasm = new $selected();
     if (isset($phantasm->origin)) {
       $sourcing = '';
       $sourcing .= Forger::item($phantasm->origin . '/Ether.php');
