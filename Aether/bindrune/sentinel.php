@@ -496,9 +496,10 @@ Chanter::cast('sentinel', function() {
       
       $templates = 'public $node = [' . PHP_EOL;
       foreach ($maps as $row) {
+        $call = str_replace("'", '"', $row['call']);
         $templates .= "    [" . PHP_EOL;
         $templates .= "      'type' => '$row[type]'," . PHP_EOL;
-        $templates .= "      'call' => '$row[call]'," . PHP_EOL;
+        $templates .= "      'call' => '$call'," . PHP_EOL;
         $templates .= "      'note' => '$row[note]'," . PHP_EOL;
         $templates .= "    ]," . PHP_EOL;
       }
@@ -684,9 +685,10 @@ Chanter::cast('sentinel', function() {
       $templates_phantasm = preg_replace('/(public\s\$node\s*=\s*)(\[[\s\S]*?\]);/', '{{node}}', $read_phantasm);
       $templates = 'public $node = [' . PHP_EOL;
       foreach ($renote as $row) {
+        $call = str_replace("'", '"', $row['call']);
         $templates .= "    [" . PHP_EOL;
         $templates .= "      'type' => '$row[type]'," . PHP_EOL;
-        $templates .= "      'call' => '$row[call]'," . PHP_EOL;
+        $templates .= "      'call' => '$call'," . PHP_EOL;
         $templates .= "      'note' => '$row[note]'," . PHP_EOL;
         $templates .= "    ]," . PHP_EOL;
       }
