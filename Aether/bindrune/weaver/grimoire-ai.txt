@@ -1,73 +1,55 @@
-# GRIMOIRE OF RUNE
-name=Rune
-base-language=php
-language-version=8.1+
-ai-assist=focus on structure pattern & part rune, all of this for ai fast adaptation.
+[#] SYSTEM INFORMATION: -- 
+  ::INTRO -- 
+    project: Rune
+    base-language: php
+    language-version: 8.1+
+    composer: true
+  ::STRUCTURE -- 
+    -Being.php
+    -Manifest.php
+    -Phantasm.php
+    -Rune/
+    -Rune/Ether.php
+    -Rune/Essence.php
+    -Rune/Entity.php
+    -Rune/Manifest.php
+    -Rune/Phantasm.php
+  ::CORE -- 
+    Being.php: core but not primary do for change mode monarch, conditional if user want build own rune
+    Manifest.php: core parent for all rune manifest, have arise(), ether(), essence(), entity() load method
+    Phantasm.php: core parent for all rune phantasm, conditional normally not in process
+  ::MODE -- 
+    user: conventional user use rune for create a project
+    monarch: expertise in rune can binding system rune with own rune with repository @monarch
 
-# MODE: 
-user=just use rune registered on system
-monarch=binding system rune with own rune with repository @monarch
+[#] RULES & FLOW: --
+  ::INTRO
+    - Rune: Ether,Essence,Entity,Manifest,Phantasm
+  ::ROLE -- 
+    - Ether: constant rule  state or data
+    - Essence: globals variable for lifecycle dynamic process
+    - Entity: function part of feature
+    - Manifest: static class of feature
+    - Phantasm: class reflection of rune for documentation
+  ::INHERIT -- 
+    - Ether: Essence,Entity,Manifest,AnotherManifest
+    - Essence: Entity,Manifest,AnotherManifest
+    - Entity: Manifest,AnotherEntity
+    - Manifest: AnotherEntity,AnotherManifest
+  ::STRUCTURE -- 
+    - vendor
+    - composer.json
+    - rune.php
+  ::TERM -- 
+    - do not instance / load static class core manifest
+    - must have origin in aether
+    - must have at least 1 awaken if rune have awaken or call it with aether
+    - before use some rune must arise first
 
-# STRUCTURE: 
--Being.php
--Manifest.php
--Phantasm.php
--Rune/
--Rune/Ether.php
--Rune/Essence.php
--Rune/Entity.php
--Rune/Manifest.php
--Rune/Phantasm.php
-
-# STRUCTURE INFO: 
-Being.php=core but not primary do for change mode monarch, conditional if user want build own rune
-Manifest.php=core parent for all rune manifest, have arise(), ether(), essence(), entity() load method
-Phantasm.php=core parent for all rune phantasm, conditional normally not in process
-
-# RUNE ROLE:
-Ether=constant rule  state or data
-Essence=globals variable for lifecycle dynamic process
-Entity=function part of feature
-Manifest=static class of feature
-Phantasm=class reflection of rune for documentation
-
-# RUNE INHERIT (potential use in [X=another]):
-Ether=Essence,Entity,Manifest,XManifest
-Essence=Entity,Manifest,XManifest
-Entity=Manifest,XEntity
-Manifest=XEntity,XManifest
-
-# RULES:
--do not instance / load static class core manifest
--must have origin in aether
--must have at least 1 awaken if rune have awaken or call it with aether
--before use some rune must arise first
-
-# FLOW OF PROCESSING: 
-->start
-->instance {Rune\Manifest}
-->{Rune\Manifest} extends {Manifest}
-->{Rune\Manifest} use as {Rune}
-->{Rune} initialize function {arise()} from {Manifest}
-->{arise()} load {Ether}, {Essence}, {Entity}
-->conditional if not {arise()} load with {ether()} for ether, {essence()} for essence, {entity()} for entity
-->will run an Aether {origin()}
-->process the code
-->end in Aether {awaken()}
-->end
-
-# PATTERN CODES SHOULD BE:
-- require_once 'vendor/autoload.php';
-- use Rune\Name\Manifest
-- Name::arise() or Name::ether() | essence() | entity()
-- Aether::origin()
-- Name::method_name( args )
-- Aether::awaken()
-
-# AVALIABLE RUNE IN SYSTEM: 
+[#] INTRODUCTION RUNE IN SYSTEM: -- 
 {{RUNES}}
 
-# EXAMPLE FINAL CODES & STRUCTURE PATTERN: 
+[#] EXAMPLE FINAL CODES & STRUCTURE PATTERN: -- 
 /*
  * Act. 1 - Echoes of Forgotten Shapes
  * THE CONSTRUCT
@@ -172,7 +154,7 @@ Chanter::cast('watch', function() {
 Chanter::cast('serve', function() {
   Specter::devserver([
     // 'path'=> 'dist', // use path if web have assets
-    'file'=> 'altar.php',
+    'file'=> 'dist/index.php',
   ]);
 });
 /* START

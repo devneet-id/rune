@@ -282,130 +282,7 @@ Chanter::cast('grimoire', function() {
   /* ARTFIFICIAL INTELEGENCE
    * todo get raw system for Ai
    *  */
-  $processing__for_ai = function( $full=false ) use ($processing_get_all_rune) {
-    // $result = [];
-
-    // $result['mode'] = [
-    //   'user'=> 'just use rune registered on system',
-    //   'monarch'=> 'binding system rune with own rune with repository @monarch',
-    // ];
-    
-    // $result['structure'] = [
-    //   'being'=> 'Being.php',
-    //   'manifest'=> 'Manifest.php',
-    //   'phantasm'=> 'Phantasm.php',
-    //   'rune'=> [
-    //     'Ether.php',
-    //     'Essence.php',
-    //     'Entity.php',
-    //     'Manifest.php',
-    //     'Phantasm.php',
-    //   ]
-    // ];
-
-    // $result['scheme'] = [
-    //   'role'=> [
-    //     'ether as constant',
-    //     'essence as global',
-    //     'entity as function',
-    //     'manifest as static class',
-    //     'phantasm as class'
-    //   ],
-    //   'inherit'=> [
-    //     'internal'=> [
-    //       'ether',
-    //       'essence->ether',
-    //       'entity->essence',
-    //       'manifest->entity'
-    //     ],
-    //     'external'=> [
-    //       'entity->entity',
-    //       'manifest->entity',
-    //     ],
-    //   ],
-    // ];
-
-    // $result['flow'] = [
-    //   'user'=> [
-    //     'start',
-    //     'instance {Rune\Manifest}',
-    //     '{Rune\Manifest} extends {Manifest}',
-    //     '{Rune\Manifest} use as {Rune}',
-    //     '{Rune} initialize function {arise()} from {Manifest}',
-    //     '{arise()} load {Ether}, {Essence}, {Entity}',
-    //     'or load partial with {ether()} for ether',
-    //     'or load partial with {essence()} for essence',
-    //     'or load partial with {entity()} for entity',
-    //     'end',
-    //   ],
-    //   'monarch'=> [
-    //     'start',
-    //     'after vendor autoload {Rune\Being::monarch()}',
-    //     'instance {Rune\Manifest}',
-    //     '{Rune\Manifest} extends {Manifest}',
-    //     '{Rune\Manifest} use as {Rune}',
-    //     '{Rune} initialize function {arise()} from {Manifest}',
-    //     '{arise()} load {Ether}, {Essence}, {Entity}',
-    //     'or load partial with {ether()} for ether',
-    //     'or load partial with {essence()} for essence',
-    //     'or load partial with {entity()} for entity',
-    //     'end',
-    //   ],
-    // ];
-
-    // $result['rune'] = [];
-    // if ($full) {
-    //   $result['rune-source'] = '';
-    // }
-    
-    // $list = $processing_get_all_rune();
-    // foreach ($list as $rune) {
-    //   $phantasm = str_replace('Manifest', 'Phantasm', $rune[0]);
-    //   $phantasm = new $phantasm();
-    //   $result['rune'][] = $phantasm;
-
-    //   if ($full) {
-    //     $source = '';
-    //     foreach ($result['structure']['rune'] as $file) {
-    //       $source .= file_get_contents($phantasm->origin . '/' . $file);
-    //     }
-    //     $result['rune-source'] .= weaver_min_php($source);
-    //   }
-    // }
-
-    // $result['built-in-chanter'] = [
-    //   'user'=> [
-    //     ['php {file} rune'],
-    //     ['php {file} rune --resonance'],
-    //     ['php {file} artefact'],
-    //     ['php {file} artefact --invoke'],
-    //     ['php {file} artefact --revoke'],
-    //     ['php {file} artefact --inspect'],
-    //     ['php {file} artefact --shard-clean'],
-    //     ['php {file} grimoire'],
-    //     ['php {file} grimoire --rune'],
-    //     ['php {file} grimoire --rune-all'],
-    //     ['php {file} grimoire --arcane'],
-    //     ['php {file} grimoire --arcane-clean'],
-    //   ],
-    //   'monarch'=> [
-    //     ['php {file} sentinel --create-rune'],
-    //     ['php {file} sentinel --remove-rune'],
-    //     ['php {file} sentinel --phantasm-up'],
-    //     ['php {file} sentinel --phantasm-fix'],
-    //     ['php {file} sentinel --phantasm-fix-node'],
-    //     ['php {file} sentinel --phantasm-fix-note'],
-    //     ['php {file} sentinel --phantasm-fix-link'],
-    //   ]
-    // ];
-
-
-    // $resultJSON = json_encode($result);
-
-    // echo "Dear Ai, this is grimoire of the system. inspect it with base64, just reply okay and wait next chat ask you.";
-    // echo base64_encode(json_encode($result)); exit;
-
-    
+  $processing__for_ai_adaptation = function( $full=false ) use ($processing_get_all_rune) {
     $template = Weaver::item(__DIR__ . '/weaver/grimoire-ai.txt');
     $list = $processing_get_all_rune();
     $runes = [];
@@ -426,21 +303,87 @@ Chanter::cast('grimoire', function() {
     $template = Weaver::bind($template, [
       'runes'=> json_encode($runes)
     ]);
-    // $template = str_replace("\n", '', $template);
-    // $template = str_replace("\t", '', $template);
-    // $template = str_replace("  ", ' ', $template);
+    $template = str_replace("\n", '', $template);
+    $template = str_replace("\t", '', $template);
+    $template = str_replace("  ", ' ', $template);
 
     echo "RUNE :: GRIMOIRE - Ai Fast Adaptation...\n";
     echo "Encripted:base64, Should be Ai to read it!!\n";
     echo base64_encode($template); die;
   };
-  if (Chanter::spell('artifical-intelligence')) {
+  if (Chanter::spell('ai-adaptation')) {
     Whisper::clear(true);
-    if (Chanter::spell('artifical-intelligence') == 'full') {
-      $processing__for_ai(true);
+    if (Chanter::spell('ai-adaptation') == 'full') {
+      $processing__for_ai_adaptation(true);
     }else {
-      $processing__for_ai();
+      $processing__for_ai_adaptation();
     }
+  }
+
+  $processing__for_ai_adaptation_stage = function() use ($processing_get_all_rune) {
+    $template = Weaver::item(__DIR__ . '/weaver/grimoire-ai.txt');
+    $list = $processing_get_all_rune();
+    $runes = [];
+    $runes_source = '';
+    $structure = ['Ether.php', 'Essence.php', 'Entity.php', 'Manifest.php', 'Phantasm.php'];
+    foreach ($list as $rune) {
+      $phantasm = str_replace('Manifest', 'Phantasm', $rune[0]);
+      $phantasm = new $phantasm();
+      $runes[] = $phantasm;
+
+      $source = '';
+      foreach ($structure as $file) {
+        $source .= file_get_contents($phantasm->origin . '/' . $file);
+      }
+      $runes_source .= weaver_min_php($source);
+    }
+
+    $template = Weaver::bind($template, [
+      'runes'=> json_encode($runes)
+    ]);
+
+    return $template;
+  };
+  $processing__for_ai_adaptation_stage_start = function() use ($processing_get_all_rune) {
+    $template = Weaver::item(__DIR__ . '/weaver/grimoire-ai.txt');
+    $list = $processing_get_all_rune();
+    $runes = [];
+    $structure = ['Ether.php', 'Essence.php', 'Entity.php', 'Manifest.php', 'Phantasm.php'];
+    foreach ($list as $rune) {
+      $phantasm = str_replace('Manifest', 'Phantasm', $rune[0]);
+      $phantasm = new $phantasm();
+      $runes[] = [
+        'name'=> $phantasm->main,
+        'note'=> $phantasm->note
+      ];
+    }
+    $template = str_replace('{{RUNES}}', json_encode($runes), $template);
+
+    $stages = explode(PHP_EOL."[#] ", $template);
+
+    foreach ($stages as $stage) {
+      $stage = explode(': --', $stage);
+      Whisper::clear(true);
+      echo "$stage[0]\n";
+      echo "$stage[1]\n\n";
+
+      $next = Whisper::call("Done yet? Continue [Y/n]: ");
+      if ($next == 'n') {
+        break;
+        Aether::exit();
+      }
+    }
+  };
+  if (Chanter::spell('ai-adaptation-stage')) {
+    Whisper::clear(true);
+    Whisper::echo("RUNE {{color-danger}}::{{color-end}} GRIMOIRE - Ai Stage Adaptation\n");
+    Whisper::echo("Copy paste to ai all your terminal show, then press y to continue.\n");
+    Whisper::echo("And for ai prepare yourself, we will start stage adaptation this system to you, read it closely then answer yes if agree.\n\n");
+    $next = Whisper::call("Continue [Y/n]: ");
+    if ($next == 'n') {
+      Aether::exit();
+    }
+    $processing__for_ai_adaptation_stage_start();
   }
 
   
