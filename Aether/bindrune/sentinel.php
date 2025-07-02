@@ -509,10 +509,11 @@ Chanter::cast('sentinel', function() {
       $templates = 'public $node = [' . PHP_EOL;
       foreach ($maps as $row) {
         $call = str_replace("'", '"', $row['call']);
+        $note = str_replace("'", '"', $row['note']);
         $templates .= "    [" . PHP_EOL;
         $templates .= "      'type' => '$row[type]'," . PHP_EOL;
         $templates .= "      'call' => '$call'," . PHP_EOL;
-        $templates .= "      'note' => '$row[note]'," . PHP_EOL;
+        $templates .= "      'note' => '$note'," . PHP_EOL;
         $templates .= "    ]," . PHP_EOL;
       }
       $templates .= '  ];' . PHP_EOL;
@@ -687,10 +688,11 @@ Chanter::cast('sentinel', function() {
       $templates = 'public $node = [' . PHP_EOL;
       foreach ($renote as $row) {
         $call = str_replace("'", '"', $row['call']);
+        $note = str_replace("'", '"', $row['note']);
         $templates .= "    [" . PHP_EOL;
         $templates .= "      'type' => '$row[type]'," . PHP_EOL;
         $templates .= "      'call' => '$call'," . PHP_EOL;
-        $templates .= "      'note' => '$row[note]'," . PHP_EOL;
+        $templates .= "      'note' => '$note'," . PHP_EOL;
         $templates .= "    ]," . PHP_EOL;
       }
       $templates .= '  ];' . PHP_EOL;

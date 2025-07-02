@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.10';
+  public $version = '1.11';
   
   public $main = 'Forger';
 
@@ -113,7 +113,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'trace( String $source_path )',
-      'note' => 'Traces and resolves each part of a given path, tagging them as file ("item") or folder ("repo") along with their existence.',
+      'note' => 'Traces and resolves each part of a given path, tagging them as file (item) or folder (repo) along with their existence.',
     ],
     [
       'type' => 'manifest',

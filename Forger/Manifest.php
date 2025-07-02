@@ -69,7 +69,7 @@ class Manifest extends \Rune\Manifest {
   }
   
   #NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
-  public static function repo( String $source_path, ?Callable $callback ) {
+  public static function repo( String $source_path, ?Callable $callback = null ) {
     $return = forger_repo( $source_path, $callback );
 
     aether_arcane('Forger.manifest.repo');
