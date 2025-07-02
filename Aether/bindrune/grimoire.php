@@ -3,11 +3,18 @@
 use Rune\Chanter\Manifest as Chanter;
 use Rune\Weaver\Manifest as Weaver;
 use Rune\Whisper\Manifest as Whisper;
+use Rune\Cipher\Manifest as Cipher;
 use Rune\Forger\Manifest as Forger;
 use Rune\Keeper\Manifest as Keeper;
 
 // grimoire
 Chanter::cast('grimoire', function() {
+  Weaver::arise();
+  Whisper::arise();
+  Cipher::arise();
+  Forger::arise();
+  Keeper::arise();
+
   global $AETHER_ARISED;
 
   (aether_has_entity('whisper')) ?: die(PHP_EOL.'[!]WARNING: Required Whisper:entity'.PHP_EOL);

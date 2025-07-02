@@ -9,10 +9,11 @@ use Rune\Keeper\Manifest as Keeper;
 
 // artefact
 Chanter::cast('artefact', function() {
-  Forger::entity();
-  Cipher::ether();
-  Cipher::entity();
-  Keeper::ether();
+  Weaver::arise();
+  Whisper::arise();
+  Cipher::arise();
+  Forger::arise();
+  Keeper::arise();
 
   $header = Weaver::item(__DIR__ . '/weaver/artefact-header.txt');
   $header = Weaver::bind($header, [

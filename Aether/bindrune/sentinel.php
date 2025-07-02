@@ -4,14 +4,21 @@ use Rune\Aether\Manifest as Aether;
 use Rune\Chanter\Manifest as Chanter;
 use Rune\Weaver\Manifest as Weaver;
 use Rune\Whisper\Manifest as Whisper;
-use Rune\Keeper\Manifest as Keeper;
-
-use Rune\Crafter\Manifest as Crafter;
+use Rune\Cipher\Manifest as Cipher;
 use Rune\Forger\Manifest as Forger;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Crafter\Manifest as Crafter;
 use Rune\Specter\Manifest as Specter;
 
 // sentinel
 Chanter::cast('sentinel', function() {
+  Weaver::arise();
+  Whisper::arise();
+  Cipher::arise();
+  Forger::arise();
+  Keeper::arise();
+  Crafter::arise();
+  Specter::arise();
 
   // prepare cast template
   $template = Weaver::item(__DIR__ . '/weaver/sentinel-header.txt');

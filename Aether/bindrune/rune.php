@@ -1,11 +1,14 @@
 <?php
 
 use Rune\Chanter\Manifest as Chanter;
-use Rune\Whisper\Manifest as Whisper;
 use Rune\Weaver\Manifest as Weaver;
+use Rune\Whisper\Manifest as Whisper;
 
 // base/default
 Chanter::cast('rune', function() {
+  Weaver::arise();
+  Whisper::arise();
+
   global $AETHER_RUNE_ETHER;
   global $AETHER_RUNE_ESSENCE;
   global $AETHER_RUNE_ENTITY;
