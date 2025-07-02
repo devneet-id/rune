@@ -19,7 +19,7 @@ function weaver_wrap_echo($text, $wrap, $divider) {
  * todo binding string
  *  */
 #NOTE: Replace a variable placeholder in a template with given data
-function weaver_bind( $template, $search, $data ) {
+function weaver_bind( $template, $search, String $data = '' ) {
   global $WEAVER_BOND;
 
   $template = (!empty($template)) ? $template : '';

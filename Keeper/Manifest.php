@@ -37,11 +37,11 @@ class Manifest extends \Rune\Manifest {
   
   #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
   public static function _aether_awaken_after() {
-    self::awaken();
+    self::final();
   }
   
   #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
-  public static function awaken() {
+  public static function final() {
     
     // $memory = aether_memoryusage();
     // keeper_item('aether', [

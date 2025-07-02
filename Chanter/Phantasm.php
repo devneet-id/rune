@@ -173,7 +173,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'awaken()',
+      'call' => 'final()',
       'note' => 'Prepares and executes a spell casting based on provided arguments or from file.',
     ],
     [

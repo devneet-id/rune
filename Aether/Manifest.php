@@ -14,7 +14,7 @@ class Manifest extends \Rune\Manifest {
   public static function _arise() {}
 
   
-  public static function origin( $flags = 0 ) {
+  public static function begin( $flags = 0 ) {
     global $AETHER_PHANTASM;
 
     gc_collect_cycles();
@@ -30,7 +30,7 @@ class Manifest extends \Rune\Manifest {
     aether_arcane("Aether.manifest.origin");
   }
 
-  public static function awaken()
+  public static function final()
   {
     // auto awaken
     $arised = aether_arised();
@@ -41,7 +41,7 @@ class Manifest extends \Rune\Manifest {
     }
     foreach ($arised as $manifest) {
       if (method_exists($manifest, '_aether_awaken')) {
-        $manifest::_aether_awaken();
+        $manifest::_aether_final();
       }
     }
     foreach ($arised as $manifest) {

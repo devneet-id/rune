@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.6';
+  public $version = '1.7';
   
   public $main = 'Specter';
 
@@ -20,11 +20,11 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Enables out-of-process operations through soul-like abstractions—designed for managing complex, asynchronous, or decoupled executions by temporarily separating logic from the main flow while maintaining active control.';
 
   public $link = [
-    ['Keeper', 'ether', '1.8'],
-    ['Aether', 'ether', '1.14'],
+    ['Keeper', 'ether', '1.9'],
+    ['Aether', 'ether', '1.15'],
     ['Weaver', 'entity', '1.5'],
-    ['Crafter', 'ether:essence', '1.5'],
-    ['Forger', 'entity', '1.9'],
+    ['Crafter', 'ether:essence', '1.6'],
+    ['Forger', 'entity', '1.10'],
     ['Whisper', 'ether:essence', '1.9'],
   ];
 
@@ -37,12 +37,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'ether',
       'call' => 'SPECTER_ECHOES_SOUL',
-      'note' => 'Path to the file where Specter"s soul data (state/configuration) is stored.',
+      'note' => 'Path to the file where Specter soul data (state/configuration) is stored.',
     ],
     [
       'type' => 'ether',
       'call' => 'SPECTER_ECHOES_CAST',
-      'note' => 'Path to the file where Specter"s cast data (execution history/config) is stored.',
+      'note' => 'Path to the file where Specter cast data (execution history/config) is stored.',
     ],
     [
       'type' => 'ether',
@@ -141,12 +141,12 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_aether_awaken()',
+      'call' => '_aether_final()',
       'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'awaken()',
+      'call' => 'final()',
       'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [

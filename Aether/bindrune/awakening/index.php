@@ -18,7 +18,7 @@ Cipher::arise();
 
 
 // RUNE:AWAKENING
-Aether::origin();
+Aether::begin();
 
 Chanter::cast('awakening', function() {
   Whisper::clear();
@@ -68,16 +68,15 @@ Chanter::cast('awakening', function() {
     
     $code = (!empty($part[2])) ? explode(PHP_EOL, $part[2]) : [];
     foreach ($code as $row) {
-      $row = json_decode(Cipher::base64(Cipher::runic($row, true), true));
+      $row = explode(PHP_EOL, Cipher::base64(Cipher::runic($row, true), true));
+      $item = json_decode($row[0]);
+      $source = Cipher::base64($row[1], true);
 
-      foreach ($row->items as $item) {
-        $source = Cipher::base64($item->source, true);
-        Forger::fix(Forger::trace((AETHER_REPO . $item->dirname)));
-        Forger::item(AETHER_REPO . $item->target, $source);
-      }
+      Forger::fix(Forger::trace((AETHER_REPO . '/' . $item->target)));
+      Forger::item(AETHER_REPO . '/' . $item->target, $source);
     }
 
-    Whisper::clear();
+    // Whisper::clear();
     Whisper::echo("\n{{tab}}RUNE {{COLOR-DANGER}}::{{color-end}} AWAKENED {{COLOR-SUCCESS}}{{ICON-SUCCESS}}");
     Whisper::echo("\n{{tab}}{{COLOR-SECONDARY}}Check with command {{color-danger}}php ".AETHER_FILE."\n");
   };

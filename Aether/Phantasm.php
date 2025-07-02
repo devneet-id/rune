@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.14';
+  public $version = '1.15';
   
   public $main = 'Aether';
 
@@ -23,7 +23,7 @@ class Phantasm extends \Rune\Phantasm {
     ['Weaver', 'essence', '1.5'],
     ['Chanter', 'ether:essence', '1.10'],
     ['Forger', 'essence', '1.9'],
-    ['Keeper', 'essence', '1.8'],
+    ['Keeper', 'ether:essence', '1.8'],
     ['Whisper', 'ether:essence', '1.9'],
   ];
 
@@ -280,12 +280,12 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'origin()',
+      'call' => 'begin()',
       'note' => '',
     ],
     [
       'type' => 'manifest',
-      'call' => 'awaken()',
+      'call' => 'final()',
       'note' => '',
     ],
     [

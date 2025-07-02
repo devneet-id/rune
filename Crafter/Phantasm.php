@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.5';
+  public $version = '1.6';
   
   public $main = 'Crafter';
 
@@ -20,11 +20,11 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Focused on dynamic creation and composition—designed to build, shape, and assemble various data structures or logic units through modular, seed-based, and spark-driven processes.';
 
   public $link = [
-    ['Aether', 'ether', '1.14'],
+    ['Aether', 'ether', '1.15'],
     ['Weaver', 'essence', '1.5'],
     ['Cipher', 'entity', '1.5'],
     ['Forger', 'entity', '1.9'],
-    ['Keeper', 'essence:entity', '1.8'],
+    ['Keeper', 'ether:essence', '1.8'],
   ];
 
   public $node = [
@@ -195,12 +195,12 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_aether_awaken()',
+      'call' => '_aether_final()',
       'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'awaken()',
+      'call' => 'final()',
       'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [

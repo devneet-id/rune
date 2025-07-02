@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.8';
+  public $version = '1.9';
   
   public $main = 'Keeper';
 
@@ -20,12 +20,12 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
   public $link = [
-    ['Aether', 'ether', '1.14'],
+    ['Aether', 'ether', '1.15'],
     ['Chanter', 'essence', '1.10'],
     ['Cipher', 'ether:entity', '1.5'],
-    ['Forger', 'entity', '1.9'],
+    ['Forger', 'entity', '1.10'],
     ['Specter', 'ether:essence', '1.6'],
-    ['Crafter', 'ether:essence', '1.5'],
+    ['Crafter', 'ether:essence', '1.6'],
   ];
 
   public $node = [
@@ -181,7 +181,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'awaken()',
+      'call' => 'final()',
       'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [

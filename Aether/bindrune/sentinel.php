@@ -157,9 +157,9 @@ Chanter::cast('sentinel', function() {
     if ($input) {
       Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
       if ($processing_invoke($input)) {
-        Whisper::echo("{{color-success}}{{icon-success}} Successfully do Invoked with '$manifest' {{nl}}");
+        Whisper::echo("{{color-success}}{{icon-success}} Successfully do Invoked with '$input' {{nl}}");
       }else {
-        Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Invoked with '$manifest' {{nl}}");
+        Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Invoked with '$input' {{nl}}");
       }
     }
   }
@@ -249,9 +249,9 @@ Chanter::cast('sentinel', function() {
     if ($input) {
       Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
       if ( $processing_revoke($input) ) {
-        Whisper::echo("{{color-success}}{{icon-success}} Successfully do Revoke with '$manifest' {{nl}}");
+        Whisper::echo("{{color-success}}{{icon-success}} Successfully do Revoke with '$input' {{nl}}");
       }else {
-        Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Revoke with '$manifest' {{nl}}");
+        Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Revoke with '$input' {{nl}}");
       }
     }
   }

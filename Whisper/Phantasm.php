@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.9';
+  public $version = '1.10';
   
   public $main = 'Whisper';
 
@@ -15,9 +15,8 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles user-facing output through styled messages, prompts, and echoes—focused on delivering clear, customizable system feedback and visual communication.';
 
   public $link = [
-    ['Aether', 'essence:entity', '1.14'],
-    ['Weaver', 'entity', '1.5'],
-    ['Crafter', 'ether:essence', '1.5'],
+    ['Aether', 'essence:entity', '1.15'],
+    ['Crafter', 'ether:essence', '1.6'],
   ];
 
   public $node = [
@@ -138,12 +137,12 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_aether_awaken()',
+      'call' => '_aether_final()',
       'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'awaken()',
+      'call' => 'final()',
       'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [

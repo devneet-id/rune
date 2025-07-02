@@ -10,10 +10,10 @@ class Manifest extends \Rune\Manifest {
   public static function _arise() {}
 
   #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
-  public static function _aether_awaken() {}
+  public static function _aether_final() {}
 
   #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
-  public static function awaken() {}
+  public static function final() {}
 
   #NOTE: Print or return a formatted whisper message with color support
   public static function echo( String $message, Bool $asString = false ) {

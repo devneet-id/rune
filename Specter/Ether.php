@@ -8,10 +8,10 @@
 #NOTE: main ether
 define('SPECTER', true);
 
-#NOTE: Path to the file where Specter's soul data (state/configuration) is stored.
+#NOTE: Path to the file where Specter soul data (state/configuration) is stored.
 define('SPECTER_ECHOES_SOUL', KEEPER_ECHOES.'/soul.json');
 
-#NOTE: Path to the file where Specter's cast data (execution history/config) is stored.
+#NOTE: Path to the file where Specter cast data (execution history/config) is stored.
 define('SPECTER_ECHOES_CAST', KEEPER_ECHOES.'/cast.json');
 
 #NOTE: Default structure for a Specter cast, indicating execution state and options.
