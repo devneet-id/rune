@@ -16,11 +16,11 @@ class Manifest extends \Rune\Manifest {
 
   #NOTE: middleware from aether awaken
   public static function _aether_awaken_before() {
-    self::final();
+    self::end();
   }
 
   #NOTE: Prepares and executes a spell casting based on provided arguments or from file.
-  public static function final() {
+  public static function end() {
     global $CHANTER_ARG;
     global $CHANTER_ARG_CAST;
     global $CHANTER_ARG_SPELL;

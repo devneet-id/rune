@@ -285,7 +285,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'final()',
+      'call' => 'end()',
       'note' => '',
     ],
     [

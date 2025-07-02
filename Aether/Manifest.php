@@ -30,7 +30,7 @@ class Manifest extends \Rune\Manifest {
     aether_arcane("Aether.manifest.origin");
   }
 
-  public static function final()
+  public static function end()
   {
     // auto awaken
     $arised = aether_arised();
@@ -41,7 +41,7 @@ class Manifest extends \Rune\Manifest {
     }
     foreach ($arised as $manifest) {
       if (method_exists($manifest, '_aether_awaken')) {
-        $manifest::_aether_final();
+        $manifest::_aether_end();
       }
     }
     foreach ($arised as $manifest) {

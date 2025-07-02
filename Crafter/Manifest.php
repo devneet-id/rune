@@ -17,10 +17,10 @@ class Manifest extends \Rune\Manifest {
   public static function _arise() {}
 
   #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
-  public static function _aether_final() {}
+  public static function _aether_end() {}
   
   #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
-  public static function final() {}
+  public static function end() {}
 
   #NOTE: Registers or retrieves a crafter item by name; sets the active name if callable is provided.
   public static function item( String $name, ?Callable $callable = NULL ) {

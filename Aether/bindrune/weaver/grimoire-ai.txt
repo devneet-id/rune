@@ -94,7 +94,7 @@ Specter::arise();
 #sentinel-arise
 /* RUNE REALM
  * 
- * inner of begin() & final() that's your realm
+ * inner of begin() & end() that's your realm
  * you can build your own Rune by insert variable of require_once
  * vendor autoload to begin()
  * 
@@ -200,5 +200,5 @@ Chanter::cast('ready', function() {
 // Build website is good as it easy right?, 
 // <3 enjoy it.
 #sentinel-space
-Aether::final();
+Aether::end();
 // thanks for use this project.

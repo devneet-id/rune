@@ -17,12 +17,12 @@ class Manifest extends \Rune\Manifest {
   public static function _arise() {}
 
   #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
-  public static function _aether_final() {
-    self::final();
+  public static function _aether_end() {
+    self::end();
   }
 
   #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
-  public static function final() {}
+  public static function end() {}
 
   #NOTE: Start observing changes in a directory and trigger callback on modification
   public static function observer( $repo, $callback ) {

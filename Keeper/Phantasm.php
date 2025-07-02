@@ -181,7 +181,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'final()',
+      'call' => 'end()',
       'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
     ],
     [

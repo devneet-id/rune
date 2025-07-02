@@ -15,10 +15,10 @@ class Manifest extends \Rune\Manifest {
   public static function _arise() {}
 
   #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
-  public static function _aether_final() {}
+  public static function _aether_end() {}
 
   #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
-  public static function final() {}
+  public static function end() {}
   
   #NOTE: Traces and resolves each part of a given path, tagging them as file (item) or folder (repo) along with their existence.
   public static function trace( String $source_path ) {
