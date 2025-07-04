@@ -11,8 +11,8 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  #NOTE: Optional lifecycle method for internal post-arise logic.
-  public static function _arise() {
+  #NOTE: Special hook for aether-based awakening phase, executed at the start of the crafter process.
+  public static function begin( $flags = 0 ) {
     forger_fix([
       [
         'target'=> KEEPER_ECHOES,
@@ -31,29 +31,14 @@ class Manifest extends \Rune\Manifest {
         'type'=> 'item'
       ],
     ]);
-  
+
     keeper_glitch_boot();
-  }
-  
-  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
-  public static function _aether_awaken_after() {
-    self::end();
   }
   
   #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
   public static function end() {
-    
-    // $memory = aether_memoryusage();
-    // keeper_item('aether', [
-    //   'FILE'=> AETHER_FILE,
-    //   'REPO'=> AETHER_REPO,
-    //   'VERSION'=> AETHER_VERSION,
-    //   'SIZE'=> filesize(AETHER_FILE),
-    //   'MEMORY'=> [$memory[0], $memory[1]],
-    //   'RUNE'=> aether_arised(),
-    // ]);
-    
-    aether_arcane('Keeper.manifest.awaken');
+    aether_arcane('Keeper.manifest.end');
+
     keeper_arcane_process();
   }
 

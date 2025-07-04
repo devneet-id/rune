@@ -37,6 +37,10 @@ class Ethereal {
     define('LIBERATION', self::$origin);
   }
 
+  public static function awakening() {
+    require_once self::$bindrune . '/awakening/cast.php';
+  }
+
   public static function energy() {
     // set bit system
     static $bit = 0;

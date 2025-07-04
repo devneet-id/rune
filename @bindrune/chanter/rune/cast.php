@@ -6,8 +6,8 @@ use Rune\Whisper\Manifest as Whisper;
 
 // base/default
 Chanter::cast('rune', function() {
-  Weaver::arise();
-  Whisper::arise();
+  Weaver::ether()::essence()::entity();
+  Whisper::ether()::essence()::entity();
 
   global $AETHER_RUNE_ETHER;
   global $AETHER_RUNE_ESSENCE;

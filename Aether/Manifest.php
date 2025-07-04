@@ -10,55 +10,22 @@ namespace Rune\Aether;
 class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
-
-  public static function _arise() {}
-
   
   public static function begin( $flags = 0 ) {
     global $AETHER_PHANTASM;
 
     gc_collect_cycles();
-    aether_arcane_reset();
-    
-    // bindrune
-    $bindrunes = glob(\Rune\Ethereal::$bindrune . "/chanter/*");
-    foreach ($bindrunes as $app) {
-      if (file_exists($app . "/cast.php")) {
-        require_once $app . "/cast.php";
-      }
-    }
 
-    // require_once __DIR__ . '/bindrune/rune.php';
-    // require_once __DIR__ . '/bindrune/grimoire.php';
-    // require_once __DIR__ . '/bindrune/sentinel.php';
-    // require_once __DIR__ . '/bindrune/artefact.php';
+    aether_arcane_reset();
 
     // end
-    aether_arcane("Aether.manifest.origin");
+    aether_arcane("Aether.manifest.begin");
   }
 
   public static function end()
   {
-    // auto awaken
-    $arised = aether_arised();
-    foreach ($arised as $manifest) {
-      if (method_exists($manifest, '_aether_awaken_before')) {
-        $manifest::_aether_awaken_before();
-      }
-    }
-    foreach ($arised as $manifest) {
-      if (method_exists($manifest, '_aether_awaken')) {
-        $manifest::_aether_end();
-      }
-    }
-    foreach ($arised as $manifest) {
-      if (method_exists($manifest, '_aether_awaken_after')) {
-        $manifest::_aether_awaken_after();
-      }
-    }
-
     // end
-    aether_arcane("Aether.manifest.awaken");
+    aether_arcane("Aether.manifest.end");
     // development mode
     // aether_arcane_pretty_print();
     aether_exit(true);

@@ -9,16 +9,17 @@ use Rune\Forger\Manifest as Forger;
 use Rune\Cipher\Manifest as Cipher;
 
 // RUNE:INSTANCE
-Aether::arise();
-Chanter::arise();
-Weaver::arise();
-Whisper::arise();
-Forger::arise();
-Cipher::arise();
+Aether::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
 
 
 // RUNE:AWAKENING
 Aether::begin();
+Chanter::begin();
 
 Chanter::cast('awakening', function() {
   Whisper::clear();

@@ -225,17 +225,49 @@ function forger_repo( String $source_path, ?Callable $callback = null ) {
  * todo working with file
  *  */
 #NOTE: Ensures the file exists, optionally writes content to it, and returns its contents.
-function forger_item( String $source_path, $content = false, $flags = 0 ) {
-  $trace = forger_trace( $source_path );
-  forger_fix( $trace );
-  
-  if ($content!==false) {
-    file_put_contents( $source_path, $content, $flags );
+function forger_item(string $source_path, $content = false, int $flags = 0) {
+  $return = false;
+
+  if ($content === false) {
+    // Mode baca
+    if (file_exists($source_path)) {
+      $return = file_get_contents($source_path);
+    } else {
+      $return = false;
+    }
+  } else {
+    // Mode tulis
+    $dir = dirname($source_path);
+    if (!is_dir($dir)) {
+      mkdir($dir, 0755, true);
+    }
+
+    file_put_contents($source_path, $content, $flags);
+    $return = true;
   }
 
   aether_arcane('Forger.entity.forger_item');
-  return file_get_contents( $source_path );
+  return $return;
 }
+// function forger_item( String $source_path, $content = false, $flags = 0 ) {
+//   if (file_exists($source_path)) {
+//     if ($content!==false) {
+//       file_put_contents( $source_path, $content, $flags );
+//     }
+//   }else {
+//     $trace = forger_trace( $source_path );
+//     forger_fix( $trace );
+    
+//     if ($content!==false) {
+//       file_put_contents( $source_path, $content, $flags );
+//     }
+//   }
+
+//   aether_arcane('Forger.entity.forger_item');
+//   return file_get_contents( $source_path );
+// }
+
+
 
 
 /* INFO

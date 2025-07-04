@@ -6,24 +6,6 @@ class Manifest {
 
   protected static $origin = __DIR__;
 
-  protected static $mana = 0;
-  
-  // intialize
-  public static function arise() {
-    self::ether();
-    self::essence();
-    self::entity();
-
-    if (method_exists(static::class, '_arise')) {
-      $name = str_replace('Rune\\', '', static::class);
-      $name = str_replace('\\Manifest', '', $name);
-
-      static::_arise();
-
-      aether_arcane($name.'.manifest.arise');
-    }    
-  }
-
   // load entity
   public static function entity() {
     global $AETHER_RUNE_ENTITY;
@@ -52,12 +34,6 @@ class Manifest {
     
     $AETHER_RUNE_ETHER[] = static::class;
     return static::class;
-  }
-
-  public static function mana() {
-    static $bit = 0; // ← ini penting!
-    self::$mana = $bit < PHP_INT_SIZE * 8 ? (1 << $bit++) : null;
-    return self::$mana;
   }
 
 

@@ -12,18 +12,18 @@ use Rune\Specter\Manifest as Specter;
 
 // sentinel
 Chanter::cast('sentinel', function() {
-  Weaver::arise();
-  Whisper::arise();
-  Cipher::arise();
-  Forger::arise();
-  Keeper::arise();
-  Crafter::arise();
-  Specter::arise();
+  Weaver::ether()::essence()::entity();
+  Whisper::ether()::essence()::entity();
+  Cipher::ether()::essence()::entity();
+  Forger::ether()::essence()::entity();
+  Keeper::ether()::essence()::entity();
+  Crafter::ether()::essence()::entity();
+  Specter::ether()::essence()::entity();
 
   // prepare cast template
   $template = Weaver::item(__DIR__ . '/header.txt');
   $template .= Weaver::item(__DIR__.'/cast-avaliable.txt');
-  if (defined('BEING_MONARCH')) {
+  if (defined('LIBERATION')) {
     $template .= Weaver::item(__DIR__.'/cast-monarch.txt');
   }
   $template = Weaver::bind($template, [
@@ -56,8 +56,8 @@ Chanter::cast('sentinel', function() {
       }
     }
     // external rune
-    if (file_exists(AETHER_REPO . '/@monarch')) {
-      foreach (glob(AETHER_REPO . '/@monarch/*') as $rune) {
+    if (defined('LIBERATION')) {
+      foreach (glob(AETHER_REPO . '/@ethereal/*') as $rune) {
         if (is_dir($rune)) {
           $result[] = basename($rune);
         }
@@ -111,7 +111,7 @@ Chanter::cast('sentinel', function() {
       $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
 
       $prefix_manifest = '#sentinel-manifest';
-      $prefix_arise = '#sentinel-arise';
+      $prefix_arise = '#sentinel-awaken';
       $codex_manifest = "use Rune\\{$manifest}\\Manifest as {$manifest};";
 
       if (strpos($rune, $codex_manifest) !== false) {
@@ -171,7 +171,7 @@ Chanter::cast('sentinel', function() {
 
       $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
       $prefix_manifest = '#sentinel-manifest';
-      $prefix_arise = '#sentinel-arise';
+      $prefix_arise = '#sentinel-awaken';
       $codex_manifest = "use Rune\\{$manifest}\\Manifest as {$manifest};";
 
       $method_map = [

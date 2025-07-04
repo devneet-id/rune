@@ -29,6 +29,15 @@ function aether_memoryusage() {
   aether_arcane("Aether.entity.aether_memoryusage");
   return $output;
 }
+
+function aether_zero_trust( Mixed $state = '' ) {
+  global $AETHER_ZERO_TRUST;
+  if (!is_bool($state)) {
+    $AETHER_ZERO_TRUST = $state;
+  }else {
+    return $AETHER_ZERO_TRUST;
+  }
+}
 #NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper)
 function aether_exit( $force = false ) {
   $memory = aether_memoryusage();
@@ -147,6 +156,8 @@ function aether_arised() {
  *  */
 #NOTE: Track execution events with timestamp and elapsed time (arcane trace logging)
 function aether_arcane(String $text, String $value = '') {
+  if (aether_zero_trust()) return;
+  
   global $AETHER_ARCANE;
   global $AETHER_STOPWATCH;
   global $AETHER_ARCANE_STATE;

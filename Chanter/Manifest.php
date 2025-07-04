@@ -11,12 +11,14 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  #NOTE: middleware arise
-  public static function _arise() {}
-
-  #NOTE: middleware from aether awaken
-  public static function _aether_awaken_before() {
-    self::end();
+  public static function begin() {
+    // bindrune
+    $bindrunes = glob(\Rune\Ethereal::$bindrune . "/chanter/*");
+    foreach ($bindrunes as $app) {
+      if (file_exists($app . "/cast.php")) {
+        require_once $app . "/cast.php";
+      }
+    }
   }
 
   #NOTE: Prepares and executes a spell casting based on provided arguments or from file.
@@ -28,7 +30,6 @@ class Manifest extends \Rune\Manifest {
     chanter_arg_extract();
     $spell = chanter_spell_chain();
     $cast = $CHANTER_ARG_CAST . ' ' . $spell;
-    #NOTE: $cast = chanter_arg_rebase();
 
     if ($CHANTER_ARG == AETHER_FILE) {
       $run = chanter_cast_get('rune');
@@ -37,6 +38,7 @@ class Manifest extends \Rune\Manifest {
     }
 
     if (chanter_spell_get('zero-trust')) {
+      aether_zero_trust(true);
       aether_arcane_disable();
       chanter_whisper_drain( $run );
       

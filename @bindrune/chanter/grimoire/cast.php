@@ -9,11 +9,11 @@ use Rune\Keeper\Manifest as Keeper;
 
 // grimoire
 Chanter::cast('grimoire', function() {
-  Weaver::arise();
-  Whisper::arise();
-  Cipher::arise();
-  Forger::arise();
-  Keeper::arise();
+  Weaver::ether()::essence()::entity();
+  Whisper::ether()::essence()::entity();
+  Cipher::ether()::essence()::entity();
+  Forger::ether()::essence()::entity();
+  Keeper::ether()::essence()::entity();
 
   global $AETHER_ARISED;
 
