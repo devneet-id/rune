@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.6';
+  public $version = '1.7';
   
   public $main = 'Crafter';
 

@@ -21,10 +21,17 @@ class Manifest extends \Rune\Manifest {
     aether_arcane_reset();
     
     // bindrune
-    require_once __DIR__ . '/bindrune/rune.php';
-    require_once __DIR__ . '/bindrune/grimoire.php';
-    require_once __DIR__ . '/bindrune/sentinel.php';
-    require_once __DIR__ . '/bindrune/artefact.php';
+    $bindrunes = glob(\Rune\Ethereal::$bindrune . "/chanter/*");
+    foreach ($bindrunes as $app) {
+      if (file_exists($app . "/cast.php")) {
+        require_once $app . "/cast.php";
+      }
+    }
+
+    // require_once __DIR__ . '/bindrune/rune.php';
+    // require_once __DIR__ . '/bindrune/grimoire.php';
+    // require_once __DIR__ . '/bindrune/sentinel.php';
+    // require_once __DIR__ . '/bindrune/artefact.php';
 
     // end
     aether_arcane("Aether.manifest.origin");
@@ -59,7 +66,7 @@ class Manifest extends \Rune\Manifest {
 
   public static function awakening()
   {
-    require_once __DIR__ . '/bindrune/awakening/index.php';
+    require_once \Rune\Ethereal::$bindrune . '/awakening/cast.php';
   }
 
   public static function exit( $force = false )

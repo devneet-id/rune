@@ -15,7 +15,7 @@ Chanter::cast('artefact', function() {
   Forger::arise();
   Keeper::arise();
 
-  $header = Weaver::item(__DIR__ . '/weaver/artefact-header.txt');
+  $header = Weaver::item(__DIR__ . '/header.txt');
   $header = Weaver::bind($header, [
     'AETHER-FILE'=> AETHER_FILE,
   ]);

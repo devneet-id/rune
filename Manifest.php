@@ -31,6 +31,7 @@ class Manifest {
     require_once static::$origin . "/Entity.php";
 
     $AETHER_RUNE_ENTITY[] = static::class;
+    return static::class;
   }
 
   // load essence
@@ -40,6 +41,7 @@ class Manifest {
     require_once static::$origin . "/Essence.php";
 
     $AETHER_RUNE_ESSENCE[] = static::class;
+    return static::class;
   }
 
   // load ether
@@ -49,6 +51,7 @@ class Manifest {
     require_once static::$origin . "/Ether.php";
     
     $AETHER_RUNE_ETHER[] = static::class;
+    return static::class;
   }
 
   public static function mana() {

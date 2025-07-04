@@ -60,7 +60,7 @@ Chanter::cast('rune', function() {
     }
   }
 
-  $header = Weaver::item(__DIR__ . '/weaver/rune-header.txt');
+  $header = Weaver::item(__DIR__ . '/header.txt');
   $header = Weaver::bind($header, [
     'FILE'=> AETHER_FILE,
     'REPO'=> AETHER_REPO,

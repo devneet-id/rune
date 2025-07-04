@@ -93,10 +93,10 @@ Chanter::cast('awakening', function() {
   
   // without kit
   Whisper::clear();
-  Whisper::echo('you will choose rank D as default, {{nl}}Did you want to choose another rank?{{nl}}');
+  Whisper::echo('you will choose app D as default, {{nl}}Did you want to choose another app?{{nl}}');
   if (Whisper::call('Enter your answer [y/n]: ') !== 'y') {
     $processing_revoke(
-      __DIR__ . '/rank/d--plain.rune',
+      __DIR__ . '/app/d--plain.rune',
       AETHER_REPO.'/'.AETHER_FILE
     );
     aether_exit(true);
@@ -109,7 +109,7 @@ Chanter::cast('awakening', function() {
   Whisper::echo('');
   $list = [];
   Whisper::echo("{{COLOR-SECONDARY}}[ID] NAME {{nl}}");
-  foreach (glob(__DIR__.'/rank/*') as $row) {
+  foreach (glob(__DIR__.'/app/*') as $row) {
     if (is_file($row)) {
       $data = explode('--', basename($row));
       $ID = strtoupper($data[0]);

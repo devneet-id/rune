@@ -21,10 +21,10 @@ Chanter::cast('sentinel', function() {
   Specter::arise();
 
   // prepare cast template
-  $template = Weaver::item(__DIR__ . '/weaver/sentinel-header.txt');
-  $template .= Weaver::item(__DIR__.'/weaver/sentinel-cast-avaliable.txt');
+  $template = Weaver::item(__DIR__ . '/header.txt');
+  $template .= Weaver::item(__DIR__.'/cast-avaliable.txt');
   if (defined('BEING_MONARCH')) {
-    $template .= Weaver::item(__DIR__.'/weaver/sentinel-cast-monarch.txt');
+    $template .= Weaver::item(__DIR__.'/cast-monarch.txt');
   }
   $template = Weaver::bind($template, [
     'AETHER-FILE'=> AETHER_FILE,
@@ -50,7 +50,9 @@ Chanter::cast('sentinel', function() {
     $result = [];
     foreach (glob(AETHER_RUNE_LOCATION . '/*') as $rune) {
       if (is_dir($rune)) {
-        $result[] = basename($rune);
+        if (basename($rune)!=='@bindrune') {
+          $result[] = basename($rune);
+        }
       }
     }
     // external rune
@@ -69,7 +71,7 @@ Chanter::cast('sentinel', function() {
   $processing__altar = function() {
     if (!file_exists(AETHER_REPO . '/altar.php')) {
       Forger::move([
-        ['type'=>'item', 'from'=> __DIR__ . '/weaver/sentinel-altar.txt', 'target'=> AETHER_REPO . '/altar.php']
+        ['type'=>'item', 'from'=> __DIR__ . '/altar.txt', 'target'=> AETHER_REPO . '/altar.php']
       ]);
     }
     Specter::devserver([
@@ -97,55 +99,34 @@ Chanter::cast('sentinel', function() {
 
     $target = ucfirst(strtolower($target));
     if ($target) {
-      if (strpos($target, '.') !== false) {
-        $target = explode('.', $target);
-        $manifest = $target[0];
-        unset($target[0]);
-        $arise = $target;
-        $state_arise = 'multi';
-      }else {
-        $manifest = $target;
-        $state_arise = 'single';
-      }
-      $rune = Forger::item(AETHER_REPO . '/'. AETHER_FILE);
-      
+      $target_parts = explode('.', $target);
+      $manifest = $target_parts[0];
+      $methods = array_slice($target_parts, 1);
+
+      $valid_methods = ['ether', 'essence', 'entity'];
+      $selected_methods = $methods ? array_values(array_intersect($valid_methods, $methods)) : $valid_methods;
+
+      $codex_arise = $manifest . '::' . implode('()::', $selected_methods) . '();';
+
+      $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
+
       $prefix_manifest = '#sentinel-manifest';
       $prefix_arise = '#sentinel-arise';
       $codex_manifest = "use Rune\\{$manifest}\\Manifest as {$manifest};";
-      // check codex manifest
-      if (strpos($rune, $codex_manifest) !== false) {
-        $rune = str_replace($codex_manifest.PHP_EOL, '', $rune);
-      }
-      $rune = str_replace($prefix_manifest, $codex_manifest.PHP_EOL.$prefix_manifest, $rune);
-      
-      // arising
-      if ($state_arise=='single') {
-        $codex_arise = "{$manifest}::arise();";
-        // check codex arise
-        if (strpos($rune, $codex_arise) !== false) {
-          $rune = str_replace($codex_arise.PHP_EOL, '', $rune);
-        }
-        $rune = str_replace($prefix_arise, $codex_arise.PHP_EOL.$prefix_arise, $rune);
-      }else {
-        if (strpos($rune, "{$manifest}::arise();") !== false) {
-          $rune = str_replace("{$manifest}::arise();".PHP_EOL, '', $rune);
-        }
-        $codex_arise_list = [
-          'ether'=> "{$manifest}::ether();",
-          'essence'=> "{$manifest}::essence();",
-          'entity'=> "{$manifest}::entity();",
-        ];
-        $codex_arise_select = [];
-        foreach ($arise as $ID) {
-          $codex_arise_select[] = $codex_arise_list[$ID];
-        }
-        $codex_arise = '';
-        foreach ($arise as $ID) {
-          $codex_arise .= $codex_arise_list[$ID].PHP_EOL;
-        }
-        $rune = str_replace($prefix_arise, trim($codex_arise.PHP_EOL).PHP_EOL.$prefix_arise, $rune);
-      }
 
+      if (strpos($rune, $codex_manifest) !== false) {
+        $rune = str_replace($codex_manifest . PHP_EOL, '', $rune);
+      }
+      $rune = str_replace($prefix_manifest, $codex_manifest . PHP_EOL . $prefix_manifest, $rune);
+
+      // Hapus baris arise yang lama untuk manifest ini
+      $rune = preg_replace(
+        '/' . preg_quote($manifest) . '::(?:ether|essence|entity)(\(\)::)?(?:ether|essence|entity)?(\(\)::)?(?:ether|essence|entity)?\(\);' . PHP_EOL . '/',
+        '',
+        $rune
+      );
+
+      $rune = str_replace($prefix_arise, $codex_arise . PHP_EOL . $prefix_arise, $rune);
       
       Forger::item(AETHER_REPO . '/'. AETHER_FILE, $rune);
       return true;
@@ -179,61 +160,57 @@ Chanter::cast('sentinel', function() {
     $target = ucfirst(strtolower($target));
     if ($target) {
       if (strpos($target, '.') !== false) {
-        $target = explode('.', $target);
-        $manifest = $target[0];
-        unset($target[0]);
-        $arise = $target;
-        $state_arise = 'multi';
-      }else {
+        $parts = explode('.', $target);
+        $manifest = $parts[0];
+        unset($parts[0]);
+        $arise = array_values($parts);
+      } else {
         $manifest = $target;
-        $state_arise = 'single';
+        $arise = 'all';
       }
-      $rune = Forger::item(AETHER_REPO . '/'. AETHER_FILE);
+
+      $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
       $prefix_manifest = '#sentinel-manifest';
       $prefix_arise = '#sentinel-arise';
       $codex_manifest = "use Rune\\{$manifest}\\Manifest as {$manifest};";
-      $codex_arise = "{$manifest}::arise();";
 
-      // delete arise
-      if (strpos($rune, $codex_arise) !== false) {
-        $rune = str_replace($codex_arise.PHP_EOL, '', $rune);
-      }
-
-      // arising
-      if ($state_arise=='multi') {
-        $codex_arise_list = [
-          'ether'=> "{$manifest}::ether();",
-          'essence'=> "{$manifest}::essence();",
-          'entity'=> "{$manifest}::entity();",
-        ];
-        $codex_arise_select = [];
-        foreach ($arise as $ID) {
-          $codex_arise_select[] = $codex_arise_list[$ID];
-        }
-        foreach ($codex_arise_select as $codex_arise) {
-          if (strpos($rune, $codex_arise) !== false) {
-            $rune = str_replace($codex_arise.PHP_EOL, '', $rune);
-          }
-        }
-      }
-
-
-      // arise check
-      $check_arise_list = [
-        'ether'=> "{$manifest}::ether();",
-        'essence'=> "{$manifest}::essence();",
-        'entity'=> "{$manifest}::entity();",
+      $method_map = [
+        'ether' => 'ether',
+        'essence' => 'essence',
+        'entity' => 'entity'
       ];
-      $check_arise_list_state = 3;
-      foreach ($check_arise_list as $ID => $codex_arise) {
-        if (!strpos($rune, $codex_arise) !== false) {
-          $check_arise_list_state -= 1;
+
+      $pattern = '/' . preg_quote($manifest) . '::(?:ether\(\)::|essence\(\)::|entity\(\)::)*(ether|essence|entity)\(\);/';
+      preg_match($pattern, $rune, $matches);
+      $chain_line = $matches[0] ?? null;
+
+      if ($arise === 'all') {
+        if ($chain_line) {
+          $rune = str_replace($chain_line . PHP_EOL, '', $rune);
         }
-      }
-      if ($check_arise_list_state == 0) {
-        // delete manifest
         if (strpos($rune, $codex_manifest) !== false) {
-          $rune = str_replace($codex_manifest.PHP_EOL, '', $rune);
+          $rune = str_replace($codex_manifest . PHP_EOL, '', $rune);
+        }
+      } else {
+        if ($chain_line) {
+          $existing_methods = [];
+          foreach ($method_map as $key => $method) {
+            if (strpos($chain_line, $method . '()') !== false) {
+              $existing_methods[] = $key;
+            }
+          }
+
+          $remaining_methods = array_diff($existing_methods, $arise);
+
+          if (!empty($remaining_methods)) {
+            $new_chain = $manifest . '::' . implode('()::', array_map(fn($m) => $method_map[$m], $remaining_methods)) . '();';
+            $rune = str_replace($chain_line, $new_chain, $rune);
+          } else {
+            $rune = str_replace($chain_line . PHP_EOL, '', $rune);
+            if (strpos($rune, $codex_manifest) !== false) {
+              $rune = str_replace($codex_manifest . PHP_EOL, '', $rune);
+            }
+          }
         }
       }
       
@@ -292,11 +269,11 @@ Chanter::cast('sentinel', function() {
     Forger::fix(Forger::trace($repo));
 
     // importing
-    $phantasm = Weaver::item( __DIR__ . '/weaver/sentinel-rune--phantasm.txt');
-    $manifest = Weaver::item( __DIR__ . '/weaver/sentinel-rune--manifest.txt');
-    $ether = Weaver::item( __DIR__ . '/weaver/sentinel-rune--ether.txt');
-    $essence = Weaver::item( __DIR__ . '/weaver/sentinel-rune--essence.txt');
-    $entity = Weaver::item( __DIR__ . '/weaver/sentinel-rune--entity.txt');
+    $phantasm = Weaver::item( __DIR__ . '/rune--phantasm.txt');
+    $manifest = Weaver::item( __DIR__ . '/rune--manifest.txt');
+    $ether = Weaver::item( __DIR__ . '/rune--ether.txt');
+    $essence = Weaver::item( __DIR__ . '/rune--essence.txt');
+    $entity = Weaver::item( __DIR__ . '/rune--entity.txt');
   
     // weaving
     $vars = [

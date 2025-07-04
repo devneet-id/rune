@@ -42,8 +42,8 @@ Chanter::cast('grimoire', function() {
     ]
   ];
 
-  $header = Weaver::item(__DIR__ . '/weaver/grimoire-header.txt');
-  $footer = Weaver::item(__DIR__ . '/weaver/grimoire-footer.txt');
+  $header = Weaver::item(__DIR__ . '/header.txt');
+  $footer = Weaver::item(__DIR__ . '/footer.txt');
   $header = Weaver::bind($header, [
     'AETHER-FILE'=> AETHER_FILE
   ]);
@@ -61,13 +61,15 @@ Chanter::cast('grimoire', function() {
     // internal rune
     foreach (glob(AETHER_RUNE_LOCATION . '/*') as $manifest) {
       if (is_dir($manifest)) {
-        $pathinfo = pathinfo($manifest);
-  
-        $manifests[] = [
-          'Rune\\' . $pathinfo['basename'] . '\\Manifest',
-          AETHER_RUNE_LOCATION, 
-          'internal'
-        ];
+        if (basename($manifest)!=='@bindrune') {
+          $pathinfo = pathinfo($manifest);
+    
+          $manifests[] = [
+            'Rune\\' . $pathinfo['basename'] . '\\Manifest',
+            AETHER_RUNE_LOCATION, 
+            'internal'
+          ];
+        }
       }
     }
     // external rune
@@ -290,7 +292,7 @@ Chanter::cast('grimoire', function() {
    * todo get raw system for Ai
    *  */
   $processing__for_ai_adaptation = function( $full=false ) use ($processing_get_all_rune) {
-    $template = Weaver::item(__DIR__ . '/weaver/grimoire-ai.txt');
+    $template = Weaver::item(__DIR__ . '/ai.txt');
     $list = $processing_get_all_rune();
     $runes = [];
     foreach ($list as $rune) {
@@ -328,7 +330,7 @@ Chanter::cast('grimoire', function() {
   }
 
   $processing__for_ai_adaptation_stage = function() use ($processing_get_all_rune) {
-    $template = Weaver::item(__DIR__ . '/weaver/grimoire-ai.txt');
+    $template = Weaver::item(__DIR__ . '/ai.txt');
     $list = $processing_get_all_rune();
     $runes = [];
     $runes_source = '';
@@ -352,7 +354,7 @@ Chanter::cast('grimoire', function() {
     return $template;
   };
   $processing__for_ai_adaptation_stage_start = function() use ($processing_get_all_rune) {
-    $template = Weaver::item(__DIR__ . '/weaver/grimoire-ai.txt');
+    $template = Weaver::item(__DIR__ . '/ai.txt');
     $list = $processing_get_all_rune();
     $runes = [];
     $structure = ['Ether.php', 'Essence.php', 'Entity.php', 'Manifest.php', 'Phantasm.php'];
