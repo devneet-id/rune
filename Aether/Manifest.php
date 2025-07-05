@@ -31,9 +31,9 @@ class Manifest extends \Rune\Manifest {
     aether_exit(true);
   }
 
-  public static function awakening()
+  public static function dd( $data, $force=false  )
   {
-    require_once \Rune\Ethereal::$bindrune . '/awakening/cast.php';
+    aether_dd($data);
   }
 
   public static function exit( $force = false )

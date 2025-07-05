@@ -13,7 +13,7 @@ function forger() {
 /* TRACE
  * */
 #NOTE: Traces and resolves each part of a given path, tagging them as file ('item') or folder ('repo') along with their existence.
-function forger_trace( String $source_path ) {
+function forger_trace( String $source_path, ?Callable $callback = null ) {
   $source_path = str_replace('/', DIRECTORY_SEPARATOR, $source_path);
   $pathParts = explode(DIRECTORY_SEPARATOR, $source_path);
   
@@ -30,6 +30,10 @@ function forger_trace( String $source_path ) {
       $basename = pathinfo($current, PATHINFO_BASENAME);
       $isHidden = substr($basename, 0, 1) === '.';
       $stack['type'] = (!$ext || $isHidden) ? 'repo' : 'item';
+
+      if ($callback) {
+        $stack = $callback($stack);
+      }
 
       $targets[] = $stack;
     }
@@ -83,12 +87,16 @@ function forger_scan( String $source_path, ?Callable $callback ) {
   foreach (glob( $source_path . '/*' ) as $item) {
     $reitem = pathinfo($item);
     $reitem['target'] = $source_path . DIRECTORY_SEPARATOR . $reitem['basename'];
+    if ($callback) {
+      $reitem = $callback($reitem);
+    }
     $return[] = $callback( (object) $reitem );
   }
 
   aether_arcane('Forger.entity.forger_scan');
   return $return;
 }
+
 
 
 /* FIX
@@ -114,6 +122,7 @@ function forger_fix( Array $source_path ) {
 
   aether_arcane('Forger.entity.forger_fix');
 }
+
 
 /* MOVE
  * */
@@ -202,7 +211,6 @@ function forger_clean( String $source_path, $force_repo = false ) {
 }
 
 
-
 /* REPO
  * todo working with folder */
 #NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
@@ -221,6 +229,7 @@ function forger_repo(string $source_path, bool $isRecursion = false) {
 
   return $return + aether_arcane('Forger.entity.forger_repo');
 }
+
 
 /* ITEM
  * todo working with file
@@ -247,26 +256,6 @@ function forger_item(string $source_path, mixed $content = false, int $flags = 0
   aether_arcane('Forger.entity.forger_item');
   return $return;
 }
-
-
-// function forger_item( String $source_path, $content = false, $flags = 0 ) {
-//   if (file_exists($source_path)) {
-//     if ($content!==false) {
-//       file_put_contents( $source_path, $content, $flags );
-//     }
-//   }else {
-//     $trace = forger_trace( $source_path );
-//     forger_fix( $trace );
-    
-//     if ($content!==false) {
-//       file_put_contents( $source_path, $content, $flags );
-//     }
-//   }
-
-//   aether_arcane('Forger.entity.forger_item');
-//   return file_get_contents( $source_path );
-// }
-
 
 
 

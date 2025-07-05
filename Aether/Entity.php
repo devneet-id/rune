@@ -86,25 +86,41 @@ function aether_has_essence( $rune ) {
 }
 
 #NOTE: Dump and display debug information with colorized formatting, then exit
-function aether_dd($data) { 
-  // print(PHP_EOL.'AETHER DUBGGING :: START'.PHP_EOL);
+function aether_dd( $data, $force=false ) {
   ob_start();
   var_dump($data);
   $x = ob_get_clean();
 
-  $timestamp = number_format(aether_stopwatch(), 4) . 'ms';
-  $x = '{{color-primary}}AETHER DEBUGGING ('.$timestamp.') {{color-danger}}::{{color-end}} {{color-secondary}}'.$x;
-  $x = str_replace(' ["', ' {{color-danger}}::{{color-end}}{{color-info}}', $x);
-  $x = str_replace('"]=>', '{{color-end}}=>', $x);
-  $x = str_replace("=>\n", " =>", $x);
+  $translate = [
+    '{head-divider}'=> '{{color-danger}}::{{color-end}}',
+    '{tab}'=> '{{color-secondary}}│ {{color-end}}',
+    '{key}'=> '{{color-secondary}}♦ {{color-end}}{{color-info}}',
+    '{type}'=> '{{color-danger}}::{{color-secondary}}',
+    '{end}'=> '{{color-danger}} » {{color-end}}',
+  ];
+  $trace = debug_backtrace();
+  $infile = $trace[0]['file'];
+  $inline = $trace[0]['line'];
+
+  $x = "{{color-secondary}}Line: {$inline}, File: {$infile}\n\n".$x;
+  $x = "AETHER {head-divider} I N S P E C T\n".$x;
+  $x = str_ireplace("=>\n", "=>", $x);
+  $x = preg_replace("/{\n\s*}/", "{}", $x);
+  $x = preg_replace('/^(\s*)\["(.+?)"\]=>/m', '$1{key}$2{type}', $x);
+  $x = preg_replace('/^(\s*)\[(.+?)\]=>/m', '$1{key}$2{type}', $x);
   for ($i = 0; $i < 10; $i++) {
-    $x = str_replace('=>  ', '=> ', $x);
+    $x = str_replace('{type} ', '{type}', $x);
   }
-  $x = str_replace(" => ", " {{color-danger}}-{{color-end}} {{color-secondary}}", $x);
-  $x = str_replace(') "', '){{color-end}} "', $x);
-  $x = str_replace(') {', '){{color-end}} {', $x);
-  $x = str_replace('  ', '{{color-secondary}}:{{color-end}} ', $x);
+  $x = str_replace(') "', '){end}"', $x);
+  $x = str_replace(') {', '){end}{', $x);
+  $x = str_replace('  ', '{tab}', $x);
+  foreach ($translate as $key => $value) {
+    $x = str_ireplace($key, $value, $x);
+  }
   
+  if ($force) {
+    whisper_clear_force();
+  }
   whisper_clear();
   whisper_echo($x);
   die;

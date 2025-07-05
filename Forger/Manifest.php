@@ -21,15 +21,15 @@ class Manifest extends \Rune\Manifest {
   public static function end() {}
   
   #NOTE: Traces and resolves each part of a given path, tagging them as file (item) or folder (repo) along with their existence.
-  public static function trace( String $source_path ) {
-    $return = forger_trace( $source_path );
+  public static function trace( String $source_path, ?Callable $callback = null ) {
+    $return = forger_trace( $source_path, $callback );
 
     aether_arcane('Forger.manifest.trace');
     return $return;
   }
   
   #NOTE: Scans a directory for items, applies a callback to each, and returns the result list.
-  public static function scan( String $source_path, $callback ) {
+  public static function scan( String $source_path, ?Callable $callback = null ) {
     $return = forger_scan($source_path, $callback );
 
     aether_arcane('Forger.manifest.scan');
