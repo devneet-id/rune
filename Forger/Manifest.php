@@ -69,16 +69,16 @@ class Manifest extends \Rune\Manifest {
   }
   
   #NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
-  public static function repo( String $source_path, ?Callable $callback = null ) {
-    $return = forger_repo( $source_path, $callback );
+  public static function repo( string $source_path, bool $isRecursion = false ) {
+    $return = forger_repo( $source_path, $isRecursion );
 
     aether_arcane('Forger.manifest.repo');
     return $return;
   }
   
   #NOTE: Ensures the file exists, optionally writes content to it, and returns its contents.
-  public static function item( String $source_path, $content = false ) {
-    $return = forger_item( $source_path, $content );
+  public static function item( string $source_path, Mixed $content = false, int $flags = 0 ) {
+    $return = forger_item( $source_path, $content, $flags );
 
     aether_arcane('Forger.manifest.item');
     return $return;

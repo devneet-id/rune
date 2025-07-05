@@ -206,49 +206,49 @@ function forger_clean( String $source_path, $force_repo = false ) {
 /* REPO
  * todo working with folder */
 #NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
-function forger_repo( String $source_path, ?Callable $callback = null ) {
-  $trace = forger_trace( $source_path );
-  forger_fix( $trace );
-  
+function forger_repo(string $source_path, bool $isRecursion = false) {
   $return = true;
-  
-  if (!empty($callback)) {
-    $return = forger_scan( $source_path, $callback );
+
+  if (!is_dir($source_path)) {
+    $return = mkdir($source_path, 0755, true);
+  } else {
+    chmod($source_path, 0755);
   }
 
-  aether_arcane('Forger.entity.forger_repo');
-  return $return;
-}
+  if ($isRecursion) {
+    forger_fix(forger_trace($source_path));
+  }
 
+  return $return + aether_arcane('Forger.entity.forger_repo');
+}
 
 /* ITEM
  * todo working with file
  *  */
 #NOTE: Ensures the file exists, optionally writes content to it, and returns its contents.
-function forger_item(string $source_path, $content = false, int $flags = 0) {
+function forger_item(string $source_path, mixed $content = false, int $flags = 0) {
   $return = false;
 
   if ($content === false) {
     // Mode baca
     if (file_exists($source_path)) {
       $return = file_get_contents($source_path);
-    } else {
-      $return = false;
     }
   } else {
-    // Mode tulis
+    // Mode tulis, hanya jika folder-nya sudah ada
     $dir = dirname($source_path);
-    if (!is_dir($dir)) {
-      mkdir($dir, 0755, true);
+    if (is_dir($dir)) {
+      if (file_put_contents($source_path, $content, $flags) !== false) {
+        $return = true;
+      }
     }
-
-    file_put_contents($source_path, $content, $flags);
-    $return = true;
   }
 
   aether_arcane('Forger.entity.forger_item');
   return $return;
 }
+
+
 // function forger_item( String $source_path, $content = false, $flags = 0 ) {
 //   if (file_exists($source_path)) {
 //     if ($content!==false) {
