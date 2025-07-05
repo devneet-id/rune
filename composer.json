@@ -1,6 +1,6 @@
 {
   "name": "devneet/rune",
-  "description": "Rune is a versatile, modular, and maintainable PHP framework designed to make your application development smooth and scalable.",
+  "description": "Rune is a lore-driven, modular concept beneath PHP, designed not to dictate development — but to respond to it.",
   "type": "library",
   "license": "MIT",
   "autoload": {
