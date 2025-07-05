@@ -31,18 +31,17 @@ Chanter::cast('artefact', function() {
   /* INVOKE
    *  */
   $processing_invoke = function() {
-    $prefix_newPage = PHP_EOL.'- - - - -'.PHP_EOL;
-    $prefix_item = PHP_EOL;
-
+    $prefix_newPage = "\n- - - - -\n";
+    $prefix_item = "\n";
+    
     $runefile = AETHER_FILE . '.rune';
     $template = '';
-    $template .= 'RUNE ARTEFACT - ' . AETHER_VERSION . PHP_EOL;
-    $template .= 'created at ' . date('Y-m-d H:i:s') . PHP_EOL;
+    $template .= 'RUNE ARTEFACT - ' . AETHER_VERSION . "\n";
+    $template .= 'created at ' . date('Y-m-d H:i:s') . "\n";
     
     $template .= $prefix_newPage;
     $rune_source = Forger::item(AETHER_FILE);
     $template .= Cipher::runic(Cipher::base64($rune_source));
-    // aether_dd($template);
     
     if (file_exists(AETHER_ECHOES)) {
       Forger::fix([ 
@@ -53,11 +52,11 @@ Chanter::cast('artefact', function() {
       });
       if (!empty($items)) {
         $template .= $prefix_newPage;
-        $template .= implode(PHP_EOL, $items);
+        $template .= implode("\n", $items);
       }
     }
 
-    $template = str_replace(PHP_EOL.PHP_EOL, PHP_EOL, $template);
+    $template = str_replace("\n\n", "\n", $template);
     
     Forger::item($runefile, $template);
 
@@ -71,8 +70,8 @@ Chanter::cast('artefact', function() {
   /* REVOKE
    *  */
   $processing_revoke = function( $link ) {
-    $prefix_newPage = PHP_EOL.'- - - - -'.PHP_EOL;
-    $prefix_item = PHP_EOL;
+    $prefix_newPage = "\n- - - - -\n";
+    $prefix_item = "\n";
 
     $target = str_replace('.rune', '', $link);
     $file = Forger::item($link);
@@ -83,13 +82,14 @@ Chanter::cast('artefact', function() {
       Forger::item($target, $base);
     }
     
-    $code = (!empty($part[2])) ? explode(PHP_EOL, $part[2]) : [];
+    $code = (!empty($part[2])) ? explode("\n", $part[2]) : [];
     foreach ($code as $row) {
       keeper_shard_revoke($row);
     }
 
     Whisper::clear()::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}}{{LABEL-SUCCESS}}Artefact successfully revoked. {{nl}}");
   };
+
   if (Chanter::spell('revoke')) {
     Whisper::clear();
     if (Chanter::spell('revoke') !== '1') {
@@ -109,8 +109,8 @@ Chanter::cast('artefact', function() {
   $processing__inspect_raw = function($link) {
     $link = 'rune.php.rune';
 
-    $prefix_newPage = PHP_EOL.'- - - - -'.PHP_EOL;
-    $prefix_item = PHP_EOL;
+    $prefix_newPage = "\n- - - - -\n";
+    $prefix_item = "\n";
 
     $target = str_replace('.rune', '', $link);
     $file = Forger::item($link);

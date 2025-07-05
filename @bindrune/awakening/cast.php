@@ -53,21 +53,22 @@ Chanter::cast('awakening', function() {
     Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} A W A K E N I N G ");
   };
   $processing_revoke = function( $from, $to ) {
-    $prefix_newPage = PHP_EOL.'- - - - -'.PHP_EOL;
-    $prefix_item = PHP_EOL;
+    $prefix_newPage = "\n- - - - -\n";
+    $prefix_item = "\n";
 
     $target = $to;
     $file = Forger::item($from);
     $part = explode($prefix_newPage, $file);
-    
+
     if (isset($part[1])) {
       $base = Cipher::base64(Cipher::runic($part[1], true), true);
       Forger::item($target, $base);
     }
-    
-    $code = (!empty($part[2])) ? explode(PHP_EOL, $part[2]) : [];
+
+    $code = (!empty($part[2])) ? explode("\n", $part[2]) : [];
+
     foreach ($code as $row) {
-      $row = explode(PHP_EOL, Cipher::base64(Cipher::runic($row, true), true));
+      $row = explode("\n", Cipher::base64(Cipher::runic($row, true), true));
       $item = json_decode($row[0]);
       $source = Cipher::base64($row[1], true);
 
