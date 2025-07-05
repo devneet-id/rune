@@ -88,9 +88,9 @@ function forger_scan( String $source_path, ?Callable $callback ) {
     $reitem = pathinfo($item);
     $reitem['target'] = $source_path . DIRECTORY_SEPARATOR . $reitem['basename'];
     if ($callback) {
-      $reitem = $callback($reitem);
+      $reitem = $callback( (object) $reitem );
     }
-    $return[] = $callback( (object) $reitem );
+    $return[] = $reitem;
   }
 
   aether_arcane('Forger.entity.forger_scan');
