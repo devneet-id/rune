@@ -30,8 +30,6 @@ Chanter::cast('awakening', function() {
   $processing = function( $rune, $timing ) {
     $target = Forger::item(AETHER_REPO.'/'.AETHER_FILE);
     $runefile = Forger::item(AETHER_REPO.'/'.AETHER_FILE.'.rune', $rune);
-    
-    aether_dd($target);
 
     $target = str_replace('use Rune\Aether\Manifest as Aether;', '', $target);
     $target = str_replace(PHP_EOL.PHP_EOL, PHP_EOL, $target);
@@ -77,9 +75,9 @@ Chanter::cast('awakening', function() {
       Forger::item(AETHER_REPO . '/' . $item->target, $source);
     }
 
-    // Whisper::clear();
+    Whisper::clear();
     Whisper::echo("\n{{tab}}RUNE {{COLOR-DANGER}}::{{color-end}} AWAKENED {{COLOR-SUCCESS}}{{ICON-SUCCESS}}");
-    Whisper::echo("\n{{tab}}{{COLOR-SECONDARY}}Check with command {{color-danger}}php ".AETHER_FILE."\n");
+    Whisper::echo("\n{{tab}}{{COLOR-SECONDARY}}Check with command {{color-default}}$ php ".AETHER_FILE."\n");
   };
 
   // check minimum requirement
