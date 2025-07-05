@@ -6,9 +6,8 @@
 ██║  ██║ ╚██████╔╝ ██║ ╚████║ ███████╗ PHP-Lang
 ╚═╝  ╚═╝  ╚═════╝  ╚═╝  ╚═══╝ ╚══════╝ v{{VERSION}}
 {{COLOR-SECONDARY}}
-Rune is a versatile, modular, and maintainable 
-PHP framework — It is designed to make your 
-application development smooth and scalable.
+Rune is a lore-driven, modular concept beneath PHP,  
+designed not to dictate development — but to respond.
 {{color-default}}
 
 {{color-danger}}::{{color-default}} S T A T S{{color-danger}}.{{color-default}}{{color-default}}
