@@ -1,5 +1,5 @@
 {{nl}}
-{{color-danger}}::{{color-default}} M O N A R C H{{color-danger}}.{{color-default}}{{color-default}}
+{{color-danger}}::{{color-default}} L I B E R A T I O N{{color-danger}}.{{color-default}}{{color-default}}
 {{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --create-rune {{color-success}}{{icon-success}}
 {{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --remove-rune {{color-success}}{{icon-success}}
 {{color-info}} ∙ {{color-secondary}}php {{AETHER-FILE}}{{color-end}} sentinel --phantasm-up {{color-success}}{{icon-success}}

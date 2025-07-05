@@ -24,7 +24,7 @@ Chanter::cast('sentinel', function() {
   $template = Weaver::item(__DIR__ . '/header.txt');
   $template .= Weaver::item(__DIR__.'/cast-avaliable.txt');
   if (defined('LIBERATION')) {
-    $template .= Weaver::item(__DIR__.'/cast-monarch.txt');
+    $template .= Weaver::item(__DIR__.'/cast-liberation.txt');
   }
   $template = Weaver::bind($template, [
     'AETHER-FILE'=> AETHER_FILE,
@@ -305,7 +305,7 @@ Chanter::cast('sentinel', function() {
   };
   if (Chanter::spell('create-rune')) {
     // check bindrune
-    if (!file_exists(AETHER_REPO . '/@monarch/')) {
+    if (!file_exists(AETHER_REPO . '/@liberation/')) {
       Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
       die();
     }
@@ -323,7 +323,7 @@ Chanter::cast('sentinel', function() {
     
     // set data
     $name = ucfirst(strtolower($name));
-    $repo = AETHER_REPO . '/@monarch/' . $name . '/';
+    $repo = AETHER_REPO . '/@liberation/' . $name . '/';
 
     // processing
     $processing__create_rune($name, $repo);
@@ -343,7 +343,7 @@ Chanter::cast('sentinel', function() {
   };
   if (Chanter::spell('remove-rune')) {
     // check bindrune
-    if (!file_exists(AETHER_REPO . '/@monarch/')) {
+    if (!file_exists(AETHER_REPO . '/@liberation/')) {
       Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
       die();
     }
@@ -361,7 +361,7 @@ Chanter::cast('sentinel', function() {
     
     // set data
     $name = ucfirst(strtolower($name));
-    $repo = AETHER_REPO . '/@monarch/' . $name . '/';
+    $repo = AETHER_REPO . '/@liberation/' . $name . '/';
 
     // processing
     if ($processing__remove_rune($name, $repo) ) {
