@@ -51,7 +51,5 @@ class Ethereal {
     // return energy
     return self::$energy;
   }
-
   
-
 }
