@@ -33,7 +33,7 @@ First invocation — awaken Rune from the void:
  * */
 require_once __DIR__ . '/vendor/autoload.php';
 
-Rune\Ethereals::awakening();
+Rune\Ethereal::awakening();
 ```
 Run the app to begin:
 ```bash
