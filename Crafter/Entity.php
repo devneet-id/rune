@@ -173,8 +173,8 @@ function crafter_spark_message() {
   $total_shard = count($CRAFTER_SPARK['shard']);
   
   // aether_dd($CRAFTER_SPARK);
-  whisper_echo("{{color-success}}{{icon-success}}{{label-success}}Crafting '$name' has been Sparked!!");
-  whisper_echo("\n{{color-info}}{{icon-info}}{{label-info}}Path=$file_path, Size=$file_size, Shard=$total_shard");
+  whisper_echo("{{color-success}}{{icon-success}}{{label-success}}Crafting '$name' has been Sparked!!\n");
+  whisper_echo("{{color-info}}{{icon-info}}{{label-info}}Path=$file_path, Size=$file_size, Shard=$total_shard\n");
 }
 #NOTE: Processes each shard by injecting and clustering its content into the appropriate group based on file type or name.
 function crafter_spark_clustering() {
