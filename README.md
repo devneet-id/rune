@@ -11,7 +11,7 @@ This makes Rune inherently lightweight and adaptable, aligning perfectly with pr
 ## Awakening
 Install Rune using Composer:
 ```bash
-composer require devneet/rune
+composer require devneet/rune dev-main
 ```
 Project structure after installation:
 ```shell
