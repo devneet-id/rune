@@ -128,84 +128,114 @@ function keeper_echo_get( String $repo, String $name ) {
 /* SHARDS
  * todo managements file as shards
  *  */
-#NOTE: Handles shard storage or restoration based on revoke flag.
-function keeper_shard( Array $file_maps, Bool $is_revoke = false ) {
-  if ($is_revoke) {
-    keeper_shard_get($file_maps);
-  }else {
-    keeper_shard_set($file_maps);
+function keeper_shard_set( String $source_path ) {
+  if (!str_contains($source_path, '.echoes')) {
+    $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
+    $name = cipher_hash($source_path);
+    $source = forger_info($source_path);
+    $shard[$name] = $source;
+    file_put_contents(KEEPER_ECHOES_SHARD, str_replace('    ', '  ', json_encode($shard, JSON_PRETTY_PRINT)));
   }
 }
-#NOTE: Traces files, collects valid items, and stores them as encoded rune shards.
-function keeper_shard_set( Array $file_maps ) {
+function keeper_shard_set_all( Array $file_maps ) {
   $map = [];
   foreach ($file_maps as $row) {
     $map = array_merge($map, forger_trace_recursive($row));
   }
 
-  $map2 = [];
+  $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
   foreach ($map as $row) {
     if ($row['type'] == 'item') {
       if ($row['ready'] == true) {
-        $file = forger_info($row['target']);
-        $map2[$file->base] = $file;
+        if (!str_contains($row['target'], '.echoes')) {
+          $file = forger_info($row['target']);
+          $shard[cipher_hash($file->target)] = $file;
+        }
       }
     }
   }
 
-  foreach ($map2 as $row) {
-    keeper_shard_invoke($row);
-  }
-
-  aether_arcane('Keeper.entity.keeper_shard_set');
-  return true;
+  file_put_contents(KEEPER_ECHOES_SHARD, str_replace('    ', '  ', json_encode($shard, JSON_PRETTY_PRINT)));
 }
+#NOTE: Handles shard storage or restoration based on revoke flag.
+// function keeper_shard( Array $file_maps, Bool $is_revoke = false ) {
+//   if ($is_revoke) {
+//     keeper_shard_get($file_maps);
+//   }else {
+//     keeper_shard_set($file_maps);
+//   }
+// }
+
+#NOTE: Traces files, collects valid items, and stores them as encoded rune shards.
+// function keeper_shard_set( Array $file_maps ) {
+//   $map = [];
+//   foreach ($file_maps as $row) {
+//     $map = array_merge($map, forger_trace_recursive($row));
+//   }
+
+//   $map2 = [];
+//   foreach ($map as $row) {
+//     if ($row['type'] == 'item') {
+//       if ($row['ready'] == true) {
+//         $file = forger_info($row['target']);
+//         $map2[$file->base] = $file;
+//       }
+//     }
+//   }
+
+//   foreach ($map2 as $row) {
+//     keeper_shard_invoke($row);
+//   }
+
+//   aether_arcane('Keeper.entity.keeper_shard_set');
+//   return true;
+// }
 #NOTE: Encodes file metadata and content into base64 then runic format, and saves it as a shard.
-function keeper_shard_invoke( Object $forger_info ) {
-  $patch = '';
-  $source = '';
+// function keeper_shard_invoke( Object $forger_info ) {
+//   $patch = '';
+//   $source = '';
 
-  $patch = json_encode($forger_info);
-  $source = forger_item($forger_info->target);
-  $source = cipher_base64($source);
+//   $patch = json_encode($forger_info);
+//   $source = forger_item($forger_info->target);
+//   $source = cipher_base64($source);
   
-  $file = cipher_base64($patch.PHP_EOL.$source);
-  $file = cipher_runic($file);
+//   $file = cipher_base64($patch.PHP_EOL.$source);
+//   $file = cipher_runic($file);
 
-  // not use
-  $rune_name = str_replace('/', '-', $forger_info->target . '.rune');
+//   // not use
+//   $rune_name = str_replace('/', '-', $forger_info->target . '.rune');
 
-  forger_item(KEEPER_ECHOES_SHARDS . '/' . cipher_hash($rune_name) . '.rune', $file);
+//   forger_item(KEEPER_ECHOES_SHARDS . '/' . cipher_hash($rune_name) . '.rune', $file);
 
-  aether_arcane('Keeper.entity.keeper_shard_invoke');
-  return true;
-}
+//   aether_arcane('Keeper.entity.keeper_shard_invoke');
+//   return true;
+// }
 #NOTE: Retrieves and restores files from saved rune shards by name.
-function keeper_shard_get( Array $file_maps ) {
-  foreach ($file_maps as $name) {
-    $file = forger_item(KEEPER_ECHOES_SHARDS . '/' . $name . '.rune');
-    keeper_shard_revoke($file);
-  }
+// function keeper_shard_get( Array $file_maps ) {
+//   foreach ($file_maps as $name) {
+//     $file = forger_item(KEEPER_ECHOES_SHARDS . '/' . $name . '.rune');
+//     keeper_shard_revoke($file);
+//   }
 
-  aether_arcane('Keeper.entity.keeper_shard_get');
-  return true;
-}
+//   aether_arcane('Keeper.entity.keeper_shard_get');
+//   return true;
+// }
 #NOTE: Decodes and rewrites a file from its stored runic shard format.
-function keeper_shard_revoke( String $raw_source ) {
-  $file = cipher_runic($raw_source, true);
-  $file = cipher_base64($file, true);
-  $file = explode(PHP_EOL, $file);
+// function keeper_shard_revoke( String $raw_source ) {
+//   $file = cipher_runic($raw_source, true);
+//   $file = cipher_base64($file, true);
+//   $file = explode(PHP_EOL, $file);
   
-  $patch = json_decode($file[0]);
-  $source = cipher_base64($file[1], true);
+//   $patch = json_decode($file[0]);
+//   $source = cipher_base64($file[1], true);
 
-  forger_fix(forger_trace($patch->target));
+//   forger_fix(forger_trace($patch->target));
   
-  forger_item($patch->target, $source);
+//   forger_item($patch->target, $source);
 
-  aether_arcane('Keeper.entity.keeper_shard_revoke');
-  return true;
-}
+//   aether_arcane('Keeper.entity.keeper_shard_revoke');
+//   return true;
+// }
 #NOTE: Cleans all stored shards and resets the shard repository.
 function keeper_shard_clean() {
   forger_clean(KEEPER_ECHOES_SHARDS, true);
@@ -234,9 +264,14 @@ function keeper_glitch_boot() {
 
     forger_item(KEEPER_ECHOES_GLITCH, "[$data->time] [$data->type] [$data->line] [$data->file] $data->message".PHP_EOL, FILE_APPEND);
     
-    whisper_echo("{{COLOR-DANGER}}{{ICON-DANGER}} [$data->time] {{COLOR-WARNING}}//$data->type{{nl}}");
-    whisper_echo("{{COLOR-INFO}}($data->line) $data->file{{nl}}");
-    whisper_echo("{{COLOR-DEFAULT}}$data->message{{nl}}{{nl}}");
+    whisper_clear_force();
+    whisper_echo("{{color-warning}}____ ____ ____ ____ ____ ____\n");
+    whisper_echo(" KEEPER {{color-danger}}::{{color-end}} G L I T C H {{color-warning}}{{icon-warning}} \n");
+    whisper_echo("{{color-secondary}}Severity :{{color-end}}$data->type{{nl}}");
+    whisper_echo("{{color-secondary}}File     :{{color-end}}$data->file{{nl}}");
+    whisper_echo("{{color-secondary}}Line     :{{color-end}}$data->line{{nl}}");
+    whisper_echo("{{color-secondary}}Message  :{{color-end}}$data->message{{nl}}");
+    whisper_echo("{{color-warning}}//// //// //// //// //// ////\n");
     
     if (aether_has_entity('specter')) {
       specter_exit('php '.chanter_arg());

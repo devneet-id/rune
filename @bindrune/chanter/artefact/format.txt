@@ -1,0 +1,9 @@
+The Artefact of Runite
+
+[ᚱᚾ] A R T E F A C T
+  ::time={{time}}
+  ::version={{version}}
+  ::runic={{runic}}
+  ::encryption={{encryption}}
+  ::php={{php}}
+  ::system={{system}}

@@ -29,6 +29,8 @@ define('KEEPER_ECHOES_ARCANES', KEEPER_ECHOES.'/arcanes/');
 #NOTE: Directory for encoded shard backups.
 define('KEEPER_ECHOES_SHARDS', KEEPER_ECHOES.'/shards/');
 
+define('KEEPER_ECHOES_SHARD', KEEPER_ECHOES.'/shard.json');
+
 
 
 define('KEEPER_SAVING_ECHOES', \Rune\Ethereal::energy());

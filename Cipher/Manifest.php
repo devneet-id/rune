@@ -31,8 +31,8 @@ class Manifest extends \Rune\Manifest {
   }
 
   #NOTE: Encodes or decodes text using runic character mapping.
-  public static function runic( String $text, Bool $isDecode = false ) {
-    $return = cipher_runic($text, $isDecode);
+  public static function runic( String $text, Bool $isDecode = false, String $variant = 'default' ) {
+    $return = cipher_runic($text, $isDecode, $variant);
 
     aether_arcane('Cipher.manifest.runic');
     return $return;

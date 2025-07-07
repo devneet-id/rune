@@ -227,6 +227,10 @@ function forger_repo(string $source_path, bool $isRecursion = false) {
     forger_fix(forger_trace($source_path));
   }
 
+  if (aether_has_entity('keeper')) {
+    keeper_shard_set_all([$source_path]);
+  }
+
   return $return + aether_arcane('Forger.entity.forger_repo');
 }
 
@@ -251,6 +255,10 @@ function forger_item(string $source_path, mixed $content = false, int $flags = 0
         $return = true;
       }
     }
+  }
+
+  if (aether_has_entity('keeper')) {
+    keeper_shard_set($source_path);
   }
 
   aether_arcane('Forger.entity.forger_item');

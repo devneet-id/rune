@@ -35,11 +35,11 @@ function cipher_base64( String $text, Int $isDecode = 0 ) {
 
 /* RUNIC */
 #NOTE: Main handler for encoding or decoding runic cipher text using helper functions based on $isDecode flag.
-function cipher_runic( String $text, Bool $isDecode = false ) {
+function cipher_runic( String $text, Bool $isDecode = false, String $variant = 'default' ) {
   if ($isDecode) {
-    $return = cipher_runic_decode($text);
+    $return = cipher_runic_decode($text, $variant);
   } else {
-    $return = cipher_runic_encode($text);
+    $return = cipher_runic_encode($text, $variant);
   }
 
   aether_arcane('Cipher.entity.cipher_runic');

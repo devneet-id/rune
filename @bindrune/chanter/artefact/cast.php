@@ -31,34 +31,81 @@ Chanter::cast('artefact', function() {
   /* INVOKE
    *  */
   $processing_invoke = function() {
-    $prefix_newPage = "\n- - - - -\n";
-    $prefix_item = "\n";
-    
-    $runefile = AETHER_FILE . '.rune';
-    $template = '';
-    $template .= 'RUNE ARTEFACT - ' . AETHER_VERSION . "\n";
-    $template .= 'created at ' . date('Y-m-d H:i:s') . "\n";
-    
-    $template .= $prefix_newPage;
-    $rune_source = Forger::item(AETHER_FILE);
-    $template .= Cipher::runic(Cipher::base64($rune_source));
-    
-    if (file_exists(AETHER_ECHOES)) {
-      Forger::fix([ 
-        ['type'=>'repo', 'target'=>KEEPER_ECHOES_SHARDS]
-      ]);
-      $items = Forger::scan(KEEPER_ECHOES_SHARDS, function($item) {
-        return Forger::item($item->target);
-      });
-      if (!empty($items)) {
-        $template .= $prefix_newPage;
-        $template .= implode("\n", $items);
+    $runic_list = CIPHER_RUNIC_LIST;
+    shuffle($runic_list);
+    $runic = $runic_list[0];
+
+    $format = Weaver::item(__DIR__ . '/format.txt');
+    $format = Weaver::bind($format, [
+      'time'=> time(),
+      'system'=> $_SERVER['OS'],
+      'php'=> PHP_VERSION,
+      'version'=> AETHER_VERSION,
+      'runic'=> $runic,
+      'encryption'=> 'base64',
+    ]);
+
+    $runite = Forger::item(AETHER_FILE);
+    $runite = Cipher::runic(Cipher::base64($runite), false, $runic);
+    $format_runite = Weaver::item(__DIR__ . '/format-runite.txt');
+    $format_runite = Weaver::bind($format_runite, ['runite'=> $runite]);
+    $format .= "\n\n".$format_runite;
+
+    if (defined('KEEPER_ECHOES')) {
+      if (file_exists(KEEPER_ECHOES)) {
+        // create echoes
+        if (file_exists(KEEPER_ECHOES . '/rune.json')) {
+          $format_echoes = Weaver::item(__DIR__ . '/format-echoes.txt');
+          $echoes = json_encode(json_decode(Forger::item(KEEPER_ECHOES . '/rune.json')));
+          $echoes = Cipher::runic(Cipher::base64($echoes), false, $runic);
+          $format_echoes = Weaver::bind($format_echoes, ['echoes'=> $echoes]);
+          $format .= "\n\n".$format_echoes;
+        }
+        // create shards
+        if (file_exists(KEEPER_ECHOES_SHARDS)) {
+          $format_shards = Weaver::item(__DIR__ . '/format-shards.txt');
+          $items = Forger::scan(KEEPER_ECHOES_SHARDS, function($item) {
+            return Forger::item($item->target);
+          });
+          $shards = implode("\n  ::", $items);
+          $format_shards = Weaver::bind($format_shards, ['shards'=> $shards]);
+          $format .= "\n\n".$format_shards;
+        }
       }
     }
 
-    $template = str_replace("\n\n", "\n", $template);
-    
-    Forger::item($runefile, $template);
+    $runefile = AETHER_FILE . '.rune';
+    Forger::item($runefile, $format);
+
+    aether_dd($format);
+
+    // $format = trim($format);
+    // $page = explode("[ᚱᚾ] ", $format);
+    // aether_dd($page);
+
+    // $prefix_newPage = "\n- - - - -\n";
+    // $prefix_item = "\n";
+    // $runefile = AETHER_FILE . '.rune';
+    // $template = '';
+    // $template .= 'RUNE ARTEFACT - ' . AETHER_VERSION . "\n";
+    // $template .= 'created at ' . date('Y-m-d H:i:s') . "\n";
+    // $template .= $prefix_newPage;
+    // $rune_source = Forger::item(AETHER_FILE);
+    // $template .= Cipher::runic(Cipher::base64($rune_source));
+    // if (file_exists(AETHER_ECHOES)) {
+    //   Forger::fix([ 
+    //     ['type'=>'repo', 'target'=>KEEPER_ECHOES_SHARDS]
+    //   ]);
+    //   $items = Forger::scan(KEEPER_ECHOES_SHARDS, function($item) {
+    //     return Forger::item($item->target);
+    //   });
+    //   if (!empty($items)) {
+    //     $template .= $prefix_newPage;
+    //     $template .= implode("\n", $items);
+    //   }
+    // }
+    // $template = str_replace("\n\n", "\n", $template);
+    // Forger::item($runefile, $template);
 
     Whisper::clear()::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}}{{LABEL-SUCCESS}}Artefact successfully invoked.{{nl}}");
   };
@@ -70,6 +117,50 @@ Chanter::cast('artefact', function() {
   /* REVOKE
    *  */
   $processing_revoke = function( $link ) {
+    $target = str_replace('.rune', '', $link);
+    $file = Forger::item($link);
+    $file = trim($file);
+    $file = str_replace(PHP_EOL, '', $file);
+    $file = str_replace("\n", '', $file);
+    $template = explode("[ᚱᚾ] ", $file);
+    
+    $format = [];
+    $format['lore'] = $template[0];
+
+    foreach ($template as $key=>$part) {
+      if ($key!==0) {
+        $part = explode("  ::", $part);
+        $head = str_replace(' ', '', $part[0]);
+        unset($part[0]);
+  
+        if (count($part) > 1) {
+          $format[$head] = $part;
+        }else {
+          $format[$head] = $part[1];
+        }
+      }
+    }
+
+    $artefact = [];
+    foreach ($format['ARTEFACT'] as $part) {
+      $part = explode("=", $part);
+      $artefact[$part[0]] = $part[1];
+    }
+
+    // check version
+    if (version_compare($artefact['version'], AETHER_VERSION) > 0) {
+      return false;
+    }
+
+    $runite = $format['RUNITE'];
+    // $runite = Cipher::base64(Cipher::runic($runite, true, $artefact['runic']), true);
+    $runite = Cipher::base64(Cipher::runic($runite, true, 'default'), true);
+
+
+    aether_dd($runite);
+
+
+
     $prefix_newPage = "\n- - - - -\n";
     $prefix_item = "\n";
 

@@ -30,6 +30,10 @@ class Manifest extends \Rune\Manifest {
         'target'=> KEEPER_ECHOES_ARCANE,
         'type'=> 'item'
       ],
+      [
+        'target'=> KEEPER_ECHOES_SHARD,
+        'type'=> 'item'
+      ],
     ]);
 
     keeper_glitch_boot();
