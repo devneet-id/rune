@@ -16,8 +16,8 @@ Chanter::cast('grimoire', function() {
   Keeper::ether()::essence()::entity();
 
   global $AETHER_ARISED;
-
-  (aether_has_entity('whisper')) ?: die(PHP_EOL.'[!]WARNING: Required Whisper:entity'.PHP_EOL);
+  global $FORGER_KEEPER_SHARD;
+  $FORGER_KEEPER_SHARD = false;
 
   $default_node = [
     [

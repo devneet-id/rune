@@ -215,6 +215,7 @@ function forger_clean( String $source_path, $force_repo = false ) {
  * todo working with folder */
 #NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
 function forger_repo(string $source_path, bool $isRecursion = false) {
+  global $FORGER_KEEPER_SHARD;
   $return = true;
 
   if (!is_dir($source_path)) {
@@ -228,7 +229,9 @@ function forger_repo(string $source_path, bool $isRecursion = false) {
   }
 
   if (aether_has_entity('keeper')) {
-    keeper_shard_set_all([$source_path]);
+    if ($FORGER_KEEPER_SHARD) {
+      keeper_shard_set_all([$source_path]);
+    }
   }
 
   return $return + aether_arcane('Forger.entity.forger_repo');
@@ -240,6 +243,7 @@ function forger_repo(string $source_path, bool $isRecursion = false) {
  *  */
 #NOTE: Ensures the file exists, optionally writes content to it, and returns its contents.
 function forger_item(string $source_path, mixed $content = false, int $flags = 0) {
+  global $FORGER_KEEPER_SHARD;
   $return = false;
 
   if ($content === false) {
@@ -258,7 +262,9 @@ function forger_item(string $source_path, mixed $content = false, int $flags = 0
   }
 
   if (aether_has_entity('keeper')) {
-    keeper_shard_set($source_path);
+    if ($FORGER_KEEPER_SHARD) {
+      keeper_shard_set($source_path);
+    }
   }
 
   aether_arcane('Forger.entity.forger_item');

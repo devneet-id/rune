@@ -20,6 +20,9 @@ Chanter::cast('sentinel', function() {
   Crafter::ether()::essence()::entity();
   Specter::ether()::essence()::entity();
 
+  global $FORGER_KEEPER_SHARD;
+  $FORGER_KEEPER_SHARD = false;
+
   // prepare cast template
   $template = Weaver::item(__DIR__ . '/header.txt');
   $template .= Weaver::item(__DIR__.'/cast-avaliable.txt');

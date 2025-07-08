@@ -14,6 +14,8 @@ Chanter::cast('rune', function() {
   global $AETHER_RUNE_ENTITY;
   global $CHANTER_ARGS;
   global $CHANTER_ECHO;
+  global $FORGER_KEEPER_SHARD;
+  $FORGER_KEEPER_SHARD = false;
   
   foreach ($CHANTER_ECHO as $key => $echo) {
     $text = '{{color-info}} ∙ {{color-secondary}}php ' . AETHER_FILE . '{{color-end}} ' . $echo[1];

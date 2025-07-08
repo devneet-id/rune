@@ -15,18 +15,17 @@ Chanter::cast('artefact', function() {
   Forger::ether()::essence()::entity();
   Keeper::ether()::essence()::entity();
 
+  global $FORGER_KEEPER_SHARD;
+
+  $FORGER_KEEPER_SHARD = false;
+
   $header = Weaver::item(__DIR__ . '/header.txt');
   $header = Weaver::bind($header, [
     'AETHER-FILE'=> AETHER_FILE,
   ]);
 
-  if (aether_has_entity('whisper')) {
-    Whisper::clear();
-    Whisper::echo($header);
-  }else {
-    aether_whisper($header);
-  }
-
+  Whisper::clear();
+  Whisper::echo($header);
 
   /* INVOKE
    *  */
@@ -62,12 +61,19 @@ Chanter::cast('artefact', function() {
           $format .= "\n\n".$format_echoes;
         }
         // create shards
-        if (file_exists(KEEPER_ECHOES_SHARDS)) {
+        if (file_exists(KEEPER_ECHOES_SHARD)) {
           $format_shards = Weaver::item(__DIR__ . '/format-shards.txt');
-          $items = Forger::scan(KEEPER_ECHOES_SHARDS, function($item) {
-            return Forger::item($item->target);
-          });
-          $shards = implode("\n  ::", $items);
+          // $items = Forger::scan(KEEPER_ECHOES_SHARDS, function($item) {
+          //   return Forger::item($item->target);
+          // });
+          $shards_list = json_decode(Forger::item(KEEPER_ECHOES_SHARD));
+          $shard_source = [];
+          foreach ($shards_list as $shard) {
+            $shard = Forger::item($shard->target);
+            $shard = Cipher::runic(Cipher::base64($shard), false, $runic);
+            $shard_source[] = $shard;
+          }
+          $shards = implode("\n  ::", $shard_source);
           $format_shards = Weaver::bind($format_shards, ['shards'=> $shards]);
           $format .= "\n\n".$format_shards;
         }
@@ -153,8 +159,8 @@ Chanter::cast('artefact', function() {
     }
 
     $runite = $format['RUNITE'];
-    // $runite = Cipher::base64(Cipher::runic($runite, true, $artefact['runic']), true);
-    $runite = Cipher::base64(Cipher::runic($runite, true, 'default'), true);
+    $runite = Cipher::base64(Cipher::runic($runite, true, $artefact['runic']), true);
+    // $runite = Cipher::base64(Cipher::runic($runite, true, 'default'), true);
 
 
     aether_dd($runite);
