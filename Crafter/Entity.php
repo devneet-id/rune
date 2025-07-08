@@ -215,6 +215,7 @@ function crafter_spark_clustering() {
 #NOTE: Clean each cluster by removing unwanted patterns using language-specific cleaning rules.
 function crafter_spark_cleaning() {
   global $CRAFTER_SPARK_CLUSTER;
+  global $CRAFTER_SEED;
 
   $recluster = [];
 
@@ -224,6 +225,11 @@ function crafter_spark_cleaning() {
 
       foreach ($cleaner as $row) {
         $item = str_ireplace($row, '', $item);
+      }
+
+      // Minify code
+      if (in_array($lang, $CRAFTER_SEED['MINIFIED'])) {
+        $item = weaver_min($item);
       }
 
       $recluster[$lang][] = trim($item);
