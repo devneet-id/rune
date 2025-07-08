@@ -5,17 +5,17 @@
  * Represents functions related to this domain.
  */
 
+
+#NOTE: Main entity.
 function crafter() {
   return true;
 }
 
 
-/* HELPER
- * list all helper
- *  */
-#NOTE: Resets all Crafter-related globals to their initial states using reset constants or empty values.
+# ETC
+
+#NOTE: Reset all Crafter globals to initial states using constants or empty values.
 function crafter_reset() {
-  global $CRAFTER_ITEM;
   global $CRAFTER_SEED;
   global $CRAFTER_SHARD;
   global $CRAFTER_SHARD_LIST;
@@ -25,44 +25,44 @@ function crafter_reset() {
   global $CRAFTER_SPARK_CLUSTER;
   global $CRAFTER_SPARK_DISTRIBUTE;
 
-  $CRAFTER_ITEM = [];
-  $CRAFTER_SEED = CRAFTER_RESET_SEED;
-  $CRAFTER_SHARD = [];
-  $CRAFTER_SHARD_LIST = [];
+  $CRAFTER_SEED           = CRAFTER_RESET_SEED;
+  $CRAFTER_SHARD          = [];
+  $CRAFTER_SHARD_LIST     = [];
   $CRAFTER_SHARD_INJECTION = [];
-  $CRAFTER_SPARK = CRAFTER_RESET_SPARK;
-  $CRAFTER_SPARK_STATE = CRAFTER_RESET_SPARK_STATE;
-  $CRAFTER_SPARK_CLUSTER = CRAFTER_RESET_SPARK_CLUSTER;
+  $CRAFTER_SPARK          = CRAFTER_RESET_SPARK;
+  $CRAFTER_SPARK_STATE    = CRAFTER_RESET_SPARK_STATE;
+  $CRAFTER_SPARK_CLUSTER  = CRAFTER_RESET_SPARK_CLUSTER;
   $CRAFTER_SPARK_DISTRIBUTE = '';
 }
 
 
-/* SEED
- * todo set seed of the item
- * */
-#NOTE: Sets a value in the global CRAFTER_SEED array under the given name.
-function crafter_seed_set( String $name, Mixed $value ) {
+
+# SEED
+
+#NOTE: Store a value into the global CRAFTER_SEED array using the given name as key.
+function crafter_seed_set(String $name, Mixed $value) {
   global $CRAFTER_SEED;
 
   $CRAFTER_SEED[$name] = $value;
-  
+
   aether_arcane("Crafter.entity.crafter_seed_set");
   return $value;
 }
-#NOTE: Retrieves a value from the global CRAFTER_SEED array by name.
-function crafter_seed_get( String $name ) {
+
+#NOTE: Get a value from the global CRAFTER_SEED array using the given name as key.
+function crafter_seed_get(String $name) {
   global $CRAFTER_SEED;
 
   aether_arcane("Crafter.entity.crafter_seed_get");
+
   return $CRAFTER_SEED[$name];
 }
 
 
-/* ITEM
- * todo crafter item 
- * */
-#NOTE: Registers a callable into the global CRAFTER_ITEM array under the given name.
-function crafter_item_set( String $name, ?Callable $callable ) {
+# ITEM
+
+#NOTE: Register a callable into the global CRAFTER_ITEM array using the given name as key.
+function crafter_item_set(String $name, ?Callable $callable) {
   global $CRAFTER_ITEM;
 
   $CRAFTER_ITEM[$name] = $callable;
@@ -70,23 +70,26 @@ function crafter_item_set( String $name, ?Callable $callable ) {
   aether_arcane("Crafter.entity.crafter_item_set");
   return true;
 }
-#NOTE: Executes a registered crafter item callable by name, then updates CRAFTER_SPARK and marks it as ready.
-function crafter_item_get( String $name ) {
+
+#NOTE: Execute a registered crafter item callable by name and update CRAFTER_SPARK with current state.
+function crafter_item_get(String $name) {
   global $CRAFTER_ITEM;
   global $CRAFTER_SEED;
   global $CRAFTER_SHARD;
   global $CRAFTER_SPARK;
   global $CRAFTER_SPARK_STATE;
-  
+
   if (isset($CRAFTER_ITEM[$name])) {
-    
+    // Execute the registered callable
     $CRAFTER_ITEM[$name]();
 
+    // Update spark data with current seed and shard
     $CRAFTER_SPARK['item'] = $name;
     $CRAFTER_SPARK['seed'] = $CRAFTER_SEED;
     $CRAFTER_SPARK['shard'] = $CRAFTER_SHARD;
 
-    $CRAFTER_SPARK_STATE['ready'] = true;
+    // Mark spark state as ready
+    $CRAFTER_SPARK_STATE = true;
   }
 
   aether_arcane("Crafter.entity.crafter_item_get");
@@ -94,11 +97,10 @@ function crafter_item_get( String $name ) {
 }
 
 
-/* SHARD
- * todo get shard and crafting shards
- *  */
-#NOTE: Registers a shard file along with optional injection, stores its info and path in global crafter shard arrays.
-function crafter_shard_set( String $file_path, ?Callable $injection = NULL ) {
+# SHARD
+
+#NOTE: Register a shard file with optional injection, and store its info and path in global shard arrays.
+function crafter_shard_set(String $file_path, ?Callable $injection = NULL) {
   global $CRAFTER_SHARD;
   global $CRAFTER_SHARD_LIST;
   global $CRAFTER_SHARD_INJECTION;
@@ -112,25 +114,25 @@ function crafter_shard_set( String $file_path, ?Callable $injection = NULL ) {
   aether_arcane("Crafter.entity.crafter_shard_set");
   return $CRAFTER_SHARD;
 }
-#NOTE: Retrieves a shard file info from global crafter shard arrays.
-function crafter_shard_get( String $file_path, ?Callable $injection = NULL ) {
+
+#NOTE: Retrieve a shard file info, registering it first if not already listed.
+function crafter_shard_get(String $file_path, ?Callable $injection = NULL) {
   global $CRAFTER_SHARD;
   global $CRAFTER_SHARD_LIST;
-  
-  if (!isset($CRAFTER_SHARD_LIST[$file_path])) {
+
+  if (!in_array($file_path, $CRAFTER_SHARD_LIST)) {
     crafter_shard_set($file_path, $injection);
   }
-  
+
   aether_arcane("Crafter.entity.crafter_shard_get");
   return $CRAFTER_SHARD;
 }
 
 
+# SPARK
 
-/* SPARK
- *  */
-#NOTE: Executes full crafting process flow — ensures spark readiness, runs core processing steps, optional injection, and finalizes with keeper shard setup.
-function crafter_spark( String $name, ?Callable $injection = NULL ) {
+#NOTE: Run full crafting pipeline — validate readiness, process shards, apply injection, and finalize crafting result.
+function crafter_spark(String $name, ?Callable $injection = NULL) {
   global $CRAFTER_SHARD;
   global $CRAFTER_SHARD_INJECTION;
   global $CRAFTER_SHARD_LIST;
@@ -139,47 +141,49 @@ function crafter_spark( String $name, ?Callable $injection = NULL ) {
   global $CRAFTER_SPARK_CLUSTER;
   global $CRAFTER_SPARK_DISTRIBUTE;
 
-  // state ready
-  if (!$CRAFTER_SPARK_STATE['ready']) {
+  // Ensure the spark state is ready
+  if (!$CRAFTER_SPARK_STATE) {
     crafter_item_get($name);
   }
-  
-  // sparkling process
+
+  // Core crafting steps
   crafter_spark_clustering();
   crafter_spark_cleaning();
   crafter_spark_bundling();
   crafter_spark_distributing();
 
-  // injection
+  // Optional user-defined injection
   if (!empty($injection)) {
     $injection();
   }
-  
-  // keeper handling
+
+  // Optional keeper logic (currently disabled)
   // keeper_shard_clean();
   // keeper_shard_set($CRAFTER_SHARD_LIST);
 
-  // return
+  // Show result message and reset
+  crafter_spark_message();
+  crafter_reset();
+
   aether_arcane("Crafter.entity.crafter_spark");
   return true;
 }
-#NOTE: Displays crafting result summary including item name, output path, file size, and total shard used.
+
+#NOTE: Display crafting summary with item name, output path, file size, and total shards used.
 function crafter_spark_message() {
   global $CRAFTER_SPARK;
-  
-  $name = $CRAFTER_SPARK['item'];
-  $file_path = $CRAFTER_SPARK['seed']['DIST'];
-  $file_size = aether_formatFileSize(filesize($CRAFTER_SPARK['seed']['DIST']));
+
+  $name        = $CRAFTER_SPARK['item'];
+  $file_path   = $CRAFTER_SPARK['seed']['DIST'];
+  $file_size   = aether_formatFileSize(filesize($file_path));
   $total_shard = count($CRAFTER_SPARK['shard']);
-  
-  // aether_dd($CRAFTER_SPARK);
+
+  // Display crafting success message
   whisper_echo("{{color-success}}{{icon-success}}{{color-end}} Crafting {{color-success}}$name{{color-end}} has been Sparked!!\n");
   whisper_echo("{{color-info}}{{icon-info}}{{label-info}}{{color-end}}Path={{color-info}}$file_path{{color-end}}, Size={{color-info}}$file_size{{color-end}}, Shard={{color-info}}$total_shard{{color-end}}\n");
-  
-  // whisper_echo("{{color-success}}{{icon-success}}{{label-success}}Crafting '$name' has been Sparked!!\n");
-  // whisper_echo("{{color-info}}{{icon-info}}{{label-info}}Path=$file_path, Size=$file_size, Shard=$total_shard\n");
 }
-#NOTE: Processes each shard by injecting and clustering its content into the appropriate group based on file type or name.
+
+#NOTE: Inject and group each shard’s content into the appropriate cluster based on name or file type.
 function crafter_spark_clustering() {
   global $CRAFTER_SPARK;
   global $CRAFTER_SPARK_CLUSTER;
@@ -188,18 +192,18 @@ function crafter_spark_clustering() {
   foreach ($CRAFTER_SPARK['shard'] as $shard) {
     $source = forger_item($shard->target);
 
-    // start shard injection
+    // Run custom injection if available
     if (isset($CRAFTER_SHARD_INJECTION[$shard->target])) {
-      $inject = $CRAFTER_SHARD_INJECTION[$shard->target]( $source );
+      $inject = $CRAFTER_SHARD_INJECTION[$shard->target]($source);
       if (!empty($inject)) {
-        $source = $inject;  
+        $source = $inject;
       }
     }
-    
-    // clustering by language
-    if (strpos($shard->name, '.head')!==false) {
+
+    // Cluster based on file naming or extension
+    if (strpos($shard->name, '.head') !== false) {
       $CRAFTER_SPARK_CLUSTER['head.html'][] = $source;
-    }else {
+    } else {
       $CRAFTER_SPARK_CLUSTER[$shard->ext][] = $source;
     }
   }
@@ -207,11 +211,13 @@ function crafter_spark_clustering() {
   aether_arcane("Crafter.entity.crafter_spark_clustering");
   return true;
 }
-#NOTE: Cleans clustered shard contents by removing unwanted strings based on language-specific rules.
+
+#NOTE: Clean each cluster by removing unwanted patterns using language-specific cleaning rules.
 function crafter_spark_cleaning() {
   global $CRAFTER_SPARK_CLUSTER;
 
   $recluster = [];
+
   foreach ($CRAFTER_SPARK_CLUSTER as $lang => $items) {
     foreach ($items as $item) {
       $cleaner = CRAFTER_CLEANING[$lang];
@@ -225,22 +231,25 @@ function crafter_spark_cleaning() {
   }
 
   $CRAFTER_SPARK_CLUSTER = $recluster;
+
   aether_arcane("Crafter.entity.crafter_spark_cleaning");
   return true;
 }
-#NOTE: Binds cleaned shard clusters and metadata into a final distributable template using selected weaver and encryption.
+
+#NOTE: Bundle cleaned shard clusters and metadata into a final distributable template.
 function crafter_spark_bundling() {
   global $CRAFTER_SPARK;
   global $CRAFTER_SPARK_DISTRIBUTE;
   global $CRAFTER_SPARK_CLUSTER;
 
-  $seed_language = $CRAFTER_SPARK['seed']['LANGUAGE'];
-  $seed_type = $CRAFTER_SPARK['seed']['TYPE'];
+  $seed_language   = $CRAFTER_SPARK['seed']['LANGUAGE'];
+  $seed_type       = $CRAFTER_SPARK['seed']['TYPE'];
   $seed_encryption = $CRAFTER_SPARK['seed']['ENCRYPTION'];
-  
+
   $encoding = $seed_encryption . '_encode';
   $weaver_selected = 0;
-  
+
+  // Select the appropriate weaver based on language and type
   foreach (CRAFTER_WEAVER as $CWID => $weaver) {
     if ($weaver[0] == $seed_language && $weaver[1] == $seed_type) {
       $templates = weaver_item($weaver[3]);
@@ -248,39 +257,41 @@ function crafter_spark_bundling() {
     }
   }
 
-  // copyright
+  // Inject copyright
   $templates = weaver_bind($templates, 'COPYRIGHT', AETHER_COPYRIGHT);
-  
-  // class type
+
+  // If class type is 2, apply encryption and constructor
   if (CRAFTER_WEAVER[$weaver_selected][2] == 2) {
     $templates = weaver_bind($templates, 'ENCRYPTION', $seed_encryption);
-    
+
     $plain = weaver_item(CRAFTER_WEAVER[0][3]);
     $templates = weaver_bind($templates, 'CONSTRUCT', $encoding($plain));
-    $templates = weaver_bind($templates, 'COPYRIGHT', AETHER_COPYRIGHT);
+    $templates = weaver_bind($templates, 'COPYRIGHT', AETHER_COPYRIGHT); // Reinjection
   }
 
-  // cluster
+  // Bind all clusters to the template
   foreach ($CRAFTER_SPARK_CLUSTER as $type => $cluster) {
     $search = CRAFTER_VARIABLE[$type];
     $source = implode("\n", $cluster);
-    
+
     if (CRAFTER_WEAVER[$weaver_selected][2] == 2) {
       $source = $encoding($source);
     }
-    
+
     $templates = weaver_bind($templates, $search, $source);
   }
 
-  // hash
+  // Inject application hash
   $templates = weaver_bind($templates, 'HASH-APP', cipher_id());
-  
+
+  // Save final bundled result
   $CRAFTER_SPARK_DISTRIBUTE = $templates;
-  
+
   aether_arcane("Crafter.entity.crafter_spark_bundling");
   return true;
 }
-#NOTE: Writes the bundled content to the distribution path defined in the crafter seed.
+
+#NOTE: Write the bundled template to the distribution path defined in crafter seed.
 function crafter_spark_distributing() {
   global $CRAFTER_SEED;
   global $CRAFTER_SPARK_DISTRIBUTE;

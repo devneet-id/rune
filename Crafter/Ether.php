@@ -106,9 +106,7 @@ define('CRAFTER_RESET_SPARK', [
 ]);
 
 #NOTE: Default spark state, marking the crafter as not ready after reset.
-define('CRAFTER_RESET_SPARK_STATE', [
-  'ready' => false,
-]);
+define('CRAFTER_RESET_SPARK_STATE', false);
 
 #NOTE: Default empty cluster groups for each language type after reset.
 define('CRAFTER_RESET_SPARK_CLUSTER', [

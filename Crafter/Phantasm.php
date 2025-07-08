@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.8';
+  public $version = '1.11';
   
   public $main = 'Crafter';
 
@@ -121,87 +121,72 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'crafter()',
-      'note' => '',
+      'note' => 'Main entity.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_reset()',
-      'note' => 'Resets all Crafter-related globals to their initial states using reset constants or empty values.',
+      'note' => 'Reset all Crafter globals to initial states using constants or empty values.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_seed_set( String $name, Mixed $value )',
-      'note' => 'Sets a value in the global CRAFTER_SEED array under the given name.',
+      'note' => 'Store a value into the global CRAFTER_SEED array using the given name as key.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_seed_get( String $name )',
-      'note' => 'Retrieves a value from the global CRAFTER_SEED array by name.',
+      'note' => 'Get a value from the global CRAFTER_SEED array using the given name as key.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_item_set( String $name, ?Callable $callable )',
-      'note' => 'Registers a callable into the global CRAFTER_ITEM array under the given name.',
+      'note' => 'Register a callable into the global CRAFTER_ITEM array using the given name as key.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_item_get( String $name )',
-      'note' => 'Executes a registered crafter item callable by name, then updates CRAFTER_SPARK and marks it as ready.',
+      'note' => 'Execute a registered crafter item callable by name and update CRAFTER_SPARK with current state.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_shard_set( String $file_path, ?Callable $injection = NULL )',
-      'note' => 'Registers a shard file along with optional injection, stores its info and path in global crafter shard arrays.',
+      'note' => 'Register a shard file with optional injection, and store its info and path in global shard arrays.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_shard_get( String $file_path, ?Callable $injection = NULL )',
-      'note' => 'Retrieves a shard file info from global crafter shard arrays.',
+      'note' => 'Retrieve a shard file info, registering it first if not already listed.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_spark( String $name, ?Callable $injection = NULL )',
-      'note' => 'Executes full crafting process flow — ensures spark readiness, runs core processing steps, optional injection, and finalizes with keeper shard setup.',
+      'note' => 'Run full crafting pipeline — validate readiness, process shards, apply injection, and finalize crafting result.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_spark_message()',
-      'note' => 'Displays crafting result summary including item name, output path, file size, and total shard used.',
+      'note' => 'Display crafting summary with item name, output path, file size, and total shards used.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_spark_clustering()',
-      'note' => 'Processes each shard by injecting and clustering its content into the appropriate group based on file type or name.',
+      'note' => 'Inject and group each shard’s content into the appropriate cluster based on name or file type.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_spark_cleaning()',
-      'note' => 'Cleans clustered shard contents by removing unwanted strings based on language-specific rules.',
+      'note' => 'Clean each cluster by removing unwanted patterns using language-specific cleaning rules.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_spark_bundling()',
-      'note' => 'Binds cleaned shard clusters and metadata into a final distributable template using selected weaver and encryption.',
+      'note' => 'Bundle cleaned shard clusters and metadata into a final distributable template.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_spark_distributing()',
-      'note' => 'Writes the bundled content to the distribution path defined in the crafter seed.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => 'Optional lifecycle method for internal post-arise logic.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_end()',
-      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => 'end()',
-      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
+      'note' => 'Write the bundled template to the distribution path defined in crafter seed.',
     ],
     [
       'type' => 'manifest',

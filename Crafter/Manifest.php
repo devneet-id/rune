@@ -13,22 +13,13 @@ class Manifest extends \Rune\Manifest {
 
   protected static $inName = '';
 
-  #NOTE: Optional lifecycle method for internal post-arise logic.
-  public static function _arise() {}
-
-  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
-  public static function _aether_end() {}
-  
-  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
-  public static function end() {}
-
   #NOTE: Registers or retrieves a crafter item by name; sets the active name if callable is provided.
-  public static function item( String $name, ?Callable $callable = NULL ) {
+  public static function item(string $name, ?callable $callable = null) {
     if ($callable) {
       crafter_item_set($name, $callable);
       self::$inName = $name;
       $return = self::class;
-    }else {
+    } else {
       $return = crafter_item_get($name);
     }
 
@@ -37,10 +28,10 @@ class Manifest extends \Rune\Manifest {
   }
 
   #NOTE: Sets or retrieves a value from the crafter seed configuration.
-  public static function seed( String $name, Mixed $value = NULL ) {
-    if ($value) {
+  public static function seed(string $name, mixed $value = null) {
+    if ($value !== null) {
       $return = crafter_seed_set($name, $value);
-    }else {
+    } else {
       $return = crafter_seed_get($name);
     }
 
@@ -49,7 +40,7 @@ class Manifest extends \Rune\Manifest {
   }
 
   #NOTE: Retrieves or registers a shard source with optional injection logic.
-  public static function shard( String $source, ?Callable $injection = NULL ) {
+  public static function shard(string $source, ?callable $injection = null) {
     $return = crafter_shard_get($source, $injection);
 
     aether_arcane("Crafter.manifest.shard");
@@ -57,12 +48,8 @@ class Manifest extends \Rune\Manifest {
   }
 
   #NOTE: Executes the full crafting process using item name or callable, then resets the crafter state and shows crafting summary.
-  public static function spark( Mixed $name_or_callable = NULL, ?Callable $injection = NULL ) {
-    if (empty($name_or_callable)) {
-      $name = self::$inName;
-    }else {
-      $name = $name_or_callable;
-    }
+  public static function spark(mixed $name_or_callable = null, ?callable $injection = null) {
+    $name = empty($name_or_callable) ? self::$inName : $name_or_callable;
 
     if (is_callable($name_or_callable)) {
       $injection = $name_or_callable;
@@ -70,11 +57,9 @@ class Manifest extends \Rune\Manifest {
 
     $return = crafter_spark($name, $injection);
 
-    crafter_spark_message();
-    crafter_reset();
-    
     aether_arcane("Crafter.manifest.spark");
     return $return;
   }
+
 
 }

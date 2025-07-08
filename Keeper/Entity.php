@@ -130,11 +130,14 @@ function keeper_echo_get( String $repo, String $name ) {
  *  */
 function keeper_shard_set( String $source_path ) {
   if (!str_contains($source_path, '.echoes')) {
-    $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
-    $name = cipher_hash($source_path);
-    $source = forger_info($source_path);
-    $shard[$name] = $source;
-    file_put_contents(KEEPER_ECHOES_SHARD, str_replace('    ', '  ', json_encode($shard, JSON_PRETTY_PRINT)));
+    $source_path = str_replace(AETHER_REPO, '', $source_path);
+    if (realpath($source_path)) {
+      $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
+      $name = cipher_hash($source_path);
+      $source = forger_info($source_path);
+      $shard[$name] = $source;
+      file_put_contents(KEEPER_ECHOES_SHARD, str_replace('    ', '  ', json_encode($shard, JSON_PRETTY_PRINT)));
+    }
   }
 }
 function keeper_shard_set_all( Array $file_maps ) {
@@ -149,7 +152,8 @@ function keeper_shard_set_all( Array $file_maps ) {
       if ($row['ready'] == true) {
         if (!str_contains($row['target'], '.echoes')) {
           $file = forger_info($row['target']);
-          $shard[cipher_hash($file->target)] = $file;
+          $shard_key = str_replace(AETHER_REPO, '', $file->target);
+          $shard[cipher_hash($shard_key)] = $file;
         }
       }
     }

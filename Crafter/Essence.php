@@ -47,9 +47,7 @@ $GLOBALS['CRAFTER_SPARK'] = [
 ];
 
 #NOTE: State flags for the crafting process, such as readiness.
-$GLOBALS['CRAFTER_SPARK_STATE'] = [
-  'ready' => false,
-];
+$GLOBALS['CRAFTER_SPARK_STATE'] = false;
 
 #NOTE: Clustered content grouped by type, used during bundling (e.g., html, css, js, etc).
 $GLOBALS['CRAFTER_SPARK_CLUSTER'] = [
