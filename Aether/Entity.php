@@ -60,7 +60,6 @@ function aether_exit( $force = false ) {
     }
 
     $total_rune = count(aether_arised());
-    // aether_dd($arised);
     whisper_echo("\n{{COLOR-SECONDARY}}{{ICON-INFO}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
   }else {
     print("\n\nRUNE: Execute={$end}s, Memory=$usage - ^$peak");
@@ -92,9 +91,9 @@ function aether_dd( $data, $force=false ) {
   $x = ob_get_clean();
 
   $translate = [
-    '{head-divider}'=> '{{color-danger}}::{{color-end}}',
+    '{head-divider}'=> '{{color-danger}} :: {{color-end}}',
     '{tab}'=> '{{color-secondary}}│ {{color-end}}',
-    '{key}'=> '{{color-secondary}}♦ {{color-end}}{{color-info}}',
+    '{key}'=> '{{color-secondary}}♦ {{color-end}}{{color-default}}',
     '{type}'=> '{{color-danger}}::{{color-secondary}}',
     '{end}'=> '{{color-danger}} » {{color-end}}',
   ];
@@ -102,8 +101,8 @@ function aether_dd( $data, $force=false ) {
   $infile = $trace[0]['file'];
   $inline = $trace[0]['line'];
 
-  $x = "{{color-secondary}}Line: {$inline}, File: {$infile}\n\n".$x;
-  $x = "AETHER {head-divider} I N S P E C T\n".$x;
+  $x = "{{bg-danger}} {$inline} {{bg-end}} {$infile}\n\n{{text-secondary}}".$x;
+  $x = "{{text-secondary}}///////////////////////////////////{{text-end}}\n R U N E {head-divider} I N S P E C T\n".$x;
   $x = str_ireplace("=>\n", "=>", $x);
   $x = preg_replace("/{\n\s*}/", "{}", $x);
   $x = preg_replace('/^(\s*)\["(.+?)"\]=>/m', '$1{key}$2{type}', $x);

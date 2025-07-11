@@ -65,12 +65,15 @@ function whisper_echo_set( String $message ) {
 function whisper_echo_imbue( String $text ) {
   global $WHISPER_VARS;
   global $WHISPER_COLORS;
+  global $WHISPER_BG_COLORS;
   global $WHISPER_ICONS;
   global $WHISPER_LABELS;
 
   // remap
   $maps = $WHISPER_VARS;
   $maps_threedimension = [
+    'bg'=> $WHISPER_BG_COLORS,
+    'text'=> $WHISPER_COLORS,
     'color'=> $WHISPER_COLORS,
     'icon'=> $WHISPER_ICONS,
     'label'=> $WHISPER_LABELS,

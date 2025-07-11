@@ -7,22 +7,39 @@ $GLOBALS['WHISPER'] = true;
 $GLOBALS['WHISPER_VARS'] = [
   'NL'=> PHP_EOL,
   'TAB'=> '  ',
+  'BOLD'=> "\033[1m",
   'END'=> "\033[0;37m",
 ];
 
 #NOTE: ANSI color codes for CLI output styling used by whisper
 $GLOBALS['WHISPER_COLORS'] = [
-  'PRIMARY'   => "\033[01;34m",
+  'PRIMARY'   => "\033[01;38;5;12m",
   'SECONDARY' => "\033[01;30m",
   'FAILED'    => "\033[01;31m",
   'SUCCESS'   => "\033[01;32m",
-  'WARNING'   => "\033[38;5;214m",
+  'WARNING'   => "\033[01;38;5;214m",
   'INFO'      => "\033[01;36m",
   'DANGER'    => "\033[01;31m",
   'ERROR'     => "\033[01;31m",
   'DEBUG'     => "\033[01;30m",
   'DEFAULT'   => "\033[0;37m",
   'END'       => "\033[0;37m",
+  'BLACK'     => "\033[30m",
+];
+
+#NOTE: ANSI background color codes for CLI output styling used by whisper
+$GLOBALS['WHISPER_BG_COLORS'] = [
+  'PRIMARY'   => "\033[01;48;5;12m",       // Biru
+  'SECONDARY' => "\033[01;100m",      // Abu tua
+  'FAILED'    => "\033[01;41m",       // Merah
+  'SUCCESS'   => "\033[01;42m",       // Hijau
+  'WARNING'   => "\033[48;5;214m\033[30m", // Orange (True color)
+  'INFO'      => "\033[01;46m",       // Cyan
+  'DANGER'    => "\033[01;41m",       // Merah
+  'ERROR'     => "\033[01;41m",       // Merah
+  'DEBUG'     => "\033[01;100m",      // Abu tua
+  'DEFAULT'   => "\033[47m\033[30m",       // Putih
+  'END'       => "\033[0m",        // Reset
 ];
 
 #NOTE: HTML span-based color definitions for web-based whisper output

@@ -257,25 +257,19 @@ function keeper_shard_clean() {
 function keeper_glitch_boot() {  
   forger_item(KEEPER_ECHOES_GLITCH, '');
   
-  $handler = function($type, $message, $file = '', $line = '') {
+  $handler = function($type, $message, $file = '', $line = '', $trace='') {
     $data = (object) [
       'time'    => date('Y-m-d H:i:s'),
       'type'    => strtoupper($type),
       'message' => $message,
       'file'    => $file ?: '-',
-      'line'    => $line ?: 0
+      'line'    => $line ?: 0,
+      'trace'   => $trace,
     ];
 
     forger_item(KEEPER_ECHOES_GLITCH, "[$data->time] [$data->type] [$data->line] [$data->file] $data->message".PHP_EOL, FILE_APPEND);
-    
-    whisper_clear_force();
-    whisper_echo("{{color-warning}}____ ____ ____ ____ ____ ____\n");
-    whisper_echo(" KEEPER {{color-danger}}::{{color-end}} G L I T C H {{color-warning}}{{icon-warning}} \n");
-    whisper_echo("{{color-secondary}}Severity :{{color-end}}$data->type{{nl}}");
-    whisper_echo("{{color-secondary}}File     :{{color-end}}$data->file{{nl}}");
-    whisper_echo("{{color-secondary}}Line     :{{color-end}}$data->line{{nl}}");
-    whisper_echo("{{color-secondary}}Message  :{{color-end}}$data->message{{nl}}");
-    whisper_echo("{{color-warning}}//// //// //// //// //// ////\n");
+
+    keeper_glitch_message( $data );
     
     if (aether_has_entity('specter')) {
       specter_exit('php '.chanter_arg());
@@ -286,7 +280,7 @@ function keeper_glitch_boot() {
 
   // Tangkap error
   set_error_handler(function($errno, $errstr, $errfile, $errline) use ($handler) {
-    $handler('error', $errstr, $errfile, $errline);
+    $handler('error', $errstr, $errfile, $errline, debug_backtrace());
     return true;
   });
 
@@ -305,6 +299,30 @@ function keeper_glitch_boot() {
 
   ini_set('display_errors', '0');
   error_reporting(E_ALL);
+}
+function keeper_glitch_message( $glitch ) {
+  whisper_clear();
+  whisper_echo("{{text-secondary}}///////////////////////////////////{{text-end}}\n");
+  whisper_echo(" R U N E  {{text-warning}}{{icon-warning}}{{text-end}}  G L I T C H \n");
+  whisper_echo("{{bg-warning}} Need to fixing !! {{bg-end}} \n");
+
+  whisper_echo("\n{{bg-danger}} # {{bg-end}} M A I N \n");
+  whisper_echo("{{text-secondary}} ♦ Severity: \n");
+  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->type \n");
+  whisper_echo("{{text-secondary}} ♦ On Line Number: \n");
+  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->file \n");
+  whisper_echo("{{text-secondary}} ♦ File Location: \n");
+  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->line \n");
+  whisper_echo("{{text-secondary}} ♦ Message: \n");
+  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->message  \n");
+  whisper_echo("\n{{bg-info}} # {{bg-end}} T R A C E \n");
+  
+  foreach ($glitch->trace as $trace) {
+    $trace = (object) $trace;
+    whisper_echo("{{text-secondary}} ♦ $trace->file [$trace->line] \n");
+  }
+
+  whisper_echo("\n{{text-secondary}}///////////////////////////////////{{text-end}}\n");
 }
 #NOTE: Dumps the current glitch state for inspection.
 function keeper_glitch_detect() {

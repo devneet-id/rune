@@ -1,12 +1,12 @@
-{{color-danger}}©{{color-end}}Project Rune {{color-secondary}}———{{color-end}} DEVNEET-ID {{color-danger}}::{{color-end}} @anwarachilles{{color-default}}
+{{text-secondary}}///////////////////////////////////{{text-end}}
 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 ██ ▄▄▄ ██ ▄▄▄██ ▀██ █▄▄ ▄▄█▄ ▄██ ▀██ ██ ▄▄▄██ ████
 ██▄▄▄▀▀██ ▄▄▄██ █ █ ███ ████ ███ █ █ ██ ▄▄▄██ ████
 ██ ▀▀▀ ██ ▀▀▀██ ██▄ ███ ███▀ ▀██ ██▄ ██ ▀▀▀██ ▀▀ █
 ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-{{COLOR-SECONDARY}}
+{{text-secondary}}
 Your Sentinel helps build your app, monitor
 performance, and keep things running.
 Confused or need help with runes? Sentinel's
 got your back.
-{{COLOR-DEFAULT}}
+{{text-end}}

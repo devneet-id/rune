@@ -18,7 +18,7 @@ Chanter::cast('rune', function() {
   $FORGER_KEEPER_SHARD = false;
   
   foreach ($CHANTER_ECHO as $key => $echo) {
-    $text = '{{color-info}} ∙ {{color-secondary}}php ' . AETHER_FILE . '{{color-end}} ' . $echo[1];
+    $text = '{{color-secondary}} ♦ php ' . AETHER_FILE . '{{color-end}} ' . $echo[1];
     if (!empty($echo[2])) {
       $text .= '{{nl}}{{tab}}{{tab}}{{color-secondary}}::: ' . $echo[2] . '{{color-end}}{{nl}}';
     }
@@ -36,31 +36,35 @@ Chanter::cast('rune', function() {
   $base_cast = implode(PHP_EOL, $base_cast);
   $registered_cast = implode(PHP_EOL, $list_chanter);
   
-  $echoes_state = '{{color-secondary}}';
-  $echoes_check = '{{color-success}}√{{color-secondary}}';
+  $echoes_state = '';
   if (aether_has_entity('keeper')) {
     if (file_exists(KEEPER_ECHOES.'/rune.json')) {
-      $echoes_state .= $echoes_check."Rune, ";
+      $echoes_state .= "Rune, ";
     }
     if (file_exists(KEEPER_ECHOES_ARCANE)) {
-      $echoes_state .= $echoes_check."Arcane, ";
+      $echoes_state .= "Arcane, ";
     }
     if (file_exists(KEEPER_ECHOES_GLITCH)) {
-      $echoes_state .= $echoes_check."Glitch, ";
+      $echoes_state .= "Glitch, ";
     }
     if (file_exists(KEEPER_ECHOES_SHARDS)) {
-      $echoes_state .= $echoes_check."Shard, ";
+      $echoes_state .= "Shards, ";
     }
     if (file_exists(KEEPER_ECHOES.'/grimoire.json')) {
-      $echoes_state .= $echoes_check."Grimoire, ";
+      $echoes_state .= "Grimoire, ";
     }
     if (file_exists(KEEPER_ECHOES.'/cast.json')) {
-      $echoes_state .= $echoes_check."Cast, ";
+      $echoes_state .= "Cast, ";
     }
-    if (file_exists(KEEPER_ECHOES.'/Soul.json')) {
-      $echoes_state .= $echoes_check."Soul, ";
+    if (file_exists(KEEPER_ECHOES.'/soul.json')) {
+      $echoes_state .= "Soul, ";
     }
   }
+
+  $liberation_mode = (defined('LIBERATION')) ? true : false;
+  $liberation_mode_text = ($liberation_mode) ? 
+    'The Liberation of Forte' :
+    'The Awaken from Void';
 
   $header = Weaver::item(__DIR__ . '/header.txt');
   $header = Weaver::bind($header, [
@@ -71,6 +75,7 @@ Chanter::cast('rune', function() {
     'ECHOES'=> $echoes_state,
     'BASE-CAST'=> $base_cast,
     'REGISTERED-CAST'=> $registered_cast,
+    'LIBERATION'=> $liberation_mode_text,
     'TOTAL-RUNE'=> count(aether_arised()),
     'RUNE-ETHER'=> count($AETHER_RUNE_ETHER),
     'RUNE-ESSENCE'=> count($AETHER_RUNE_ESSENCE),

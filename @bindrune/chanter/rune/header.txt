@@ -1,23 +1,24 @@
-{{color-danger}}©{{color-end}}Project Rune {{color-secondary}}———{{color-end}} DEVNEET-ID {{color-danger}}::{{color-end}} @anwarachilles{{COLOR-DEFAULT}}
+{{text-secondary}}///////////////////////////////////{{text-end}}
 ██████╗  ██╗   ██╗ ███╗   ██╗ ███████╗ 
 ██╔══██╗ ██║   ██║ ████╗  ██║ ██╔════╝ 
 ██████╔╝ ██║   ██║ ██╔██╗ ██║ █████╗  
 ██╔══██╗ ██║   ██║ ██║╚██╗██║ ██╔══╝   
 ██║  ██║ ╚██████╔╝ ██║ ╚████║ ███████╗ PHP-Lang
 ╚═╝  ╚═╝  ╚═════╝  ╚═╝  ╚═══╝ ╚══════╝ v{{VERSION}}
+{{bg-danger}} D E V N E E T {{bg-end}} {{liberation}}
 {{COLOR-SECONDARY}}
 Rune is a lore-driven, modular concept beneath PHP,  
 designed not to dictate development — but to respond.
-{{color-default}}
+{{text-default}}
 
-{{color-danger}}::{{color-default}} S T A T S{{color-danger}}.{{color-default}}{{color-default}}
-{{color-info}} ∙{{color-end}} Main:   {{color-secondary}}{{FILE}} - {{SIZE}}{{color-end}}
-{{color-info}} ∙{{color-end}} Repo:   {{color-secondary}}{{REPO}}{{color-end}}
-{{color-info}} ∙{{color-end}} Rune:   {{color-secondary}}Manifest={{TOTAL-RUNE}}, Ether={{RUNE-ETHER}}, Essence={{RUNE-ESSENCE}}, Entity={{RUNE-ENTITY}} {{color-end}}
-{{color-info}} ∙{{color-end}} Echoes: {{ECHOES}}
+{{bg-danger}} # {{bg-end}} S T A T S{{text-danger}}.{{text-default}}
+{{text-secondary}} ♦{{text-end}} Main   {{text-danger}}»{{text-end}} {{FILE}} - {{SIZE}}{{text-end}}
+{{text-secondary}} ♦{{text-end}} Repo   {{text-danger}}»{{text-end}} {{REPO}}{{text-end}}
+{{text-secondary}} ♦{{text-end}} Rune   {{text-danger}}»{{text-end}} Manifest={{TOTAL-RUNE}}, Ether={{RUNE-ETHER}}, Essence={{RUNE-ESSENCE}}, Entity={{RUNE-ENTITY}} {{text-end}}
+{{text-secondary}} ♦{{text-end}} Echoes {{text-danger}}»{{text-end}} {{ECHOES}}
 
-{{color-danger}}::{{color-default}} D E F A U L T{{color-danger}}.{{color-default}}{{color-default}}
+{{bg-danger}} # {{bg-end}} D E F A U L T{{text-danger}}.{{text-default}}
 {{BASE-CAST}}
 
-{{color-danger}}::{{color-default}} R E G I S T E R E D{{color-danger}}.{{color-default}}{{color-default}}
+{{bg-danger}} # {{bg-end}} R E G I S T E R E D{{text-danger}}.{{text-default}}
 {{REGISTERED-CAST}}

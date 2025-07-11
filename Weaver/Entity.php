@@ -13,6 +13,56 @@ function weaver_wrap_echo($text, $wrap, $divider) {
   }
   return implode("\n", $wrapped);
 }
+#NOTE: wraps text by word length using space as word boundary
+function weaver_wrap_word($text, $wrap = 50, $divider = '', $cutFirst = false) {
+  $lines = wordwrap($text, $wrap, "\n", false);
+  $wrapped = explode("\n", $lines);
+  $count = count($wrapped);
+
+  if ($divider !== '') {
+    for ($i = 0; $i < $count; $i++) {
+      $wrapped[$i] = $divider . $wrapped[$i];
+    }
+  }
+
+  if ($cutFirst) {
+    $wrapped[0] = str_replace($divider, '', $wrapped[0]);
+  }
+
+  return implode("\n", $wrapped);
+}
+
+
+#NOTE: wraps text by exact letter count without word boundary
+function weaver_wrap_letter($text, $wrap = 50, $divider = '', $cutFirst = false) {
+  $wrapped = [];
+  $length = strlen($text);
+
+  for ($i = 0; $i < $length; $i += $wrap) {
+    $wrapped[] = substr($text, $i, $wrap);
+  }
+
+  $count = count($wrapped);
+
+  if ($divider !== '') {
+    for ($i = 0; $i < $count; $i++) {
+      $wrapped[$i] = $divider . $wrapped[$i];
+    }
+  }
+
+  if ($cutFirst) {
+    $wrapped[0] = str_replace($divider, '', $wrapped[0]);
+  }
+
+  return implode("\n", $wrapped);
+}
+
+
+
+
+
+
+
 
 
 /* BIND
