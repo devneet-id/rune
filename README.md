@@ -7,8 +7,10 @@ Within Rune’s architecture, **Ether** defines truth, **Essence** holds flow, a
 
 This makes Rune inherently lightweight and adaptable, aligning perfectly with projects that evolve from concept, not convention. Whether shaping internal tools, backend systems, or modular workflows, Rune empowers developers to sculpt structure from intent, not instruction.
 
+## ✦ Live Usage.
+![live-usage](https://ik.imagekit.io/anwarachilles/rune-perform2.png?updatedAt=1752488883740)
 
-## ✦ Awakening
+## ✦ Awakening.
 Install Rune using Composer:
 ```bash
 composer require devneet/rune dev-main
@@ -44,7 +46,7 @@ Explore the system’s using the Grimoire:
 php myapp grimoire
 ```
 
-## ✦ Evidentiary
+## ✦ Evidentiary.
 native cast use this:
 ```php
 Chanter::cast('evid-native', function () {
@@ -117,7 +119,7 @@ php {filename} evid-rune
 php {filename} evid-rune --zero-trust
 ```
 
-## ✦ Covenant
+## ✦ Covenant.
 - [x] We never promise a ready-made framework,
 but we will never let you start from the void.
 - [x] We never expect a single rune to wield impossible power,
