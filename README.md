@@ -1,14 +1,14 @@
-# Rune — ᚱᚾ
+# ❯❯❯❯ Rune
 
-**Rune** is a lore-driven, modular concept beneath PHP,  
-designed not to dictate development — but to respond to it.
+**ᚱᚾ** is a lore-driven, modular concept beneath PHP,  
+designed not to dictate development — but to respond to it. ⚡️
 
-Within Rune’s architecture, **Ether** defines truth, **Essence** holds flow, and **Entity** performs behavior — each awakened only when invoked. Every element is crafted to be composable, lazy-loaded, and purpose-driven, making systems naturally scalable and precise.
+Within Rune’s architecture, **Ether** defines truth, **Essence** holds flow, and **Entity** performs behavior — each awakened only when invoked. Every element is crafted to be composable, lazy-loaded, and purpose-driven, making systems naturally scalable and precise. 
 
-This makes Rune inherently lightweight and adaptable, aligning perfectly with projects that evolve from concept, not convention. Whether shaping internal tools, backend systems, or modular workflows, Rune empowers developers to sculpt structure from intent, not instruction. ⚡️
+This makes Rune inherently lightweight and adaptable, aligning perfectly with projects that evolve from concept, not convention. Whether shaping internal tools, backend systems, or modular workflows, Rune empowers developers to sculpt structure from intent, not instruction.
 
 
-## Awakening
+## ✦ Awakening
 Install Rune using Composer:
 ```bash
 composer require devneet/rune dev-main
@@ -44,7 +44,7 @@ Explore the system’s using the Grimoire:
 php myapp grimoire
 ```
 
-## Evidentiary
+## ✦ Evidentiary
 native cast use this:
 ```php
 Chanter::cast('evid-native', function () {
@@ -117,12 +117,13 @@ php {filename} evid-rune
 php {filename} evid-rune --zero-trust
 ```
 
-## Covenant
+## ✦ Covenant
 - [x] We never promise a ready-made framework,
 but we will never let you start from the void.
 - [x] We never expect a single rune to wield impossible power,
 but we shape it to be simple, unique, and bound to others in harmony.
 - [x] We never aim to become a massive engine that burdens creation,
 but we exist to bring a single idea to life — swiftly, cleanly, and with purpose.
-- This is the covenant: not to build for you,
+
+This is the covenant: not to build for you,
 but to forge alongside you — from the void to the vision.
