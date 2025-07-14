@@ -55,7 +55,8 @@ function whisper_echo_set( String $message ) {
   if ($WHISPER_DRAIN_STATE) {
     whisper_drain_set($return);
   }else {
-    print($return);
+    // print($return);
+    echo $return;
   }
 
   aether_arcane('Whisper.entity.whisper_echo_set');

@@ -73,13 +73,13 @@ Chanter::cast('grimoire', function() {
       }
     }
     // external rune
-    if (file_exists(AETHER_REPO . '/.bindrune')) {
-      foreach (glob(AETHER_REPO . '/.bindrune/*') as $manifest) {
+    if (file_exists(AETHER_REPO . '/@ethereal')) {
+      foreach (glob(AETHER_REPO . '/@ethereal/*') as $manifest) {
         if (is_dir($manifest)) {
           $pathinfo = pathinfo($manifest);
           $manifests[] = [
             'Rune\\' . $pathinfo['basename'] . '\\Manifest',
-            realpath(AETHER_REPO . '/.bindrune'),
+            realpath(AETHER_REPO . '/@ethereal'),
             'external'
           ];
         }
@@ -91,64 +91,59 @@ Chanter::cast('grimoire', function() {
     $manifest = 'Rune\\' . $rune . '\\Manifest';
     $phantasm = 'Rune\\' . $rune . '\\Phantasm';
     $phantasm = new $phantasm();
-    if (!isset($phantasm->node)) {
-      Whisper::echo("migration to node from list");
-      exit;
-    }
-    if (!isset($phantasm->link)) {
-      Whisper::echo("migration to link from need");
-      exit;
-    }
-    $phantasm->node = array_merge($default_node, $phantasm->node);
+
+    $template = Weaver::item(__DIR__ . '/rune.txt');
+    $template_link = Weaver::item(__DIR__ . '/rune-link.txt');
+    $template_node = Weaver::item(__DIR__ . '/rune-node.txt');
 
     $runename = strtoupper(implode(' ', str_split($phantasm->main)));
-    $note = weaver_wrap_echo($phantasm->note, 50, '{{tab}}');
-    Whisper::echo("{{color-danger}}::{{color-end}} $runename — v$phantasm->version {{nl}}");
-    Whisper::echo("{{color-secondary}}$note {{nl}}{{nl}}");
-    if ($phantasm->mark !== 'VOID') {
-      Whisper::echo("{{tab}}{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}This rune is marked as $phantasm->mark.{{nl}}");
-    }
-    Whisper::echo("{{tab}}{{color-default}}[M]{{color-secondary}} $manifest {{nl}}");
-    Whisper::echo("{{tab}}{{color-default}}[O]{{color-secondary}} $phantasm->origin {{nl}}");
-    Whisper::echo("{{tab}}{{color-default}}[U]{{color-secondary}} $phantasm->user {{nl}}");
+    // $note = weaver_wrap_echo($phantasm->note, 50, '{{tab}}');
 
-    // check if rune is tandalone or link
-    Whisper::echo("{{tab}}{{color-danger}}::{{color-end}}L I N K {{nl}}");
-    if (count($phantasm->link) == 0) {
-      Whisper::echo("{{tab}}{{tab}}{{color-info}} (THIS RUNE IS STANDALONE) {{nl}}");
-    }
+    $links = '';
     foreach ($phantasm->link as $link) {
-      Whisper::echo("{{tab}}{{tab}}{{COLOR-DEFAULT}}$link[0]");
-      Whisper::echo("{{tab}}{{COLOR-DANGER}}$link[1]");
-      Whisper::echo("{{tab}}{{COLOR-SECONDARY}}v$link[2]^{{nl}}");
+      $links .= Weaver::bind($template_link, [
+        'name'=> $link[0],
+        'piece'=> $link[1],
+        'version'=> $link[2],
+      ]);
+    }
+
+    $nodes = '';
+    foreach ($phantasm->node as $node) {
+      $node_note = weaver_wrap_echo($node['note'], 50, "{{tab}}{{tab}}{{tab}}");
+      $node_color = '{{text-default}}';
+      if ($node['type']=='manifest') {
+        $node_color = '{{text-danger}}';
+      }
+      if ($node['type']=='ether') {
+        $node_color = '{{text-primary}}';
+      }
+      if ($node['type']=='essence') {
+        $node_color = '{{text-warning}}';
+      }
+      if ($node['type']=='entity') {
+        $node_color = '{{text-info}}';
+      }
+      $nodes .= Weaver::bind($template_node, [
+        'type'=> $node['type'],
+        'call'=> $node['call'],
+        'note'=> $node_note,
+        'color'=> $node_color
+      ]);
     }
     
-    // node of phantasm
-    Whisper::echo("\n{{tab}}{{color-danger}}::{{color-end}}N O D E {{nl}}");
-    foreach ($phantasm->node as $node) {
-      $node = (object) $node;
-      $node_note = weaver_wrap_echo($node->note, 50, "{{tab}}{{tab}}{{tab}}");
-      if (empty($node->note)) {
-        $node_note = "{{tab}}{{tab}}{{tab}}no note";
-      }
-      $node_color = '{{color-default}}';
-      if ($node->type=='manifest') {
-        $node_color = '{{color-danger}}';
-      }
-      if ($node->type=='ether') {
-        $node_color = '{{color-primary}}';
-      }
-      if ($node->type=='essence') {
-        $node_color = '{{color-warning}}';
-      }
-      if ($node->type=='entity') {
-        $node_color = '{{color-info}}';
-      }
-      Whisper::echo("{{tab}}{{tab}}{$node_color}{$node->type}");
-      Whisper::echo("\n{{tab}}{{tab}}{{COLOR-DEFAULT}}$node->call");
-      Whisper::echo("\n{{COLOR-SECONDARY}}$node_note");
-      Whisper::echo("{{nl}}");
-    }
+    $template = Weaver::bind($template, [
+      'runename'=> $runename,
+      'manifest'=> $manifest,
+      'version'=> $phantasm->version,
+      'note'=> $phantasm->note,
+      'origin'=> $phantasm->origin,
+      'author'=> $phantasm->user,
+      'links'=> $links,
+      'nodes'=> $nodes
+    ]);
+
+    Whisper::echo($template);
 
     return $phantasm;
   };
@@ -198,13 +193,13 @@ Chanter::cast('grimoire', function() {
 
     global $KEEPER_ARCANE;
     $sv = $KEEPER_ARCANE;
-    $sv[0][2] = "{{color-success}}";
-    $sv[1][2] = "{{color-success}}";
-    $sv[2][2] = "{{color-info}}";
-    $sv[3][2] = "{{color-primary}}";
-    $sv[4][2] = "{{color-warning}}";
-    $sv[5][2] = "{{color-danger}}";
-    $sv[6][2] = "{{color-danger}}";
+    $sv[0][2] = "{{text-success}}";
+    $sv[1][2] = "{{text-success}}";
+    $sv[2][2] = "{{text-info}}";
+    $sv[3][2] = "{{text-primary}}";
+    $sv[4][2] = "{{text-warning}}";
+    $sv[5][2] = "{{text-danger}}";
+    $sv[6][2] = "{{text-danger}}";
     $resv = [];
     foreach ($sv as $row) {
       $resv[$row[1]] = $row[2];
@@ -230,23 +225,23 @@ Chanter::cast('grimoire', function() {
         $list_step[] = $stepwatch;
 
         if (strpos($title,'manifest')!==false) {
-          $title_prefix = "{{color-danger}}ϻ| ";
-          $title = str_replace('manifest', '{{color-danger}}manifest', $title);
+          $title_prefix = "{{text-danger}}ϻ| ";
+          $title = str_replace('manifest', '{{text-danger}}manifest', $title);
           $list_manifest[] = explode(':', $title)[0];
         }else if (strpos($title,'entity')!==false) {
-          $title_prefix = "{{color-info}}ͱ| ";
-          $title = str_replace('entity', '{{color-info}}entity', $title);
+          $title_prefix = "{{text-info}}ͱ| ";
+          $title = str_replace('entity', '{{text-info}}entity', $title);
           $list_entity[] = explode(':', $title)[0];
         }
 
-        $datetime_end = "{{color-primary}}λ{{color-secondary}}$datetime";
-        $stopwatch_end = "{{color-warning}}ϟ{{color-secondary}}{$stopwatch}s";
-        $stepwatch_end = "{{color-danger}}ϟ{{color-secondary}}{$stepwatch}s";
-        $title_end = "$title_prefix{{color-default}}$title";
+        $datetime_end = "{{text-primary}}λ{{text-secondary}}$datetime";
+        $stopwatch_end = "{{text-warning}}ϟ{{text-secondary}}{$stopwatch}s";
+        $stepwatch_end = "{{text-danger}}ϟ{{text-secondary}}{$stepwatch}s";
+        $title_end = "$title_prefix{{text-default}}$title";
         $state_end = "{$sv[$state]}.::{$state}::.";
         
-        Whisper::echo("{{color-secondary}}________________________________________________________________________ _____ ___ __ __ _ _{{nl}}");
-        Whisper::echo("{{color-default}} $no | $datetime_end $stopwatch_end $stepwatch_end   $state_end   $title_end $arcane[4] {{nl}}");
+        Whisper::echo("{{text-secondary}}________________________________________________________________________ _____ ___ __ __ _ _{{nl}}");
+        Whisper::echo("{{text-default}} $no | $datetime_end $stopwatch_end $stepwatch_end   $state_end   $title_end $arcane[4] {{nl}}");
       }
       $no++;
     }
@@ -257,18 +252,18 @@ Chanter::cast('grimoire', function() {
     $average_step = number_format(array_sum($list_step) / count($list_step), 5);
     $peak_step = max($list_step);
     
-    Whisper::echo("\n{{color-secondary}}CURRENT ARCANE STATS:");
-    Whisper::echo("\n{{color-secondary}}{{icon-info}}labels states up to: ");
+    Whisper::echo("\n{{text-secondary}}CURRENT ARCANE STATS:");
+    Whisper::echo("\n{{text-secondary}}{{icon-info}}labels states up to: ");
     foreach ($KEEPER_ARCANE as $data) {
-      Whisper::echo("{{color-secondary}}$data[0]s=$data[1], ");
+      Whisper::echo("{{text-secondary}}$data[0]s=$data[1], ");
     }
     
-    Whisper::echo("\n{{tab}}Execute: \tProcess = {{color-danger}}{$no}{{color-end}}, End in = {{color-danger}}{$stopwatch}{{color-end}}s");
-    Whisper::echo("\n{{tab}}Module: \tManifest = {{color-danger}}{$total_manifest}{{color-end}}, Entity = {{color-danger}}{$total_entity}{{color-end}}");
-    Whisper::echo("\n{{tab}}Stepwatch: \tAverage = {{color-danger}}{$average_step}{{color-end}}s, Up to = {{color-danger}}{$peak_step}{{color-end}}s");
+    Whisper::echo("\n{{tab}}Execute: \tProcess = {{text-danger}}{$no}{{text-end}}, End in = {{text-danger}}{$stopwatch}{{text-end}}s");
+    Whisper::echo("\n{{tab}}Module: \tManifest = {{text-danger}}{$total_manifest}{{text-end}}, Entity = {{text-danger}}{$total_entity}{{text-end}}");
+    Whisper::echo("\n{{tab}}Stepwatch: \tAverage = {{text-danger}}{$average_step}{{text-end}}s, Up to = {{text-danger}}{$peak_step}{{text-end}}s");
     Whisper::echo("\n{{tab}}State: \t");
     foreach ($total_state as $ts_key=>$ts_val) {
-      Whisper::echo("$ts_key = {{color-danger}}$ts_val{{color-end}}, ");
+      Whisper::echo("$ts_key = {{text-danger}}$ts_val{{text-end}}, ");
     }
     
     Whisper::echo("\n\n");
@@ -283,7 +278,7 @@ Chanter::cast('grimoire', function() {
 
   if (Chanter::spell('arcane-clean')) {
     forger_clean(KEEPER_ECHOES_ARCANES, true);
-    Whisper::echo("{{color-success}}{{icon-success}}{{label-success}}Cleaned arcane echoes");
+    Whisper::echo("{{text-success}}{{icon-success}}{{label-success}}Cleaned arcane echoes");
   }
 
 
@@ -385,7 +380,7 @@ Chanter::cast('grimoire', function() {
   };
   if (Chanter::spell('ai-adaptation-stage')) {
     Whisper::clear(true);
-    Whisper::echo("RUNE {{color-danger}}::{{color-end}} GRIMOIRE - Ai Stage Adaptation\n");
+    Whisper::echo("RUNE {{text-danger}}::{{text-end}} GRIMOIRE - Ai Stage Adaptation\n");
     Whisper::echo("Copy paste to ai all your terminal show, then press y to continue.\n");
     Whisper::echo("And for ai prepare yourself, we will start stage adaptation this system to you, read it closely then answer yes if agree.\n\n");
     $next = Whisper::call("Continue [Y/n]: ");

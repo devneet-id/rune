@@ -1,0 +1,12 @@
+{{text-secondary}}/////////////////////////{{text-end}}
+{{bg-danger}} # {{bg-end}} {{RUNENAME}} —— {{VERSION}}
+{{text-secondary}}{{NOTE}}
+
+{{tab}}{{text-default}}[M]{{text-secondary}} {{MANIFEST}}
+{{tab}}{{text-default}}[O]{{text-secondary}} {{ORIGIN}}
+{{tab}}{{text-default}}[U]{{text-secondary}} {{AUTHOR}}
+
+{{tab}}{{text-danger}}::{{text-end}}L I N K
+{{LINKS}}
+{{tab}}{{text-danger}}::{{text-end}}N O D E
+{{NODES}}

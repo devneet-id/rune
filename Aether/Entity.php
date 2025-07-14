@@ -172,6 +172,36 @@ function aether_arised() {
 #NOTE: Track execution events with timestamp and elapsed time (arcane trace logging)
 function aether_arcane(String $text, String $value = '') {
   if (aether_zero_trust()) return;
+
+  global $AETHER_ARCANE;
+  global $AETHER_STOPWATCH;
+  global $AETHER_ARCANE_STATE;
+
+  if ($AETHER_ARCANE_STATE) {
+    $process = function() use (&$AETHER_ARCANE, &$AETHER_STOPWATCH, &$text, &$value) {
+      $now = microtime(true);
+      $global_stopwatch = $now - $AETHER_STOPWATCH;
+
+      $AETHER_ARCANE[] = [
+        time(),
+        $global_stopwatch,
+        $text,
+        $value
+      ];
+    };
+
+    $count = count($AETHER_ARCANE);
+    $last1 = $count > 0 ? $AETHER_ARCANE[$count - 1][2] : null;
+    $last2 = $count > 1 ? $AETHER_ARCANE[$count - 2][2] : null;
+
+    // Tolak jika $text sama dengan salah satu dari dua terakhir
+    if ($text !== $last1 && $text !== $last2) {
+      $process();
+    }
+  }
+}
+function aether_arcane_old(String $text, String $value = '') {
+  if (aether_zero_trust()) return;
   
   global $AETHER_ARCANE;
   global $AETHER_STOPWATCH;
