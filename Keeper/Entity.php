@@ -317,9 +317,11 @@ function keeper_glitch_message( $glitch ) {
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->message  \n");
   whisper_echo("\n{{bg-info}} # {{bg-end}} T R A C E \n");
   
-  foreach ($glitch->trace as $trace) {
-    $trace = (object) $trace;
-    whisper_echo("{{text-secondary}} ♦ $trace->file [$trace->line] \n");
+  if (is_array($glitch->trace)) {
+    foreach ($glitch->trace as $trace) {
+      $trace = (object) $trace;
+      whisper_echo("{{text-secondary}} ♦ $trace->file [$trace->line] \n");
+    }
   }
 
   whisper_echo("\n{{text-secondary}}///////////////////////////////////{{text-end}}\n");

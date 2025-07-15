@@ -301,6 +301,9 @@ function crafter_spark_bundling() {
 function crafter_spark_distributing() {
   global $CRAFTER_SEED;
   global $CRAFTER_SPARK_DISTRIBUTE;
+  global $FORGER_KEEPER_SHARD;
+  
+  $FORGER_KEEPER_SHARD = false;
 
   $dist = $CRAFTER_SEED['DIST'];
   forger_fix(forger_trace($dist));

@@ -10,7 +10,7 @@ your app's format and setup. It helps you keep
 things organized and consistent.
 {{text-end}}
 
-{{bg-danger}} # {{bg-end}} A V A L I A B L E{{text-danger}}.{{text-end}}
+{{bg-danger}} # {{bg-end}} R U N I T E{{text-danger}}.{{text-end}}
 {{text-secondary}} ♦ php {{AETHER-FILE}}{{text-end}} artefact --invoke {{text-success}}{{icon-success}}
   {{text-secondary}}≈ Invoke your workspace to generate artefact
 
@@ -19,6 +19,14 @@ things organized and consistent.
 
 {{text-secondary}} ♦ php {{AETHER-FILE}}{{text-end}} artefact --inspect {{text-success}}{{icon-success}}
   {{text-secondary}}≈ Inspect some artefact before deploy it
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} S H A R D{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ php {{AETHER-FILE}}{{text-end}} artefact --shard-list {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Result list all your shards, to get ID
+
+{{text-secondary}} ♦ php {{AETHER-FILE}}{{text-end}} artefact --shard-remove {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Remove selected shard with ID
 
 {{text-secondary}} ♦ php {{AETHER-FILE}}{{text-end}} artefact --shard-clean {{text-success}}{{icon-success}}
   {{text-secondary}}≈ Clean all your shards

@@ -1,0 +1,29 @@
+{{text-secondary}}///////////////////////////{{text-end}}
+  {{text-default}}A R T E F A C T 
+{{bg-danger}} L O R E {{bg-end}} {{LORE}}
+
+
+{{bg-danger}} # {{bg-end}} R U N I T E
+{{text-secondary}} ♦ Created at{{text-end}}
+    {{text-danger}}»{{text-end}} {{CREATED_AT}}
+
+{{text-secondary}} ♦ Encryption Method{{text-end}}
+    {{text-danger}}»{{text-end}} {{RUNIC}} {{text-info}}with{{text-end}} {{ENCRYPTION}}
+
+{{text-secondary}} ♦ Rune & PHP Version{{text-end}}
+    {{text-danger}}»{{text-end}} {{VERSION}} {{text-info}}with PHP{{text-end}} {{PHP}}
+    {{text-info}}You »{{text-end}} {{MY_VERSION}} {{text-info}}with PHP{{text-end}} {{MY_PHP}}
+
+{{text-secondary}} ♦ Operation System{{text-end}}
+    {{text-danger}}»{{text-end}} {{SYSTEM}}
+    {{text-info}}You »{{text-end}} {{MY_SYSTEM}}
+
+
+{{bg-danger}} # {{bg-end}} C A S T
+{{CAST}}
+
+{{bg-danger}} # {{bg-end}} R U N E
+{{RUNE}}
+    
+{{bg-danger}} # {{bg-end}} S H A R D
+{{SHARD}}
