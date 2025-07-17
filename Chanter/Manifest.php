@@ -60,24 +60,32 @@ class Manifest extends \Rune\Manifest {
   }
 
   #NOTE: Gets or sets a spell cast definition based on input and returns the result.
-  public static function cast( String $args, ?Callable $callable = NULL ) {
-    if (empty($callable)) {
-      $return = chanter_cast_get($args);
+  public static function cast( String $arg, ?Callable $execute = NULL, String $echo = '' ) {
+    // set cast
+    if (empty($execute)) {
+      $return = chanter_cast_get($arg);
     }else {
-      chanter_cast_set($args, $callable);
+      chanter_cast_set($arg, $execute);
       $return = self::class;
+    }
+
+    // set echo
+    if (!empty($echo)) {
+      $return = chanter_echo_set($arg, $echo);
+    }else {
+      $return = chanter_echo_get($arg);
     }
 
     aether_arcane("Chanter.manifest.cast");
     return $return;
   }
-  
-  #NOTE: Gets or sets a spell definition by name and returns the result.
-  public static function spell( String $name, $values = NULL ) {
-    if (empty($values)) {
-      $return = chanter_spell_get($name);
+
+  #NOTE: Gets or sets a spell definition by key and returns the result.
+  public static function spell( String $key, Mixed $value = NULL, Mixed $fail = false ) {
+    if (empty($value)) {
+      $return = chanter_spell_get($key);
     }else {
-      chanter_spell_set($name, $values);
+      chanter_spell_set($key, $value);
       $return = true;
     }
 
@@ -86,11 +94,11 @@ class Manifest extends \Rune\Manifest {
   }
 
   #NOTE: Outputs the given text and returns it
-  public static function echo( String $cast, String $notes = '' ) {
-    if (!empty($notes)) {
-      $return = chanter_echo_set($cast, $notes);
+  public static function echo( String $arg, String $note = '' ) {
+    if (!empty($note)) {
+      $return = chanter_echo_set($arg, $note);
     }else {
-      $return = chanter_echo_get($cast);
+      $return = chanter_echo_get($arg);
     }
 
     aether_arcane("Chanter.manifest.echo");
