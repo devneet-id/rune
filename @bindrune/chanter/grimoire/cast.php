@@ -228,11 +228,11 @@ Chanter::cast(
           $list_step[] = $stepwatch;
 
           if (strpos($title,'manifest')!==false) {
-            $title_prefix = "{{text-danger}}ϻ| ";
+            $title_prefix = "{{text-danger}}[ϻ] ";
             $title = str_replace('manifest', '{{text-danger}}manifest', $title);
             $list_manifest[] = explode(':', $title)[0];
           }else if (strpos($title,'entity')!==false) {
-            $title_prefix = "{{text-info}}ͱ| ";
+            $title_prefix = "{{text-info}}[ͱ] ";
             $title = str_replace('entity', '{{text-info}}entity', $title);
             $list_entity[] = explode(':', $title)[0];
           }
@@ -261,10 +261,10 @@ Chanter::cast(
         Whisper::echo("{{text-secondary}}$data[0]s=$data[1], ");
       }
       
-      Whisper::echo("\n{{tab}}Execute: \tProcess = {{text-danger}}{$no}{{text-end}}, End in = {{text-danger}}{$stopwatch}{{text-end}}s");
-      Whisper::echo("\n{{tab}}Module: \tManifest = {{text-danger}}{$total_manifest}{{text-end}}, Entity = {{text-danger}}{$total_entity}{{text-end}}");
-      Whisper::echo("\n{{tab}}Stepwatch: \tAverage = {{text-danger}}{$average_step}{{text-end}}s, Up to = {{text-danger}}{$peak_step}{{text-end}}s");
-      Whisper::echo("\n{{tab}}State: \t");
+      Whisper::echo("\n{{tab}}Execute {{text-danger}}»{{text-end}} \tProcess = {{text-danger}}{$no}{{text-end}}, End in = {{text-danger}}{$stopwatch}{{text-end}}s");
+      Whisper::echo("\n{{tab}}Module {{text-danger}}»{{text-end}} \tManifest = {{text-danger}}{$total_manifest}{{text-end}}, Entity = {{text-danger}}{$total_entity}{{text-end}}");
+      Whisper::echo("\n{{tab}}Stepwatch {{text-danger}}»{{text-end}} \tAverage = {{text-danger}}{$average_step}{{text-end}}s, Up to = {{text-danger}}{$peak_step}{{text-end}}s");
+      Whisper::echo("\n{{tab}}State {{text-danger}}»{{text-end}} \t");
       foreach ($total_state as $ts_key=>$ts_val) {
         Whisper::echo("$ts_key = {{text-danger}}$ts_val{{text-end}}, ");
       }
