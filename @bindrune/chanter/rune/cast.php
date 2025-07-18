@@ -21,7 +21,7 @@ Chanter::cast(
     $FORGER_KEEPER_SHARD = false;
     
     foreach ($CHANTER_ECHO as $key => $echo) {
-      $text = '{{color-secondary}} ♦ php ' . AETHER_FILE . '{{color-end}} ' . $echo[1];
+      $text = '{{color-secondary}} ♦ {{color-info}}php ' . AETHER_FILE . '{{color-end}} ' . $echo[1];
       if (!empty($echo[2])) {
         $echoWrapped = weaver_wrap_letter($echo[2], 40, '{{tab}}{{tab}}', true);
         $text .= '{{nl}}{{tab}}{{tab}}{{text-secondary}}≈ ' . $echoWrapped . '{{color-end}}';
