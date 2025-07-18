@@ -303,8 +303,8 @@ function keeper_glitch_boot() {
 function keeper_glitch_message( $glitch ) {
   whisper_clear();
   whisper_echo("{{text-secondary}}///////////////////////////////////{{text-end}}\n");
-  whisper_echo(" R U N E  {{text-warning}}{{icon-warning}}{{text-end}}  G L I T C H \n");
-  whisper_echo("{{bg-warning}} Need to fixing !! {{bg-end}} \n");
+  whisper_echo(" G L I T C H {{text-warning}}{{icon-warning}}{{text-end}}\n");
+  whisper_echo("{{bg-warning}} Trouble need to fixing !! {{bg-end}} \n");
 
   whisper_echo("\n{{bg-danger}} # {{bg-end}} M A I N \n");
   whisper_echo("{{text-secondary}} ♦ Severity: \n");
@@ -315,7 +315,7 @@ function keeper_glitch_message( $glitch ) {
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->line \n");
   whisper_echo("{{text-secondary}} ♦ Message: \n");
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->message  \n");
-  whisper_echo("\n{{bg-info}} # {{bg-end}} T R A C E \n");
+  whisper_echo("\n{{bg-danger}} # {{bg-end}} T R A C E \n");
   
   if (is_array($glitch->trace)) {
     foreach ($glitch->trace as $trace) {
@@ -323,8 +323,6 @@ function keeper_glitch_message( $glitch ) {
       whisper_echo("{{text-secondary}} ♦ $trace->file [$trace->line] \n");
     }
   }
-
-  whisper_echo("\n{{text-secondary}}///////////////////////////////////{{text-end}}\n");
 }
 #NOTE: Dumps the current glitch state for inspection.
 function keeper_glitch_detect() {

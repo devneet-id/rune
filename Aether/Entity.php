@@ -102,7 +102,7 @@ function aether_dd( $data, $force=false ) {
   $inline = $trace[0]['line'];
 
   $x = "{{bg-danger}} {$inline} {{bg-end}} {$infile}\n\n{{text-secondary}}".$x;
-  $x = "{{text-secondary}}///////////////////////////////////{{text-end}}\n R U N E {head-divider} I N S P E C T\n".$x;
+  $x = "{{text-secondary}}///////////////////////////////////{{text-end}}\n D I A G N O S T I C \n".$x;
   $x = str_ireplace("=>\n", "=>", $x);
   $x = preg_replace("/{\n\s*}/", "{}", $x);
   $x = preg_replace('/^(\s*)\["(.+?)"\]=>/m', '$1{key}$2{type}', $x);
