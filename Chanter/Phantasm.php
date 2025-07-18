@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.11';
+  public $version = '1.12';
   
   public $main = 'Chanter';
 
@@ -15,9 +15,9 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Encapsulates processes and CLI-style operations to maintain immutability—structures input, spell logic, and execution flow into controlled, traceable, and reusable command definitions.';
 
   public $link = [
-    ['Aether', 'essence:entity', '1.14'],
-    ['Whisper', 'ether:essence', '1.9'],
-    ['Specter', 'ether:essence', '1.6'],
+    ['Aether', 'essence:entity', '1.16'],
+    ['Whisper', 'ether:essence', '1.10'],
+    ['Specter', 'ether:essence', '1.7'],
   ];
 
   public $node = [
@@ -164,12 +164,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => 'middleware arise',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => '_aether_awaken_before()',
-      'note' => 'middleware from aether awaken',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
@@ -184,7 +184,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'spell( String $name, $values = NULL )',
-      'note' => 'Gets or sets a spell definition by name and returns the result.',
+      'note' => 'Gets or sets a spell definition by key and returns the result.',
     ],
     [
       'type' => 'manifest',

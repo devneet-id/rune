@@ -71,9 +71,7 @@ class Manifest extends \Rune\Manifest {
 
     // set echo
     if (!empty($echo)) {
-      $return = chanter_echo_set($arg, $echo);
-    }else {
-      $return = chanter_echo_get($arg);
+      chanter_echo_set($arg, $echo);
     }
 
     aether_arcane("Chanter.manifest.cast");

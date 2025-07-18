@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.10';
+  public $version = '1.11';
   
   public $main = 'Keeper';
 
@@ -20,12 +20,12 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
   public $link = [
-    ['Aether', 'ether', '1.15'],
-    ['Chanter', 'essence', '1.10'],
+    ['Aether', 'ether', '1.16'],
+    ['Chanter', 'essence', '1.12'],
     ['Cipher', 'ether:entity', '1.5'],
-    ['Forger', 'entity', '1.10'],
-    ['Specter', 'ether:essence', '1.6'],
-    ['Crafter', 'ether:essence', '1.6'],
+    ['Forger', 'entity', '1.13'],
+    ['Specter', 'ether:essence', '1.7'],
+    ['Crafter', 'ether:essence', '1.11'],
   ];
 
   public $node = [
@@ -172,12 +172,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => '_arise()',
-      'note' => 'Optional lifecycle method for internal post-arise logic.',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
       'call' => '_aether_awaken_after()',
-      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
+      'note' => '',
     ],
     [
       'type' => 'manifest',
@@ -197,7 +197,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'shard( Array $file_maps, Bool $is_revoke = false )',
-      'note' => 'Saves or restores rune shard backups depending on revoke flag.',
+      'note' => 'Saves rune shard(s) from string or array source.',
     ],
   ];
 

@@ -71,16 +71,20 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
-  #NOTE: Saves or restores rune shard backups depending on revoke flag.
-  public static function shard( Array $file_maps, Bool $is_revoke = false ) {
-    if ($is_revoke) {
-      keeper_shard_get($file_maps);
-    }else {
-      keeper_shard_set($file_maps);
+  #NOTE: Saves rune shard(s) from string or array source.
+  public static function shard(Array|String $source): Bool
+  {
+    if (is_array($source)) {
+      keeper_shard_set_all($source);
+    } elseif (is_string($source)) {
+      keeper_shard_set($source);
+    } else {
+      throw new InvalidArgumentException("Parameter \$source must be string or array of string.");
     }
 
     aether_arcane('Keeper.manifest.shard');
     return true;
   }
+
 
 }
