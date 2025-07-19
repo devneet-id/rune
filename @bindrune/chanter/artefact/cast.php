@@ -73,78 +73,42 @@ Chanter::cast(
       $format['RUNITE'] = $runite;
       
       // echoes
-      $echoes = $format['ECHOES'];
-      $reechoes = [];
-      foreach ($echoes as $echo) {
-        $echo = explode("/////", $echo);
-        $echo_id = $echo[0];
-        $echo_value = Cipher::base64(Cipher::runic($echo[1], true, $artefact['runic']), true);
-        $echo_value = json_decode($echo_value, true);
-        $reechoes[$echo_id] = $echo_value;
+      if (isset($format['ECHOES'])) {
+        $echoes = $format['ECHOES'];
+        $reechoes = [];
+        foreach ($echoes as $echo) {
+          $echo = explode("/////", $echo);
+          $echo_id = $echo[0];
+          $echo_value = Cipher::base64(Cipher::runic($echo[1], true, $artefact['runic']), true);
+          $echo_value = json_decode($echo_value, true);
+          $reechoes[$echo_id] = $echo_value;
+        }
+        $echoes = $reechoes;
+        $format['ECHOES'] = $echoes;
       }
-      $echoes = $reechoes;
-      $format['ECHOES'] = $echoes;
 
 
       // shards
-      $shards = $format['SHARDS'];
-      $reshards = [];
-      if (!empty($echoes['SHARD'])) {
-        foreach ($shards as $shard) {
-          $shard = explode("/////", $shard);
-          $shard_id = $shard[0];
-          $shard_info = $echoes['SHARD'][$shard[0]];
-          $shard_source = Cipher::base64(Cipher::runic($shard[1], true, $artefact['runic']), true);
-          $reshards[$shard_id] = [
-            'info'=> $shard_info,
-            'source'=> $shard_source
-          ];
+      if (isset($format['SHARDS'])) {
+        $shards = $format['SHARDS'];
+        $reshards = [];
+        if (!empty($echoes['SHARD'])) {
+          foreach ($shards as $shard) {
+            $shard = explode("/////", $shard);
+            $shard_id = $shard[0];
+            $shard_info = $echoes['SHARD'][$shard[0]];
+            $shard_source = Cipher::base64(Cipher::runic($shard[1], true, $artefact['runic']), true);
+            $reshards[$shard_id] = [
+              'info'=> $shard_info,
+              'source'=> $shard_source
+            ];
+          }
         }
+        $shards = $reshards;
+        $format['SHARDS'] = $shards;
       }
-      $shards = $reshards;
-      $format['SHARDS'] = $shards;
 
       return (object) $format;
-
-      // $prefix_newPage = "\n- - - - -\n";
-      // $prefix_item = "\n";
-
-      // $target = str_replace('.rune', '', $link);
-      // $file = Forger::item($link);
-      // $part = explode($prefix_newPage, $file);
-
-      // $result = [];
-      
-      // // head
-      // $result['head'] = $part[0];
-
-      // // rune
-      // $rune = strlen($part[1]);
-      // $result['size'] = $rune;
-      // $result['rune'] = aether_formatFileSize($rune);
-
-      // // item
-      // $item = [];
-      // if (!empty($part[2])) {
-      //   foreach (explode($prefix_item, $part[2]) as $row) {
-      //     $row = Cipher::base64(Cipher::runic($row, true), true);
-      //     $row = explode($prefix_item, $row);
-
-      //     $data = json_decode($row[0]);
-      //     $size = strlen($row[1]);
-
-      //     $result['size'] += $size;
-      //     $item[] = [
-      //       'file'=> $data->target,
-      //       'type'=> $data->ext,
-      //       'size'=> aether_formatFileSize($size)
-      //     ];
-      //   }
-      // }
-      // $result['item'] = $item;
-      // $result['size'] = aether_formatFileSize($result['size']);
-
-      return (object) $result;
     };
 
 

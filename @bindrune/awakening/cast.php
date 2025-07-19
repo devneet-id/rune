@@ -23,62 +23,105 @@ Chanter::begin();
 
 Chanter::cast('awakening', function() {
   Whisper::clear();
-  Whisper::echo("\n{{tab}}RUNE {{COLOR-DANGER}}::{{color-end}} AWAKENING");
-  Whisper::echo("\n{{tab}}{{COLOR-SECONDARY}}awaken the rune from the void...\n");
+  Whisper::echo("{{text-secondary}}///////////////////////////// \n");
+  Whisper::echo(" A W A K E N I N G \n");
+  Whisper::echo("{{bg-danger}} awaken from the void {{bg-end}}\n\n");
 
-  $rune = '';
-  $processing = function( $rune, $timing ) {
-    $target = Forger::item(AETHER_REPO.'/'.AETHER_FILE);
-    $runefile = Forger::item(AETHER_REPO.'/'.AETHER_FILE.'.rune', $rune);
 
-    $target = str_replace('use Rune\Aether\Manifest as Aether;', '', $target);
-    $target = str_replace(PHP_EOL.PHP_EOL, PHP_EOL, $target);
-    $target = str_replace('<?php', $rune->act, $target);
-    $target = str_replace($act_void, '', $target);
-    $target = str_replace('Aether::awakening();', $rune->main, $target);
+  $processing__inspect_raw = function($link) {
+    $target = str_replace('.rune', '', $link);
+    $file = Forger::item($link);
+    $file = trim($file);
+    $file = str_replace(PHP_EOL, '', $file);
+    $file = str_replace("\n", '', $file);
+    $template = explode("[ᚱᚾ] ", $file);
+    
+    $format = [];
+    $format['lore'] = $template[0];
 
-    Forger::item( AETHER_REPO.'/'.AETHER_FILE, $target);
-    foreach ($rune->asset as $asset) {
-      Forger::clone($asset['location'], $asset['destination']);
+    foreach ($template as $key=>$part) {
+      if ($key!==0) {
+        $part = explode("  ::", $part);
+        $head = str_replace(' ', '', $part[0]);
+        unset($part[0]);
+  
+        if (count($part) > 1) {
+          $format[$head] = $part;
+        }else {
+          $format[$head] = $part[1];
+        }
+      }
     }
 
-    Whisper::drain(function($loader) {
-      Whisper::echo("{{COLOR-DANGER}}[$loader] A W A K E N I N G ");
-    },[
-      'speed' => 100,
-      'delay' => $timing,
-    ]);
-    Whisper::clear();
-    Whisper::clear_force();
-    Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} A W A K E N I N G ");
+    $artefact = [];
+    foreach ($format['ARTEFACT'] as $part) {
+      $part = explode("=", $part);
+      $artefact[$part[0]] = $part[1];
+    }
+    $format['ARTEFACT'] = $artefact;
+
+    
+
+    // runite
+    $runite = $format['RUNITE'];
+    $runite = Cipher::base64(Cipher::runic($runite, true, $artefact['runic']), true);
+    $format['RUNITE'] = $runite;
+    
+    // echoes
+    if (isset($format['ECHOES'])) {
+      $echoes = $format['ECHOES'];
+      $reechoes = [];
+      foreach ($echoes as $echo) {
+        $echo = explode("/////", $echo);
+        $echo_id = $echo[0];
+        $echo_value = Cipher::base64(Cipher::runic($echo[1], true, $artefact['runic']), true);
+        $echo_value = json_decode($echo_value, true);
+        $reechoes[$echo_id] = $echo_value;
+      }
+      $echoes = $reechoes;
+      $format['ECHOES'] = $echoes;
+    }
+
+
+    // shards
+    if (isset($format['SHARDS'])) {
+      $shards = $format['SHARDS'];
+      $reshards = [];
+      if (!empty($echoes['SHARD'])) {
+        foreach ($shards as $shard) {
+          $shard = explode("/////", $shard);
+          $shard_id = $shard[0];
+          $shard_info = $echoes['SHARD'][$shard[0]];
+          $shard_source = Cipher::base64(Cipher::runic($shard[1], true, $artefact['runic']), true);
+          $reshards[$shard_id] = [
+            'info'=> $shard_info,
+            'source'=> $shard_source
+          ];
+        }
+      }
+      $shards = $reshards;
+      $format['SHARDS'] = $shards;
+    }
+
+    return (object) $format;
   };
-  $processing_revoke = function( $from, $to ) {
-    $prefix_newPage = "\n- - - - -\n";
-    $prefix_item = "\n";
+  $processing_revoke = function( $from, $to ) use ($processing__inspect_raw) {
+    $result = $processing__inspect_raw($from);
 
-    $target = $to;
-    $file = Forger::item($from);
-    $part = explode($prefix_newPage, $file);
+    // deploy runite
+    Forger::item($to, $result->RUNITE);
 
-    if (isset($part[1])) {
-      $base = Cipher::base64(Cipher::runic($part[1], true), true);
-      Forger::item($target, $base);
+    if (isset($result->SHARDS)) {
+      // deploy shards
+      if (isset($result->SHARDS)) {
+        foreach ($result->SHARDS as $ID=>$shard) {
+          Forger::fix(Forger::trace($shard['info']['target']));
+          Forger::item($shard['info']['target'], $shard['source']);
+        }
+      }
     }
 
-    $code = (!empty($part[2])) ? explode("\n", $part[2]) : [];
-
-    foreach ($code as $row) {
-      $row = explode("\n", Cipher::base64(Cipher::runic($row, true), true));
-      $item = json_decode($row[0]);
-      $source = Cipher::base64($row[1], true);
-
-      Forger::fix(Forger::trace((AETHER_REPO . '/' . $item->target)));
-      Forger::item(AETHER_REPO . '/' . $item->target, $source);
-    }
-
-    Whisper::clear();
-    Whisper::echo("\n{{tab}}RUNE {{COLOR-DANGER}}::{{color-end}} AWAKENED {{COLOR-SUCCESS}}{{ICON-SUCCESS}}");
-    Whisper::echo("\n{{tab}}{{COLOR-SECONDARY}}Check with command {{color-default}}$ php ".AETHER_FILE."\n");
+    return true;
   };
 
   // check minimum requirement
@@ -89,26 +132,28 @@ Chanter::cast('awakening', function() {
 
   
   // start stages
-  sleep(1);
+  // sleep(1);
   
   // without kit
-  Whisper::clear();
-  Whisper::echo('you will choose app D as default, {{nl}}Did you want to choose another app?{{nl}}');
+  // Whisper::clear();
+  Whisper::echo("{{color-secondary}}you will choose app D as default \n");
+  Whisper::echo("{{color-secondary}}Did you want to choose another app? \n");
   if (Whisper::call('Enter your answer [y/n]: ') !== 'y') {
-    $processing_revoke(
+    $revoking = $processing_revoke(
       __DIR__ . '/app/d--plain.rune',
       AETHER_REPO.'/'.AETHER_FILE
     );
-    aether_exit(true);
+    if ($revoking) {
+      Whisper::echo("{{COLOR-SUCCESS}}Awakening successfully. \n");
+      Aether::exit(true);
+    }
   }
   
-  
   // choosing
-  Whisper::clear();
-  Whisper::echo('Choose you want to use. {{nl}}');
-  Whisper::echo('');
+  // Whisper::clear();
+  Whisper::echo("\n{{text-secondary}}Choose you want to use. \n");
   $list = [];
-  Whisper::echo("{{COLOR-SECONDARY}}[ID] NAME {{nl}}");
+  Whisper::echo("{{text-secondary}}[ID] NAME \n");
   foreach (glob(__DIR__.'/app/*') as $row) {
     if (is_file($row)) {
       $data = explode('--', basename($row));
@@ -120,7 +165,6 @@ Chanter::cast('awakening', function() {
     }
   }
   
-  
   // processing
   $selected = Whisper::call('Enter kit ID: ');
   if ($selected) {
@@ -130,15 +174,17 @@ Chanter::cast('awakening', function() {
       Whisper::echo('{{COLOR-ERROR}}{{ICON-ERROR}} Template not found');
       exit;
     }
-
     
     $target = $list[strtoupper($selected)];
-    $processing_revoke(
+    $revoking = $processing_revoke(
       $target,
       AETHER_REPO.'/'.AETHER_FILE
     );
+    if ($revoking) {
+      Whisper::echo("{{COLOR-SUCCESS}}Awakening successfully. \n");
+      Aether::exit(true);
+    }
   }
-  
 });
 
 // Chanter::cast('start', function() {
