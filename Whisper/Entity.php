@@ -96,7 +96,7 @@ function whisper_echo_imbue( String $text ) {
  *  */
 #NOTE: Prompt user for input via terminal with styled message
 function whisper_call( String $prompt ) {
-  whisper_echo("{{COLOR-INFO}}{{ICON-INFO}} $prompt");
+  whisper_echo("{{text-warning}}>>>{{text-end}} $prompt");
   $response = trim(fgets(STDIN));
 
   aether_arcane('Whisper.entity.whisper_call'); 

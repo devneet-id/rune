@@ -109,15 +109,13 @@ Chanter::cast('awakening', function() {
     $result = $processing__inspect_raw($from);
 
     // deploy runite
-    Forger::item($to, $result->RUNITE);
+    // Forger::item($to, $result->RUNITE);
 
+    // deploy shards
     if (isset($result->SHARDS)) {
-      // deploy shards
-      if (isset($result->SHARDS)) {
-        foreach ($result->SHARDS as $ID=>$shard) {
-          Forger::fix(Forger::trace($shard['info']['target']));
-          Forger::item($shard['info']['target'], $shard['source']);
-        }
+      foreach ($result->SHARDS as $ID=>$shard) {
+        Forger::fix(Forger::trace($shard['info']['target']));
+        Forger::item(AETHER_REPO.'/'.$shard['info']['target'], $shard['source']);
       }
     }
 
