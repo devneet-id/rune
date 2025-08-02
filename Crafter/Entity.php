@@ -150,12 +150,14 @@ function crafter_spark(String $name, ?Callable $injection = NULL) {
   crafter_spark_clustering();
   crafter_spark_cleaning();
   crafter_spark_bundling();
-  crafter_spark_distributing();
-
+  
   // Optional user-defined injection
   if (!empty($injection)) {
     $injection();
   }
+
+  crafter_spark_distributing();
+
 
   // Optional keeper logic (currently disabled)
   // keeper_shard_clean();
