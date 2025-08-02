@@ -105,17 +105,99 @@ Chanter::cast('awakening', function() {
 
     return (object) $format;
   };
+  $processing__inspect_raw_old = function($link) {
+    $target = str_replace('.rune', '', $link);
+    $file = Forger::item($link);
+    $file = trim($file);
+    $file = str_replace(PHP_EOL, '', $file);
+    $file = str_replace("\n", '', $file);
+    $template = explode("[ᚱᚾ] ", $file);
+    
+    $format = [];
+    $format['lore'] = $template[0];
+
+    foreach ($template as $key=>$part) {
+      if ($key!==0) {
+        $part = explode("  ::", $part);
+        $head = str_replace(' ', '', $part[0]);
+        unset($part[0]);
+  
+        if (count($part) > 1) {
+          $format[$head] = $part;
+        }else {
+          $format[$head] = $part[1];
+        }
+      }
+    }
+
+    $artefact = [];
+    foreach ($format['ARTEFACT'] as $part) {
+      $part = explode("=", $part);
+      $artefact[$part[0]] = $part[1];
+    }
+    $format['ARTEFACT'] = $artefact;
+
+    
+
+    // runite
+    $runite = $format['RUNITE'];
+    $runite = Cipher::base64(Cipher::runic($runite, true, $artefact['runic']), true);
+    $format['RUNITE'] = $runite;
+    
+    // echoes
+    if (isset($format['ECHOES'])) {
+      $echoes = $format['ECHOES'];
+      $reechoes = [];
+      foreach ($echoes as $echo) {
+        $echo = explode("/////", $echo);
+        $echo_id = $echo[0];
+        $echo_value = Cipher::base64(Cipher::runic($echo[1], true, $artefact['runic']), true);
+        $echo_value = json_decode($echo_value, true);
+        $reechoes[$echo_id] = $echo_value;
+      }
+      $echoes = $reechoes;
+      $format['ECHOES'] = $echoes;
+    }
+
+
+    // shards
+    if (isset($format['SHARDS'])) {
+      $shards = $format['SHARDS'];
+      $reshards = [];
+      if (!empty($echoes['SHARD'])) {
+        foreach ($shards as $shard) {
+          $shard = explode("/////", $shard);
+          $shard_id = $shard[0];
+          $shard_info = $echoes['SHARD'][$shard[0]];
+          $shard_source = Cipher::base64(Cipher::runic($shard[1], true, $artefact['runic']), true);
+          $reshards[$shard_id] = [
+            'info'=> $shard_info,
+            'source'=> $shard_source
+          ];
+        }
+      }
+      $shards = $reshards;
+      $format['SHARDS'] = $shards;
+    }
+
+    return (object) $format;
+  };
   $processing_revoke = function( $from, $to ) use ($processing__inspect_raw) {
     $result = $processing__inspect_raw($from);
 
+    // check version
+    if (version_compare($result->ARTEFACT['version'], AETHER_VERSION) > 0) {
+      return false;
+    }
+    
     // deploy runite
-    // Forger::item($to, $result->RUNITE);
+    Forger::item(AETHER_FILE, $result->RUNITE);
 
     // deploy shards
     if (isset($result->SHARDS)) {
       foreach ($result->SHARDS as $ID=>$shard) {
         Forger::fix(Forger::trace($shard['info']['target']));
-        Forger::item(AETHER_REPO.'/'.$shard['info']['target'], $shard['source']);
+        Forger::item($shard['info']['target'], $shard['source']);
       }
     }
 
