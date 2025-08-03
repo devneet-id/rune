@@ -231,7 +231,7 @@ function crafter_spark_cleaning() {
 
       // Minify code
       if (in_array($lang, $CRAFTER_SEED['MINIFIED'])) {
-        $item = weaver_min($item);
+        $item = weaver_min($item, $CRAFTER_SEED['MINIFIED']);
       }
 
       $recluster[$lang][] = trim($item);
