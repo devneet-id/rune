@@ -80,7 +80,7 @@ class Manifest extends \Rune\Manifest {
     $file = !empty($config->file) ? ' ' . escapeshellarg($config->file) : '';
     
     // Gabungkan semua
-    $command = 'php -S ' . $config->host . ':' . $config->port . $path . $file;
+    $command = PHP_BINARY . ' -S ' . $config->host . ':' . $config->port . $path . $file;
     
     // whisper
     whisper_echo("\n SPECTER {{color-danger}}::{{color-end}} DEVSERVER");
