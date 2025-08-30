@@ -84,7 +84,7 @@ function specter_soul_remove( String $name ) {
  *  */
 #NOTE: Executes a command with given options across platforms and logs the cast state.
 function specter_cast_set( string $arg, array $options = [] ) {
-  $arg = weaver_bind($arg, 'self', 'php ' . AETHER_FILE);
+  $arg = weaver_bind($arg, 'self', PHP_BINARY. ' ' . AETHER_FILE);
   $opt = array_merge(SPECTER_CAST_ARG_DEFAULT, $options);  
 
   specter_cast_save($arg, true, $opt);
@@ -132,7 +132,7 @@ function specter_cast_set( string $arg, array $options = [] ) {
 function specter_cast_get( string $arg ) {
   global $SPECTER_CAST;
 
-  $arg = weaver_bind($arg, 'self', 'php ' . AETHER_FILE);
+  $arg = weaver_bind($arg, 'self', PHP_BINARY. ' ' . AETHER_FILE);
 
   $cast_keeper = keeper_item_get('cast');
   if (empty($cast_keeper)) {
@@ -154,7 +154,7 @@ function specter_cast_get( string $arg ) {
 function specter_cast_save( $arg, $alive = true, $option = [] ) {
   global $SPECTER_CAST;
 
-  $arg = weaver_bind($arg, 'self', 'php ' . AETHER_FILE);
+  $arg = weaver_bind($arg, 'self', PHP_BINARY. ' ' . AETHER_FILE);
 
   $cast_keeper = keeper_item_get('cast');
   if (empty($cast_keeper)) {
