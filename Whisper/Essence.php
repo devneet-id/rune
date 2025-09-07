@@ -9,6 +9,7 @@ $GLOBALS['WHISPER_VARS'] = [
   'TAB'=> '  ',
   'BOLD'=> "\033[1m",
   'END'=> "\033[0;37m",
+  'PHP'=> pathinfo(PHP_BINARY, PATHINFO_FILENAME),
 ];
 
 #NOTE: ANSI color codes for CLI output styling used by whisper
