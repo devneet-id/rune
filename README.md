@@ -1,7 +1,6 @@
-# ❯❯❯❯ Rune
+# ᚱᚾ
 
-**ᚱᚾ** is a lore-driven, modular concept beneath PHP,  
-designed not to dictate development — but to respond to it. ⚡️
+![live-usage](https://ik.imagekit.io/anwarachilles/devneet-rune.png?updatedAt=1758214513094)
 
 Within Rune’s architecture, **Ether** defines truth, **Essence** holds flow, and **Entity** performs behavior — each awakened only when invoked. Every element is crafted to be composable, lazy-loaded, and purpose-driven, making systems naturally scalable and precise. 
 
