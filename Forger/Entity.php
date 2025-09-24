@@ -102,19 +102,24 @@ function forger_scan( String $source_path, ?Callable $callback ) {
 /* FIX
  * */
 #NOTE: Ensures all given paths exist by creating missing directories or files based on their type.
-function forger_fix(array $source_path){
-  foreach($source_path as $source){
-    $state = $source['ready'] ?? file_exists($source['target']);
-    if($state === false){
-      $dir = dirname($source['target']);
-      if(!is_dir($dir)) @mkdir($dir, 0755, true);
-      if($source['type'] === 'repo' && !is_dir($source['target'])) @mkdir($source['target'], 0755, true);
-      if($source['type'] === 'item' && !file_exists($source['target'])){
-        @touch($source['target']);
-        chmod($source['target'], 0644);
+function forger_fix( Array $source_path ) {
+  foreach ($source_path as $source) {
+    $state = (isset($source['ready'])) ? $source['ready'] : file_exists($source['target']);
+    if ($state === false) {
+      if ($source['type'] === 'repo') {
+        if (!file_exists($source['target'])) {
+          @mkdir($source['target'], 0755, true);
+        }
+      }
+      if ($source['type'] === 'item') {
+        if (!file_exists($source['target'])) {
+          @touch($source['target']);
+          chmod($source['target'], 0644);
+        }
       }
     }
   }
+
   aether_arcane('Forger.entity.forger_fix');
 }
 
