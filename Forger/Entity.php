@@ -107,10 +107,10 @@ function forger_fix(array $source_path){
     $state = $source['ready'] ?? file_exists($source['target']);
     if($state === false){
       $dir = dirname($source['target']);
-      if(!is_dir($dir)) mkdir($dir, 0755, true);
-      if($source['type'] === 'repo' && !is_dir($source['target'])) mkdir($source['target'], 0755, true);
+      if(!is_dir($dir)) @mkdir($dir, 0755, true);
+      if($source['type'] === 'repo' && !is_dir($source['target'])) @mkdir($source['target'], 0755, true);
       if($source['type'] === 'item' && !file_exists($source['target'])){
-        touch($source['target']);
+        @touch($source['target']);
         chmod($source['target'], 0644);
       }
     }
