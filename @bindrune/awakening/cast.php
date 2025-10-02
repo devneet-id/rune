@@ -197,7 +197,22 @@ Chanter::cast('awakening', function() {
     if (isset($result->SHARDS)) {
       foreach ($result->SHARDS as $ID=>$shard) {
         Forger::fix(Forger::trace($shard['info']['target']));
-        Forger::item($shard['info']['target'], $shard['source']);
+        
+        $target = AETHER_REPO . DIRECTORY_SEPARATOR . $shard['info']['target'];
+
+        $isHidden = (substr(basename($target), 0, 1) === '.');
+        
+        if ($isHidden) {
+            $path = $target;
+            $tmp = $path . '.tmp';
+            if (is_dir($path)) {
+                rmdir($path);
+            }
+            file_put_contents($tmp, $shard['source']);
+            rename($tmp, $path);
+        } else {
+            Forger::item($target, $shard['source']);
+        }
       }
     }
 
@@ -216,11 +231,11 @@ Chanter::cast('awakening', function() {
   
   // without kit
   // Whisper::clear();
-  Whisper::echo("{{color-secondary}}you will choose app D as default \n");
-  Whisper::echo("{{color-secondary}}Did you want to choose another app? \n");
-  if (Whisper::call('Enter your answer [y/n]: ') !== 'y') {
+  Whisper::echo("{{color-secondary}}Will you begin from the first step, \n");
+  Whisper::echo("{{color-secondary}}or from the strange artefact? \n\n");
+  if (Whisper::call('Begin anew, or use an artefact [y/n]: ') !== 'y') {
     $revoking = $processing_revoke(
-      __DIR__ . '/app/d--plain.rune',
+      __DIR__ . '/src/Blank+Default.2025-10-01.Anwar+Achilles.rune',
       AETHER_REPO.'/'.AETHER_FILE
     );
     if ($revoking) {
@@ -231,37 +246,61 @@ Chanter::cast('awakening', function() {
   
   // choosing
   // Whisper::clear();
-  Whisper::echo("\n{{text-secondary}}Choose you want to use. \n");
+  Whisper::echo("\n{{text-secondary}}///////////////////////////// \n");
+  Whisper::echo("{{text-secondary}}Artefact with runite ready to explore: \n");
+  // Whisper::echo("{{bg-danger}} # {{end}} A R T E F A C T \n");
   $list = [];
-  Whisper::echo("{{text-secondary}}[ID] NAME \n");
-  foreach (glob(__DIR__.'/app/*') as $row) {
+  Whisper::echo("{{text-secondary}} ID TITLE \n\n");
+  foreach (glob(__DIR__.'/src/*') as $i=>$row) {
+    $info = Forger::info($row);
     if (is_file($row)) {
-      $data = explode('--', basename($row));
-      $ID = strtoupper($data[0]);
-      $name = str_replace('.rune', '', str_replace('-', ' ', $data[1]));
-      $default = ($ID=='D') ? ' <- current' : '';
-      Whisper::echo("[$ID] $name {{COLOR-SUCCESS}}$default{{COLOR-DEFAULT}} {{nl}}");
+      $profile = explode('.', urldecode($info->name));
+      $ID = $i + 1;
+      $title = strtoupper($profile[0]);
+      $date = (isset($profile[1])) ? $profile[1] : 'unknown';
+      $author = (isset($profile[2])) ? $profile[2] : 'unknown';
+      $extension = (isset($profile[3])) ? str_replace(',', ', ', $profile[3]) : 'native';
+
       $list[$ID] = $row;
+
+      Whisper::echo("[{{text-primary}}$ID{{end}}] {{text-default}}$title \n");
+      Whisper::echo("{{text-secondary}} :: $date{{end}} @{{text-danger}}$author{{end}} ");
+      Whisper::echo("[{{text-warning}}$extension{{end}}] \n\n");
+      // Whisper::echo("[{{text-danger}}$ID{{end}}] $title {{text-secondary}}$date{{end}} {{text-danger}}$author{{end}} {{nl}}");
+
+      // aether_dd($name);
+
+      // $data = explode('--', basename($row));
+      // $ID = strtoupper($data[0]);
+      // $name = str_replace('.rune', '', str_replace('-', ' ', $data[1]));
+      // $default = ($ID=='D') ? ' <- current' : '';
+      // Whisper::echo("[$ID] $name {{COLOR-SUCCESS}}$default{{COLOR-DEFAULT}} {{nl}}");
+      // $list[$ID] = $row;
     }
   }
   
   // processing
-  $selected = Whisper::call('Enter kit ID: ');
+  $selected = Whisper::call('Where would you like to continue your journey? [ID]: ');
+  // aether_dd($list[$selected]);
+  // aether_exit(true);
   if ($selected) {
     $selected = (empty($selected)) ? 'd' : $selected;
     
-    if (!isset($list[strtoupper($selected)])) {
+    if (!isset($list[$selected])) {
       Whisper::echo('{{COLOR-ERROR}}{{ICON-ERROR}} Template not found');
       exit;
     }
     
-    $target = $list[strtoupper($selected)];
+    $target = $list[$selected];
     $revoking = $processing_revoke(
       $target,
       AETHER_REPO.'/'.AETHER_FILE
     );
     if ($revoking) {
-      Whisper::echo("{{COLOR-SUCCESS}}Awakening successfully. \n");
+      $selfFile = AETHER_FILE;
+      Whisper::echo("{{text-success}}{{icon-success}} Awakening successfully. \n");
+      Whisper::echo("{{text-info}}{{icon-info}}{{end}}{{text-secondary}} Checkout your runite with '{{text-danger}}php $selfFile run{{end}}'. \n");
+      
       Aether::exit(true);
     }
   }

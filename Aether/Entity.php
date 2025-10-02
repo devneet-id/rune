@@ -51,6 +51,7 @@ function aether_exit( $force = false ) {
   if (aether_has_entity('whisper')) {
     $icon_execute = "{{color-danger}}ϟ{{color-secondary}}";
     $icon_memory = "{{color-primary}}Ξ{{color-secondary}}";
+    $icon_version = '{{color-default}}◇{{color-secondary}}';
     
     if (aether_has_entity('chanter')) {
       if (chanter_spell('zero-trust')) {
@@ -58,9 +59,18 @@ function aether_exit( $force = false ) {
         $icon_memory = "{{color-danger}}Ξ{{color-secondary}}";
       }
     }
+    
+    list($major,,) = explode('.', AETHER_VERSION);
+    $patch = 0;
+    foreach (aether_list_runes() as $rune) {
+      $phantasm = 'Rune\\'.$rune.'\\Phantasm';
+      $phantasm = new $phantasm();
+      $patch += (float) $phantasm->version;
+    }
+    $version = $major . '.' . $patch;
 
-    $total_rune = count(aether_arised());
-    whisper_echo("\n{{COLOR-SECONDARY}}{{ICON-INFO}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
+    // whisper_echo("\n{{text-secondary}}{{icon-info}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
+    whisper_echo("\n{$icon_version}Version={{text-secondary}}$version:{{end}} {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
   }else {
     print("\n\nRUNE: Execute={$end}s, Memory=$usage - ^$peak");
   }
@@ -295,13 +305,13 @@ function aether_list_runes() {
   $manifests = [];
   // internal rune
   foreach (glob(AETHER_RUNE_LOCATION . '/*') as $manifest) {
-    if (is_dir($manifest)) {
+    if (is_dir($manifest) && strpos($manifest, '@bindrune') === false) {
       $manifests[] = basename($manifest);
     }
   }
   // external rune
-  if (file_exists(AETHER_REPO . '/.bindrune')) {
-    foreach (glob(AETHER_REPO . '/.bindrune/*') as $manifest) {
+  if (file_exists(AETHER_REPO . '/@bindrune')) {
+    foreach (glob(AETHER_REPO . '/@bindrune/*') as $manifest) {
       if (is_dir($manifest)) {
         $manifests[] = basename($manifest);
       }

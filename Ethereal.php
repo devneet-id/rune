@@ -15,7 +15,7 @@ class Ethereal {
     $loader = new \Composer\Autoload\ClassLoader();
 
     // replace the origin
-    self::$origin = getcwd() . '/@ethereal/';
+    self::$origin = getcwd() . '/@liberations/';
 
     // if not exists repo
     if (!file_exists(self::$origin)) {
@@ -24,7 +24,8 @@ class Ethereal {
     }
     // if not exits item
     if (!file_exists(self::$origin . '/README.md')) {
-      file_put_contents(self::$origin . '/README.md', 'RUNE LIBERATION.');
+      // file_put_contents(self::$origin . '/README.md', file_get_contents(__DIR__ . '/LIBERATION.md'));
+      copy(__DIR__ . '/LIBERATION.md', self::$origin . '/README.md');
     }
 
     // add bindrune

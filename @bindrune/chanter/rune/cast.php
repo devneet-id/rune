@@ -70,11 +70,13 @@ Chanter::cast(
       'The Liberation of Forte' :
       'The Awaken from Void';
     
+    list($major,,) = explode('.', AETHER_VERSION);
+
     $header = Weaver::item(__DIR__ . '/header.txt');
     $header = Weaver::bind($header, [
       'FILE'=> AETHER_FILE,
       'REPO'=> AETHER_REPO,
-      'VERSION'=> AETHER_VERSION,
+      'VERSION'=> $major,
       'SIZE'=> aether_formatFileSize(filesize(AETHER_FILE)),
       'ECHOES'=> $echoes_state,
       'BASE-CAST'=> $base_cast,

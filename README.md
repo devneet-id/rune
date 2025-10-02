@@ -1,27 +1,59 @@
-# ᚱᚾ
+![live-usage](https://ik.imagekit.io/anwarachilles/devneet-rune.png)
 
-![live-usage](https://ik.imagekit.io/anwarachilles/devneet-rune.png?updatedAt=1758214513094)
 
-Within Rune’s architecture, **Ether** defines truth, **Essence** holds flow, and **Entity** performs behavior — each awakened only when invoked. Every element is crafted to be composable, lazy-loaded, and purpose-driven, making systems naturally scalable and precise. 
+Within Rune's architecture, **Ether** defines truth, **Essence** holds flow, and **Entity** performs behavior - each awakened only when invoked. Every element is crafted to be composable, lazy-loaded, and purpose-driven, making systems naturally scalable and precise. 
 
 This makes Rune inherently lightweight and adaptable, aligning perfectly with projects that evolve from concept, not convention. Whether shaping internal tools, backend systems, or modular workflows, Rune empowers developers to sculpt structure from intent, not instruction.
 
-## ✦ Live Usage.
-![live-usage](https://ik.imagekit.io/anwarachilles/rune-perform2.png?updatedAt=1752488883740)
 
-## ✦ Awakening.
+
+## Essentials
+
+##### Core System
+- Modular Core Structure & Concept (Maintainable)
+- Functional Process-Based
+- Lazy Loading without Bootstrapping
+- Live Documentation / Reflection Core (Phantasm)
+- Automatic Minor & Patch Versioning
+- PSR-4 Composer Autoloading
+- Static Class Service Handler
+- Dynamic Output Structure
+
+##### Developer Space
+- Stats Information (Main Entrance)
+- Dynamic Command List (Main Entrance)
+- System Inspection & Read (Grimoire)
+- Phased Process Log (Arcane) (Grimoire)
+- Execution Result: Timestamp, Memory & Peak Memory
+- Fancy Command Line Interface (100% CLI support)
+- Save & Load Project as Package (Runite) (Artefact)
+- Project Item as Package (Shard) (Artefact)
+- Metadata Storage & Handling `.echoes` (Keeper)
+- Zero Trust for Breaking Execution
+- Event-Driven & Encapsulation (Chanter)
+- Starter Template (Awakening)
+- Command Line UI & Interaction (Chanter & Whisper)
+- Text Styling & Reuse (Weaver)
+- File/Item & Directory/Repo Handling (Forger)
+- Fancy Error Handling (Keeper)
+- Process-Focusable (Whisper.drain)
+- Multi-Process & Interaction (Specter)
+- Open All Possibilities & Potential (Liberation)
+
+
+
+## Awakening
 Install Rune using Composer:
 ```bash
-composer require devneet/rune dev-main
+composer require devneet/rune:1.x-dev
 ```
-Project structure after installation:
-```shell
-📦 rune-project/
-├── 📁 vendor/           # Composer dependencies (includes Rune)
-├── composer.json        # Project metadata & dependencies
-└── myapp                # Your custom application / entry point
+
+Create main file:
+```bash
+echo "#rune" > cast
 ```
-First invocation — awaken Rune from the void:
+
+First invocation awaken Rune from the void:
 ```php
 <?php
 /*
@@ -29,102 +61,66 @@ First invocation — awaken Rune from the void:
  * THE VOID
  *
  * From the silence of nothingness, echoes rise from the void.
- * A journey begins — with runes at your side.
+ * A journey begins - with runes at your side.
  * 
  * */
 require_once __DIR__ . '/vendor/autoload.php';
 
 Rune\Ethereal::awakening();
 ```
+
 Run the app to begin:
 ```bash
-php myapp
+php cast
 ```
+
 Explore the system’s using the Grimoire:
 ```bash
-php myapp grimoire
+php cast grimoire
 ```
 
-## ✦ Evidentiary.
-native cast use this:
-```php
-Chanter::cast('evid-native', function () {
-	// Generate 1000 dummy users
-	$users = [];
-	for ($i = 0; $i < 1000; $i++) {
-		$users[] = [
-			'id'		=> $i,
-			'username'	=> "user_$i",
-			'email'		=> "user_$i@example.com",
-			'score'		=> rand(1, 1000)
-		];
-	}
 
-	// Print each user using raw echo and color formatting
-	foreach ($users as $u) {
-		$color = "\033[1;31m";
-		$reset = "\033[0m";
-		echo "┌" . str_repeat("─", 48) . "\n";
-		echo "│ ID       : {$color}" . str_pad($u['id'], 36) . "{$reset}\n";
-		echo "│ Username : {$color}" . str_pad($u['username'], 36) . "{$reset}\n";
-		echo "│ Email    : {$color}" . str_pad($u['email'], 36) . "{$reset}\n";
-		echo "│ Score    : {$color}" . str_pad($u['score'], 36) . "{$reset}\n";
-		echo "└" . str_repeat("─", 48) . "\n";
-	}
-});
-```
 
-cast rune handle same output as native use this:
-file perform.txt:
-```txt
-┌────────────────────────────────────────────────
-│ ID       : {{text-danger}}{{id}}{{text-end}}               
-│ Username : {{text-danger}}{{username}}{{text-end}}   
-│ Email    : {{text-danger}}{{email}}{{text-end}}               
-│ Score    : {{text-danger}}{{score}}{{text-end}}                                 
-└────────────────────────────────────────────────
-```
-code cast:
-```php
-Chanter::cast('evid-rune', function () {
-	// Generate 1000 dummy users
-	$users = [];
-	for ($i = 0; $i < 1000; $i++) {
-		$users[] = [
-			'id'		=> $i,
-			'username'	=> "user_$i",
-			'email'		=> "user_$i@example.com",
-			'score'		=> rand(1, 1000)
-		];
-	}
+## Paradigm
+At first, humans did not know anything.  
+Then how did they start to know things, and learn more about them?  
 
-	// Load and bind template per user, then output using Whisper
-	foreach ($users as $u) {
-		$format = Weaver::item(__DIR__.'/perform.txt');
-		$format = Weaver::bind($format, [
-			'id'		=> $u['id'],
-			'username'	=> $u['username'],
-			'email'		=> $u['email'],
-			'score'		=> $u['score']
-		]);
-		Whisper::echo($format);
-	}
-});
-```
-rune with 2 option, use zero-trust will break rule of arcane and etc:
-```shell
-php {filename} evid-native
-php {filename} evid-rune
-php {filename} evid-rune --zero-trust
-```
+By looking, writing, and growing, we can finally understand.  
 
-## ✦ Covenant.
-- [x] We never promise a ready-made framework,
-but we will never let you start from the void.
-- [x] We never expect a single rune to wield impossible power,
-but we shape it to be simple, unique, and bound to others in harmony.
-- [x] We never aim to become a massive engine that burdens creation,
-but we exist to bring a single idea to life — swiftly, cleanly, and with purpose.
+1. Core
+- **Rune** = something we don't know yet
+- **Ethereal** = a place or thing we don't know
 
-This is the covenant: not to build for you,
-but to forge alongside you — from the void to the vision.
+2. Subject
+- **Ether** = something that never changes but always has meaning
+- **Essence** = something that can change as time goes on
+- **Entity** = something that makes other things change
+- **Manifest** = a box to connect things so they can work together
+- **Phantasm** = a picture in our mind to understand
+
+3. Others
+- **Awakening** = starting something, from anywhere
+- **Liberation** = being free and making something new
+- **Echoes** = sounds from the past
+- **Runite** = a rune that becomes a thing
+- **Shard** = a small piece of runite
+- **Bindrune** = many runes joined together
+- **Grimoire** = a book that feels alive
+- **Sentinel** = someone or something that guards
+- **Artefact** = a thing we can see
+
+
+
+## Contributing
+
+Thank you for considering contributing to the Rune! The contribution guide can be found in the [Rune documentation](https://github.com/devneet/rune#readme).
+
+
+## Code of Conduct
+
+In order to ensure that the DEVNEET community is welcoming to all, please review and abide by the [Code of Conduct](https://github.com/devneet/rune#readme).
+
+
+## License
+
+The Rune is open-sourced software licensed under the [MIT license](LICENSE).

@@ -63,7 +63,7 @@ Chanter::cast(
       }
       // external rune
       if (defined('LIBERATION')) {
-        foreach (glob(AETHER_REPO . '/@ethereal/*') as $rune) {
+        foreach (glob(AETHER_REPO . '/@liberations/*') as $rune) {
           if (is_dir($rune)) {
             $result[] = basename($rune);
           }
@@ -311,7 +311,7 @@ Chanter::cast(
     };
     if (Chanter::spell('create-rune')) {
       // check bindrune
-      if (!file_exists(AETHER_REPO . '/@liberation/')) {
+      if (!defined('LIBERATION')) {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
         die();
       }
@@ -329,7 +329,7 @@ Chanter::cast(
       
       // set data
       $name = ucfirst(strtolower($name));
-      $repo = AETHER_REPO . '/@liberation/' . $name . '/';
+      $repo = LIBERATION . $name . '/';
 
       // processing
       $processing__create_rune($name, $repo);
@@ -349,7 +349,7 @@ Chanter::cast(
     };
     if (Chanter::spell('remove-rune')) {
       // check bindrune
-      if (!file_exists(AETHER_REPO . '/@liberation/')) {
+      if (!defined('LIBERATION')) {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
         die();
       }
@@ -367,7 +367,7 @@ Chanter::cast(
       
       // set data
       $name = ucfirst(strtolower($name));
-      $repo = AETHER_REPO . '/@liberation/' . $name . '/';
+      $repo = LIBERATION . $name . '/';
 
       // processing
       if ($processing__remove_rune($name, $repo) ) {

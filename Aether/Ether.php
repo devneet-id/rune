@@ -11,7 +11,7 @@ define('AETHER_FILE', $_SERVER['PHP_SELF']);
 
 define('AETHER_REPO', getcwd());
 
-define('AETHER_VERSION', '1.0.17');
+define('AETHER_VERSION', '1.11');
 
 define('AETHER_COPYRIGHT', 'RUNE '.AETHER_VERSION.' | Created By @anwarachilles');
 

@@ -141,11 +141,11 @@ Chanter::cast(
       if (defined('KEEPER_ECHOES')) {
         if (file_exists(KEEPER_ECHOES)) {
           // create echoes
-          if (file_exists(KEEPER_ECHOES . '/rune.json')) {
+          if (file_exists(KEEPER_ECHOES . '/' . AETHER_FILE . '.json')) {
             $format_echoes = Weaver::item(__DIR__ . '/format-echoes.txt');
             $stack_echoes = [];
             // get echoes runite
-            $rune_echoes = json_encode(json_decode(Forger::item(KEEPER_ECHOES . '/rune.json')));
+            $rune_echoes = json_encode(json_decode(Forger::item(KEEPER_ECHOES . '/' . AETHER_FILE . '.json')));
             $rune_echoes = Cipher::runic(Cipher::base64($rune_echoes), false, $runic);
             $stack_echoes[] = "RUNITE/////" . $rune_echoes;
             // get echoes shard
