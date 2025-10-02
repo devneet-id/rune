@@ -1,0 +1,24 @@
+{{text-secondary}}///////////////////////////////////{{text-end}}
+██████╗  ██╗   ██╗ ███╗   ██╗ ███████╗ 
+██╔══██╗ ██║   ██║ ████╗  ██║ ██╔════╝ 
+██████╔╝ ██║   ██║ ██╔██╗ ██║ █████╗  
+██╔══██╗ ██║   ██║ ██║╚██╗██║ ██╔══╝   
+██║  ██║ ╚██████╔╝ ██║ ╚████║ ███████╗ PHP-Lang
+╚═╝  ╚═╝  ╚═════╝  ╚═╝  ╚═══╝ ╚══════╝ v{{VERSION}}
+{{bg-danger}} D E V N E E T {{bg-end}} {{liberation}}
+{{COLOR-SECONDARY}}
+Rune is a lore-driven, modular concept beneath PHP,  
+designed not to dictate development — but to respond.
+{{text-default}}
+
+{{bg-danger}} # {{bg-end}} S T A T S{{text-danger}}.{{text-default}}
+{{text-secondary}} ♦{{text-end}} Main   {{text-danger}}»{{text-end}} {{FILE}} - {{SIZE}}{{text-end}}
+{{text-secondary}} ♦{{text-end}} Repo   {{text-danger}}»{{text-end}} {{REPO}}{{text-end}}
+{{text-secondary}} ♦{{text-end}} Rune   {{text-danger}}»{{text-end}} Manifest={{TOTAL-RUNE}}, Ether={{RUNE-ETHER}}, Essence={{RUNE-ESSENCE}}, Entity={{RUNE-ENTITY}} {{text-end}}
+{{text-secondary}} ♦{{text-end}} Echoes {{text-danger}}»{{text-end}} {{ECHOES}}
+
+{{bg-danger}} # {{bg-end}} D E F A U L T{{text-danger}}.{{text-default}}
+{{BASE-CAST}}
+
+{{bg-danger}} # {{bg-end}} R E G I S T E R E D{{text-danger}}.{{text-default}}
+{{REGISTERED-CAST}}

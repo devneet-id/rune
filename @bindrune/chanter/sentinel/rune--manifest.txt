@@ -1,0 +1,17 @@
+<?php
+
+/*
+ * MANIFEST
+ * Represents the main static controller for this domain.
+ */
+
+namespace Rune\{{name-capital}};
+
+class Manifest extends \Rune\Manifest {
+
+  protected static $origin = __DIR__;
+
+  public static function _arise()
+  {}
+
+}

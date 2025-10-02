@@ -1,0 +1,7 @@
+{{COLOR-SECONDARY}}
+[M] = It is the main component that has already utilized entity, essence, and ether for easier use.
+[U] = The user responsible for maintaining and operating this rune.
+[N] = A note explaining what this rune actually is and what its purpose is.
+Need of rune = A list of which runes this rune depends on.
+[TYPE] = manifest:static class | entity:function | essence:variable | ether:constant
+{{COLOR-DEFAULT}}

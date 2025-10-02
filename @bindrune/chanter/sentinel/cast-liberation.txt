@@ -1,0 +1,10 @@
+{{nl}}
+{{text-end}}
+{{bg-danger}} # {{bg-end}} L I B E R A T I O N{{text-danger}}.{{text-default}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --create-rune {{text-success}}{{icon-success}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --remove-rune {{text-success}}{{icon-success}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-up {{text-success}}{{icon-success}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix {{text-success}}{{icon-success}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix-node {{text-success}}{{icon-success}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix-note {{text-success}}{{icon-success}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix-need {{text-success}}{{icon-success}}

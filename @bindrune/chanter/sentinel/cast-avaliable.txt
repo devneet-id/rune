@@ -1,0 +1,13 @@
+{{nl}}
+{{bg-danger}} # {{bg-end}} A V A L I A B L E{{text-danger}}.{{text-default}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --altar {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Run the altar
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --invoke {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Invoke the rune to your workspace.
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --revoke {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Revoke the rune in your workspace.
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --inspect {{text-danger}}{{icon-danger}}
+  {{text-secondary}}≈ Inspection the rune for miss linked rune.

@@ -1,0 +1,205 @@
+[#] SYSTEM INFORMATION: -- 
+  ::INTRO -- 
+    project: Rune
+    base-language: php
+    language-version: 8.1+
+    composer: true
+  ::STRUCTURE -- 
+    -Ethereal.php
+    -Manifest.php
+    -Phantasm.php
+    -Rune/
+    -Rune/Ether.php
+    -Rune/Essence.php
+    -Rune/Entity.php
+    -Rune/Manifest.php
+    -Rune/Phantasm.php
+  ::CORE -- 
+    Ethereal.php: core but not primary do for liberation the rune, conditional if user want build own rune
+    Manifest.php: core parent for all rune manifest, have ether(), essence(), entity() load method
+    Phantasm.php: core parent for all rune phantasm, conditional normally not in process
+  ::MODE -- 
+    user avaliable rune: conventional user use rune for create a project
+    liberation mode rune: expertise in rune can binding system rune with own rune with repository @ethereal
+
+[#] RULES & FLOW: --
+  ::INTRO
+    - Rune: Ether,Essence,Entity,Manifest,Phantasm
+  ::ROLE -- 
+    - Ether: constant rule  state or data
+    - Essence: globals variable for lifecycle dynamic process
+    - Entity: function part of feature
+    - Manifest: static class of feature
+    - Phantasm: class reflection of rune for documentation
+  ::INHERIT -- 
+    - Ether: Essence,Entity,Manifest,AnotherManifest
+    - Essence: Entity,Manifest,AnotherManifest
+    - Entity: Manifest,AnotherEntity
+    - Manifest: AnotherEntity,AnotherManifest
+  ::STRUCTURE -- 
+    - vendor
+    - composer.json
+    - rune.php
+  ::TERM -- 
+    - do not instance / load static class core manifest
+    - must have origin in aether
+    - must have at least 1 awaken if rune have awaken or call it with aether
+    - before use some rune must awaken ether,essence or entity first
+
+[#] INTRODUCTION RUNE IN SYSTEM: -- 
+{{RUNES}}
+
+[#] EXAMPLE FINAL CODES & STRUCTURE PATTERN: -- 
+<?php
+/*
+ * Act. 1 - ???
+ * THE BEYOND ✦✦✦
+ *
+ * From the silence of nothingness, echoes rise from the void.
+ * A journey begins — with runes at your side.
+ * 
+ * Run this script using:
+ *   $ php rune.php
+ *   $ php rune.php grimoire
+ */
+require_once __DIR__ . '/vendor/autoload.php';
+/**
+ * I N V O C A T I O N
+ * 
+ * Step 1 — Summon the runes:  
+ * Import each module's manifest.
+ * 
+ * Step 2 — Channel the energy:  
+ * Initialize ether, essence, and entity.
+ * 
+ * Note: Keep #sentinel markers if you're using Sentinel support.
+ */
+use Rune\Aether\Manifest as Aether;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Crafter\Manifest as Crafter;
+use Rune\Specter\Manifest as Specter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Crafter::ether()::essence()::entity();
+Specter::ether()::essence()::entity();
+#sentinel-awaken
+/**
+ * I N C A N T A T I O N
+ * 
+ * This is your working space.  
+ * Use begin() and end() to define the active logic scope.
+ */
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+/* BUILD
+ * todo build website applications 
+ * [i]INFO: crafting process will be reset your shard in .echoes
+ * */
+Chanter::cast('build', function() {
+  // create crafting environment
+  Crafter::item('my-rune-app', function() {
+    // set seeds
+    Crafter::seed('DIST', __DIR__ . '/dist/index.php'); // distribution file output
+    Crafter::seed('TYPE', 'plain'); // plain (HTML,CSS,JS) or function, class (PHP only)
+    Crafter::seed('LANGUAGE', ['html','css','js', 'php']); // web language only 4 html, css, js, php
+    // set multiple shards with Forger
+    Forger::scan('src/nirvana/', function($item) {
+      Crafter::shard($item->target);
+    });
+    // set shards one by one
+    Crafter::shard('src/index.head.html'); // privately for HTML <head>
+    Crafter::shard('src/index.html'); // HTML <body>
+    Crafter::shard('src/index.css');
+    Crafter::shard('src/index.js');
+    Crafter::shard('src/index.php');
+  });
+  // run crafting
+  Crafter::spark('my-rune-app');
+});
+/* STORE
+ * todo store your asset workspace 
+ * [!]WARNING: must be run after build
+ *  */
+Chanter::cast('store', function() {
+  // insert shards
+  Keeper::shard([
+    'dist/assets/ai-image.jpeg',
+  ]);
+  // notify
+  Whisper::echo("\n{{color-success}}{{icon-success}}{{label-success}}Successfully store to shards");
+});
+/* WATCH
+ * todo observe change in repo then trigger build
+ *  */
+Chanter::cast('watch', function() {
+  Specter::observer('src', function() {
+    Chanter::cast('build')();
+  });
+});
+/* SERVE
+ * todo serve output file in local-development server PHP
+ *  */
+Chanter::cast('serve', function() {
+  Specter::devserver([
+    'path'=> 'dist', // use path if web have assets
+    // 'file'=> 'dist/index.php',
+  ]);
+});
+/* START
+ * todo start serve & watch in another process
+ *  */
+Chanter::cast('start', function() {
+  // build it first
+  Chanter::cast('build')();
+  // run serve with specter cast
+  Specter::cast('{{self}} serve', [
+    'exit' => true, 
+    'title'=> 'RUNE:: Local Development Server'
+  ]);
+  // run watch with specter cast
+  Specter::cast('{{self}} watch', [
+    'exit' => true, 'title'=> 
+    'RUNE:: Observer Directories'
+  ]);
+  // all of specter.cast is non-blocking execution
+});
+/* READY
+ * todo setup your production ready
+ * [i]INFO: its mean universal, you can just compress to zip
+ * or you can use VCS like Github, Gitlab.
+ * or you can direct to server as well
+ *  */
+Chanter::cast('ready', function() {
+  // run build
+  Chanter::cast('build')();
+  // run store
+  Chanter::cast('store')();
+  // create artefact look this will blocking execution
+  Chanter::cast('artefact --invoke')();
+  // then move to repo ready/
+  Forger::move([
+    [ 'type'=>'item', 'from'=>'dist/index.php', 'target'=>'ready/index.php' ],
+    [ 'type'=>'item', 'from'=>'rune.php.rune', 'target'=>'ready/rune.php.rune' ],
+    [ 'type'=>'repo', 'from'=>'dist/assets/', 'target'=>'ready/assets/' ],
+  ]);
+  // notify
+  Whisper::echo("\n{{color-success}}{{icon-success}}{{label-success}}Ready to production");
+});
+// Build website is good as it easy right?, 
+// <3 enjoy it.
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

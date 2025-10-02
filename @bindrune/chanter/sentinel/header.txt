@@ -1,0 +1,12 @@
+{{text-secondary}}///////////////////////////////////{{text-end}}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+██ ▄▄▄ ██ ▄▄▄██ ▀██ █▄▄ ▄▄█▄ ▄██ ▀██ ██ ▄▄▄██ ████
+██▄▄▄▀▀██ ▄▄▄██ █ █ ███ ████ ███ █ █ ██ ▄▄▄██ ████
+██ ▀▀▀ ██ ▀▀▀██ ██▄ ███ ███▀ ▀██ ██▄ ██ ▀▀▀██ ▀▀ █
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+{{text-secondary}}
+Your Sentinel helps build your app, monitor
+performance, and keep things running.
+Confused or need help with runes? Sentinel's
+got your back.
+{{text-end}}

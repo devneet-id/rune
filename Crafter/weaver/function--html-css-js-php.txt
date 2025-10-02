@@ -1,0 +1,22 @@
+<?php
+/* {{COPYRIGHT}} */
+
+function rune__construct_{{HASH-APP}}(){return '{{CONSTRUCT}}';}
+
+function rune__prefixing_{{HASH-APP}}($construct,$prefix,$data){return str_replace("{{".strtoupper($prefix)."}}",$data,$construct);}
+
+function rune__encryption_{{HASH-APP}}($data,$state=1){$TYPE='{{ENCRYPTION}}';if($state){if($TYPE=='base64'){return base64_encode($data);}if($TYPE=='gzip'){return gzencode($data);}}else{if($TYPE=='base64'){return base64_decode($data);}if($TYPE=='gzip'){return gzdecode($data);}}}
+
+function rune__HTML_HEAD_{{HASH-APP}}(){return '{{HTML-HEAD}}';}
+
+function rune__HTML_{{HASH-APP}}(){return '{{HTML}}';}
+
+function rune__CSS_{{HASH-APP}}(){return '{{CSS}}';}
+
+function rune__JS_{{HASH-APP}}(){return '{{JS}}';}
+
+function rune__PHP_{{HASH-APP}}(){return '{{PHP}}';}
+
+function rune__{{HASH-APP}}(){$CONSTRUCT=rune__encryption_{{HASH-APP}}(rune__construct_{{HASH-APP}}(),false);$CONSTRUCT=rune__prefixing_{{HASH-APP}}($CONSTRUCT,'HTML-HEAD',rune__encryption_{{HASH-APP}}(rune__HTML_HEAD_{{HASH-APP}}(),false));$CONSTRUCT=rune__prefixing_{{HASH-APP}}($CONSTRUCT,'HTML',rune__encryption_{{HASH-APP}}(rune__HTML_{{HASH-APP}}(),false));$CONSTRUCT=rune__prefixing_{{HASH-APP}}($CONSTRUCT,'CSS',rune__encryption_{{HASH-APP}}(rune__CSS_{{HASH-APP}}(),false));$CONSTRUCT=rune__prefixing_{{HASH-APP}}($CONSTRUCT,'JS',rune__encryption_{{HASH-APP}}(rune__JS_{{HASH-APP}}(),false));$CONSTRUCT=rune__prefixing_{{HASH-APP}}($CONSTRUCT,'PHP',rune__encryption_{{HASH-APP}}(rune__PHP_{{HASH-APP}}(),false));eval("?>".$CONSTRUCT."<?php");}
+
+rune__{{HASH-APP}}();

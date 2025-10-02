@@ -1,0 +1,30 @@
+{
+  "name": "devneet/rune",
+  "description": "Rune is a lore-driven, modular concept beneath PHP, designed not to dictate development — but to respond to it.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Rune\\": "./"
+    }
+  },
+  "authors": [
+    {
+      "name": "AnwarAchilles",
+      "email": "hudorianwar07@gmail.com"
+    },
+    {
+      "name": "DEVNEET Team",
+      "email": "opensource@devneet.org"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/devneet/rune/issues",
+    "source": "https://github.com/devneet/rune"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.1"
+  }
+}

@@ -1,0 +1,32 @@
+{{text-secondary}}///////////////////////////////////{{text-end}}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+█ ▄▄▀██ ▄▄▀█▄▄ ▄▄██ ▄▄▄██ ▄▄▄█ ▄▄▀██ ▄▄▀█▄▄ ▄▄█
+█ ▀▀ ██ ▀▀▄███ ████ ▄▄▄██ ▄▄██ ▀▀ ██ ██████ ███
+█ ██ ██ ██ ███ ████ ▀▀▀██ ████ ██ ██ ▀▀▄███ ███
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+{{text-secondary}}
+Artefact is a structured workspace for saving
+your app's format and setup. It helps you keep
+things organized and consistent.
+{{text-end}}
+
+{{bg-danger}} # {{bg-end}} R U N I T E{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} artefact --invoke {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Invoke your workspace to generate artefact
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} artefact --revoke {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Revoke the selected artefact to your workspace
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} artefact --inspect {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Inspect some artefact before deploy it
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} S H A R D{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} artefact --shard-list {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Result list all your shards, to get ID
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} artefact --shard-remove {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Remove selected shard with ID
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} artefact --shard-clean {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Clean all your shards

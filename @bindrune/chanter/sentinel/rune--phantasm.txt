@@ -1,0 +1,30 @@
+<?php
+
+/*
+ * PHANTASM
+ * Represents the documentation class for this domain.
+ */
+
+namespace Rune\{{name-capital}};
+
+class Phantasm extends \Rune\Phantasm {
+
+  public $version = 0.1;
+  
+  public $main = '{{name-capital}}';
+
+  public $mark = 'BETA';
+
+  public $link = [];
+
+  public $node = [
+    [
+      'type' => 'manifest',
+      'call' => '_arise()',
+      'note'=> '',
+    ],
+  ];
+
+  public function awakening() {}
+  
+}
