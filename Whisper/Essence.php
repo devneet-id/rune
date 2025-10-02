@@ -88,3 +88,6 @@ $GLOBALS['WHISPER_DRAIN'] = [];
 
 #NOTE: State toggle to determine whether whisper is in drain mode
 $GLOBALS['WHISPER_DRAIN_STATE'] = false;
+
+#NOTE: global pointer for flash progress
+$GLOBAL['CHANTER_FLASH_POINT'] = 0;
