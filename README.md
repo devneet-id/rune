@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/devneet-id/rune target="_blank">
-    <img src="https://raw.githubusercontent.com/devneet-id/rune-art/refs/heads/main/rune-card.png" width="300" alt="Logo">
+    <img src="https://raw.githubusercontent.com/devneet-id/rune-art/refs/heads/main/official/card-2.svg" width="300" alt="Logo">
   </a>
 </p>
 
@@ -54,7 +54,7 @@ This makes Rune inherently lightweight and adaptable, aligning perfectly with pr
 ## Awakening
 Install Rune using Composer:
 ```bash
-composer require devneet/rune:1.x-dev
+composer require devneet/rune
 ```
 
 Create main file:
