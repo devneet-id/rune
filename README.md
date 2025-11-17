@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/devneet/rune" alt="Total Downloads"></a>
   <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/devneet/rune" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/devneet/rune" alt="License"></a
+  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/devneet/rune" alt="License"></a>
 </p>
 
 <p align="center">
@@ -122,12 +122,12 @@ By looking, writing, and growing, we can finally understand.
 
 ## Contributing
 
-Thank you for considering contributing to the Rune! The contribution guide can be found in the [Rune documentation](https://github.com/devneet/rune#readme).
+Thank you for considering contributing to the Rune! The contribution guide can be found in the [Rune Contribution](CONTRIBUTING.md).
 
 
 ## Code of Conduct
 
-In order to ensure that the DEVNEET community is welcoming to all, please review and abide by the [Code of Conduct](https://github.com/devneet/rune#readme).
+In order to ensure that the DEVNEET community is welcoming to all, please review and abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 
 ## License
