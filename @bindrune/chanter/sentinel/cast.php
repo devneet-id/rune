@@ -120,24 +120,25 @@ Chanter::cast(
         $codex_arise = $manifest . '::' . implode('()::', $selected_methods) . '();';
 
         $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
+        $eol = (strpos($rune, "\r\n") !== false) ? "\r\n" : "\n"; // keep the runite's own line ending
 
         $prefix_manifest = '#sentinel-manifest';
         $prefix_arise = '#sentinel-awaken';
         $codex_manifest = "use Rune\\{$manifest}\\Manifest as {$manifest};";
 
         if (strpos($rune, $codex_manifest) !== false) {
-          $rune = str_replace($codex_manifest . PHP_EOL, '', $rune);
+          $rune = str_replace($codex_manifest . $eol, '', $rune);
         }
-        $rune = str_replace($prefix_manifest, $codex_manifest . PHP_EOL . $prefix_manifest, $rune);
+        $rune = str_replace($prefix_manifest, $codex_manifest . $eol . $prefix_manifest, $rune);
 
         // Hapus baris arise yang lama untuk manifest ini
         $rune = preg_replace(
-          '/' . preg_quote($manifest) . '::(?:ether|essence|entity)(\(\)::)?(?:ether|essence|entity)?(\(\)::)?(?:ether|essence|entity)?\(\);' . PHP_EOL . '/',
+          '/' . preg_quote($manifest) . '::(?:ether|essence|entity)(\(\)::)?(?:ether|essence|entity)?(\(\)::)?(?:ether|essence|entity)?\(\);' . $eol . '/',
           '',
           $rune
         );
 
-        $rune = str_replace($prefix_arise, $codex_arise . PHP_EOL . $prefix_arise, $rune);
+        $rune = str_replace($prefix_arise, $codex_arise . $eol . $prefix_arise, $rune);
         
         Forger::item(AETHER_REPO . '/'. AETHER_FILE, $rune);
         return true;
@@ -182,6 +183,7 @@ Chanter::cast(
         }
 
         $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
+        $eol = (strpos($rune, "\r\n") !== false) ? "\r\n" : "\n"; // keep the runite's own line ending
         $prefix_manifest = '#sentinel-manifest';
         $prefix_arise = '#sentinel-awaken';
         $codex_manifest = "use Rune\\{$manifest}\\Manifest as {$manifest};";
@@ -198,10 +200,10 @@ Chanter::cast(
 
         if ($arise === 'all') {
           if ($chain_line) {
-            $rune = str_replace($chain_line . PHP_EOL, '', $rune);
+            $rune = str_replace($chain_line . $eol, '', $rune);
           }
           if (strpos($rune, $codex_manifest) !== false) {
-            $rune = str_replace($codex_manifest . PHP_EOL, '', $rune);
+            $rune = str_replace($codex_manifest . $eol, '', $rune);
           }
         } else {
           if ($chain_line) {
@@ -218,9 +220,9 @@ Chanter::cast(
               $new_chain = $manifest . '::' . implode('()::', array_map(fn($m) => $method_map[$m], $remaining_methods)) . '();';
               $rune = str_replace($chain_line, $new_chain, $rune);
             } else {
-              $rune = str_replace($chain_line . PHP_EOL, '', $rune);
+              $rune = str_replace($chain_line . $eol, '', $rune);
               if (strpos($rune, $codex_manifest) !== false) {
-                $rune = str_replace($codex_manifest . PHP_EOL, '', $rune);
+                $rune = str_replace($codex_manifest . $eol, '', $rune);
               }
             }
           }

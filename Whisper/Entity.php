@@ -87,7 +87,8 @@ function whisper_echo_imbue( String $text ) {
       $maps[ $key.'-'.$key2 ] = $value;
     }
   }
-  $text = weaver_bind_multiple($text, $maps);
+  // style variables are applied to this text only; they must not leak into Weaver's global bond
+  $text = weaver_bind_multiple($text, $maps, false);
   aether_arcane('Whisper.entity.whisper_echo_imbue');
   return $text;
 }

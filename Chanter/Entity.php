@@ -50,8 +50,9 @@ function chanter_arg_extract( String $newArg = '' ) {
       if (preg_match('/^--([a-zA-Z0-9_-]+)(?:=(.*))?$/', $arg, $match)) {
         $key = str_replace('--', '', $match[1]);
         // `--x` (no value) is a flag -> true; `--x=0` keeps "0"
-        $value = (isset($match[2]) && $match[2] !== '') ? urldecode($match[2]) : true;
-        $CHANTER_ARG_SPELL[$key] = urlencode($value);
+        $value = (isset($match[2]) && $match[2] !== '') ? rawurldecode($match[2]) : true;
+        // raw* keeps a literal '+' (e.g. How+to+Casting.rune) instead of turning it into a space
+        $CHANTER_ARG_SPELL[$key] = rawurlencode($value);
       }
     }else {
       $CHANTER_ARG_CAST[] = $arg;
@@ -204,7 +205,7 @@ function chanter_spell_get( String $name ) {
   global $CHANTER_ARG_SPELL;
 
   if (isset($CHANTER_ARG_SPELL[$name])) {
-    $return = urldecode($CHANTER_ARG_SPELL[$name]);
+    $return = rawurldecode($CHANTER_ARG_SPELL[$name]);
   }else {
     $return = false;
   };
