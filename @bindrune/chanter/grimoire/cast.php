@@ -301,6 +301,8 @@ Chanter::cast(
       $template = Weaver::item(__DIR__ . '/ai.txt');
       $list = $processing_get_all_rune();
       $runes = [];
+      $runes_source = '';
+      $structure = ['Ether.php', 'Essence.php', 'Entity.php', 'Manifest.php', 'Phantasm.php'];
       foreach ($list as $rune) {
         $phantasm = str_replace('Manifest', 'Phantasm', $rune[0]);
         $phantasm = new $phantasm();
@@ -308,16 +310,23 @@ Chanter::cast(
 
         if ($full) {
           $source = '';
-          foreach ($result['structure']['rune'] as $file) {
-            $source .= file_get_contents($phantasm->origin . '/' . $file);
+          foreach ($structure as $file) {
+            if (file_exists($phantasm->origin . '/' . $file)) {
+              $source .= file_get_contents($phantasm->origin . '/' . $file);
+            }
           }
-          $result['rune-source'] .= weaver_min_php($source);
+          $runes_source .= weaver_min_php($source);
         }
       }
 
       $template = Weaver::bind($template, [
         'runes'=> json_encode($runes)
       ]);
+
+      // full mode: include the minified source of every rune
+      if ($full) {
+        $template .= "\n\n[#] RUNE SOURCE: -- \n" . $runes_source;
+      }
       $template = str_replace("\n", '', $template);
       $template = str_replace("\t", '', $template);
       $template = str_replace("  ", ' ', $template);
