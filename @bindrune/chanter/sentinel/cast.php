@@ -100,7 +100,7 @@ Chanter::cast(
     /* INVOKE
     * todo invoke manifest & arise to rune
     *  */
-    $processing_invoke = function($target) {
+    $processing_invoke = function($target) use ($avalaible_rune) {
       (aether_has_entity('forger')) ?: die(PHP_EOL.'[!]WARNING: Required Forger:entity'.PHP_EOL);
 
       $target = ucfirst(strtolower($target));
@@ -108,6 +108,11 @@ Chanter::cast(
         $target_parts = explode('.', $target);
         $manifest = $target_parts[0];
         $methods = array_slice($target_parts, 1);
+
+        // only invoke runes that exist (origin runes, plus @liberations runes in liberation mode)
+        if (!in_array($manifest, $avalaible_rune())) {
+          return false;
+        }
 
         $valid_methods = ['ether', 'essence', 'entity'];
         $selected_methods = $methods ? array_values(array_intersect($valid_methods, $methods)) : $valid_methods;
@@ -154,6 +159,7 @@ Chanter::cast(
           Whisper::echo("{{color-success}}{{icon-success}} Successfully do Invoked with '$input' {{nl}}");
         }else {
           Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Invoked with '$input' {{nl}}");
+          Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Avaliable rune: " . implode(', ', $avalaible_rune()) . "{{nl}}");
         }
       }
     }
