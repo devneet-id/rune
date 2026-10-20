@@ -191,7 +191,8 @@ Chanter::cast('awakening', function() {
     }
     
     // deploy runite
-    Forger::item(AETHER_FILE, $result->RUNITE);
+    $runite = str_replace('{file}', basename(AETHER_FILE), $result->RUNITE);
+    Forger::item(AETHER_FILE, $runite);
 
     // deploy shards
     if (isset($result->SHARDS)) {
