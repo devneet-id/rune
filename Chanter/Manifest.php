@@ -83,7 +83,7 @@ class Manifest extends \Rune\Manifest {
 
   #NOTE: Gets or sets a spell definition by key and returns the result.
   public static function spell( String $key, Mixed $value = NULL, Mixed $fail = false ) {
-    if (empty($value)) {
+    if ($value === NULL) {
       $return = chanter_spell_get($key);
     }else {
       chanter_spell_set($key, $value);

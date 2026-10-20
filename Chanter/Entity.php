@@ -49,8 +49,8 @@ function chanter_arg_extract( String $newArg = '' ) {
     if (strpos($arg, '--')!==false) {
       if (preg_match('/^--([a-zA-Z0-9_-]+)(?:=(.*))?$/', $arg, $match)) {
         $key = str_replace('--', '', $match[1]);
-        $value = (isset($match[2])) ? $match[2] : false;
-        $value = (!empty($value)) ? urldecode($value) : true;
+        // `--x` (no value) is a flag -> true; `--x=0` keeps "0"
+        $value = (isset($match[2]) && $match[2] !== '') ? urldecode($match[2]) : true;
         $CHANTER_ARG_SPELL[$key] = urlencode($value);
       }
     }else {
@@ -178,7 +178,7 @@ function chanter_cast_has( String $arg ) {
 
 #NOTE: Gets or sets a spell by name depending on whether values are provided
 function chanter_spell( String $name, $values = NULL ) {
-  if (empty($values)) {
+  if ($values === NULL) {
     $return = chanter_spell_get($name);
   }else {
     chanter_spell_set($name, $values);
