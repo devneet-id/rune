@@ -191,7 +191,8 @@ Chanter::cast('awakening', function() {
     }
     
     // deploy runite
-    Forger::item(AETHER_FILE, $result->RUNITE);
+    $runite = str_replace('{file}', basename(AETHER_FILE), $result->RUNITE);
+    Forger::item(AETHER_FILE, $runite);
 
     // deploy shards
     if (isset($result->SHARDS)) {
@@ -235,7 +236,7 @@ Chanter::cast('awakening', function() {
   Whisper::echo("{{color-secondary}}or from the strange artefact? \n\n");
   if (Whisper::call('Begin anew, or use an artefact [y/n]: ') !== 'y') {
     $revoking = $processing_revoke(
-      __DIR__ . '/src/Blank+Default.2025-10-01.Anwar+Achilles.rune',
+      __DIR__ . '/src/Blank+Starter.2025-10-01.Anwar+Achilles.rune',
       AETHER_REPO.'/'.AETHER_FILE
     );
     if ($revoking) {
@@ -299,7 +300,7 @@ Chanter::cast('awakening', function() {
     if ($revoking) {
       $selfFile = AETHER_FILE;
       Whisper::echo("{{text-success}}{{icon-success}} Awakening successfully. \n");
-      Whisper::echo("{{text-info}}{{icon-info}}{{end}}{{text-secondary}} Checkout your runite with '{{text-danger}}php $selfFile run{{end}}'. \n");
+      Whisper::echo("{{text-info}}{{icon-info}}{{end}}{{text-secondary}} Checkout your runite with '{{text-danger}}php $selfFile{{end}}'. \n");
       
       Aether::exit(true);
     }

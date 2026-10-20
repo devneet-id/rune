@@ -124,8 +124,9 @@ Chanter::cast(
       $format = Weaver::item(__DIR__ . '/format.txt');
       $format = Weaver::bind($format, [
         'time'=> time(),
-        'system'=> php_uname(),
-        'php'=> phpversion(),
+        // OS, release, version and machine only -- no host name (privacy when sharing artefacts)
+        'system'=> php_uname('s') . ' ' . php_uname('r') . ' ' . php_uname('v') . ' ' . php_uname('m'),
+        'php-version'=> phpversion(),
         'version'=> AETHER_VERSION,
         'runic'=> $runic,
         'encryption'=> 'base64',
@@ -310,14 +311,14 @@ Chanter::cast(
       // binding template
       $template = Weaver::bind($template, [
         'lore' => $result->lore,
-        'php'=> $result->ARTEFACT['php'],
+        'artefact-php'=> $result->ARTEFACT['php'],
         'runic'=> $result->ARTEFACT['runic'],
         'encryption'=> $result->ARTEFACT['encryption'],
         'system'=> $result->ARTEFACT['system'],
         'version'=> $result->ARTEFACT['version'],
         'my_version'=> AETHER_VERSION,
         'my_php'=> phpversion(),
-        'my_system'=> php_uname(),
+        'my_system'=> php_uname('s') . ' ' . php_uname('r') . ' ' . php_uname('v') . ' ' . php_uname('m'),
         'cast'=> $casts,
         'rune'=> $runes,
         'shard'=> $shards,

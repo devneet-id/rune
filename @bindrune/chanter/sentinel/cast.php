@@ -13,7 +13,7 @@ use Rune\Specter\Manifest as Specter;
 // sentinel
 Chanter::cast(
   arg:'sentinel',
-  echo: "Help you with maintain your runite as assitant.",
+  echo: "Help you with maintain your runite as assistant.",
   execute: function() {
     Weaver::ether()::essence()::entity();
     Whisper::ether()::essence()::entity();
@@ -100,7 +100,7 @@ Chanter::cast(
     /* INVOKE
     * todo invoke manifest & arise to rune
     *  */
-    $processing_invoke = function($target) {
+    $processing_invoke = function($target) use ($avalaible_rune) {
       (aether_has_entity('forger')) ?: die(PHP_EOL.'[!]WARNING: Required Forger:entity'.PHP_EOL);
 
       $target = ucfirst(strtolower($target));
@@ -108,6 +108,11 @@ Chanter::cast(
         $target_parts = explode('.', $target);
         $manifest = $target_parts[0];
         $methods = array_slice($target_parts, 1);
+
+        // only invoke runes that exist (origin runes, plus @liberations runes in liberation mode)
+        if (!in_array($manifest, $avalaible_rune())) {
+          return false;
+        }
 
         $valid_methods = ['ether', 'essence', 'entity'];
         $selected_methods = $methods ? array_values(array_intersect($valid_methods, $methods)) : $valid_methods;
@@ -154,6 +159,7 @@ Chanter::cast(
           Whisper::echo("{{color-success}}{{icon-success}} Successfully do Invoked with '$input' {{nl}}");
         }else {
           Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Invoked with '$input' {{nl}}");
+          Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Avaliable rune: " . implode(', ', $avalaible_rune()) . "{{nl}}");
         }
       }
     }
@@ -371,7 +377,9 @@ Chanter::cast(
 
       // processing
       if ($processing__remove_rune($name, $repo) ) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success create rune: $name {{nl}}");
+        // also revoke it from the runite, so no `use`/awaken line points to a deleted rune
+        $processing_revoke($name);
+        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success remove rune: $name {{nl}}");
       }else {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: $name {{nl}}");
       }
@@ -505,7 +513,7 @@ Chanter::cast(
         
         Forger::item($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template));
 
-        return true;
+        return $maps; // T15: return the fresh node list so --phantasm-fix can pass it to fix-note
       }else {
         return false;
       }
@@ -523,7 +531,7 @@ Chanter::cast(
       // set data
       $name = ucfirst(strtolower($name));
       // processing
-      if ( $processing__phantasm_fix_node($name) ) {
+      if ( $processing__phantasm_fix_node($name) !== false ) {
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
       }else {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
@@ -619,7 +627,7 @@ Chanter::cast(
     }
     
     /* PHANTASM FIX NOTE */
-    $processing__phantasm_fix_note = function ($name) {
+    $processing__phantasm_fix_note = function ($name, $nodes = null) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
       $phantasm = new $phantasm_class();
 
@@ -633,7 +641,7 @@ Chanter::cast(
         $renote = [];
         $source = $sourcing; // source code penuh
 
-        foreach ($phantasm->node as $node) {
+        foreach (($nodes ?? $phantasm->node) as $node) { // T15: use fresh nodes when given
             $type = $node['type'];
             $call = $node['call'];
 
@@ -723,7 +731,7 @@ Chanter::cast(
       $name = ucfirst(strtolower($name));
       // fixing node
       $nodeFixed = $processing__phantasm_fix_node($name);
-      if ($nodeFixed) {
+      if ($nodeFixed !== false) {
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Node fixed for phantasm: $name {{nl}}");
       } else {
         Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix node for phantasm: $name {{nl}}");
@@ -736,7 +744,7 @@ Chanter::cast(
         Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix link for phantasm: $name {{nl}}");
       }
       // fixing note
-      $noteFixed = $processing__phantasm_fix_note($name);
+      $noteFixed = $processing__phantasm_fix_note($name, ($nodeFixed !== false) ? $nodeFixed : null);
       if ($noteFixed) {
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Note fixed for phantasm: $name {{nl}}");
       } else {

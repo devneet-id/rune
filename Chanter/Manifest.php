@@ -33,6 +33,9 @@ class Manifest extends \Rune\Manifest {
 
     if ($CHANTER_ARG == AETHER_FILE) {
       $run = chanter_cast_get('rune');
+    }else if ($CHANTER_ARG_CAST === '') {
+      // only spells given (e.g. `php cast --resonance`) -> base rune cast with those spells
+      $run = chanter_cast_get(trim('rune ' . $spell));
     }else {
       $run = chanter_cast_get($cast);
     }
@@ -80,7 +83,7 @@ class Manifest extends \Rune\Manifest {
 
   #NOTE: Gets or sets a spell definition by key and returns the result.
   public static function spell( String $key, Mixed $value = NULL, Mixed $fail = false ) {
-    if (empty($value)) {
+    if ($value === NULL) {
       $return = chanter_spell_get($key);
     }else {
       chanter_spell_set($key, $value);

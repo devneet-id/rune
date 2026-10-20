@@ -20,8 +20,14 @@ function forger_trace( String $source_path, ?Callable $callback = null ) {
   $targets = [];
   $current = '';
 
+  // absolute Unix path ("/home/..."): keep the leading separator, but don't trace the root itself
+  if ($source_path !== '' && $source_path[0] === DIRECTORY_SEPARATOR) {
+    $current = DIRECTORY_SEPARATOR;
+    array_shift($pathParts);
+  }
+
   foreach ($pathParts as $part) {
-    $current .= ($current === '' ? '' : DIRECTORY_SEPARATOR) . $part;
+    $current .= ($current === '' || $current === DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR) . $part;
     if (!empty($current)) {
       $stack['target'] = $current;
       $stack['ready'] = (file_exists($current));

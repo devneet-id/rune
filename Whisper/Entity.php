@@ -13,8 +13,11 @@ function whisper_clear() {
 }
 #NOTE: Force clear terminal using system commands (Linux & Windows)
 function whisper_clear_force() {
-  system('clear');
-  system('cls');
+  if (PHP_OS_FAMILY === 'Windows') {
+    system('cls');
+  }else {
+    system('clear');
+  }
   whisper_clear();
 }
 #NOTE: Delay output for a given number of milliseconds

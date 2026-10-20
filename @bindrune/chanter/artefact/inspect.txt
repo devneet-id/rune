@@ -11,7 +11,7 @@
     {{text-danger}}»{{text-end}} {{RUNIC}} {{text-info}}with{{text-end}} {{ENCRYPTION}}
 
 {{text-secondary}} ♦ Rune & PHP Version{{text-end}}
-    {{text-danger}}»{{text-end}} {{VERSION}} {{text-info}}with PHP{{text-end}} {{PHP}}
+    {{text-danger}}»{{text-end}} {{VERSION}} {{text-info}}with PHP{{text-end}} {{ARTEFACT-PHP}}
     {{text-info}}You »{{text-end}} {{MY_VERSION}} {{text-info}}with PHP{{text-end}} {{MY_PHP}}
 
 {{text-secondary}} ♦ Operation System{{text-end}}
