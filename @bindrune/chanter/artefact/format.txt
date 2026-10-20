@@ -5,5 +5,5 @@ The Artefact of Runite
   ::version={{version}}
   ::runic={{runic}}
   ::encryption={{encryption}}
-  ::php={{php}}
+  ::php={{php-version}}
   ::system={{system}}

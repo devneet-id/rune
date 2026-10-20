@@ -125,7 +125,7 @@ Chanter::cast(
       $format = Weaver::bind($format, [
         'time'=> time(),
         'system'=> php_uname(),
-        'php'=> phpversion(),
+        'php-version'=> phpversion(),
         'version'=> AETHER_VERSION,
         'runic'=> $runic,
         'encryption'=> 'base64',
@@ -310,7 +310,7 @@ Chanter::cast(
       // binding template
       $template = Weaver::bind($template, [
         'lore' => $result->lore,
-        'php'=> $result->ARTEFACT['php'],
+        'artefact-php'=> $result->ARTEFACT['php'],
         'runic'=> $result->ARTEFACT['runic'],
         'encryption'=> $result->ARTEFACT['encryption'],
         'system'=> $result->ARTEFACT['system'],
