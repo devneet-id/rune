@@ -37,8 +37,8 @@ Chanter::cast(
       $target = str_replace('.rune', '', $link);
       $file = Forger::item($link);
       $file = trim($file);
-      $file = str_replace(PHP_EOL, '', $file);
-      $file = str_replace("\n", '', $file);
+      // strip every line ending (CRLF/LF/CR) so artefacts parse on any OS
+      $file = str_replace(["\r\n", "\r", "\n"], '', $file);
       $template = explode("[ᚱᚾ] ", $file);
       
       $format = [];
