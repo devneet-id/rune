@@ -13,7 +13,7 @@ use Rune\Specter\Manifest as Specter;
 // sentinel
 Chanter::cast(
   arg:'sentinel',
-  echo: "Help you with maintain your runite as assitant.",
+  echo: "Help you with maintain your runite as assistant.",
   execute: function() {
     Weaver::ether()::essence()::entity();
     Whisper::ether()::essence()::entity();
