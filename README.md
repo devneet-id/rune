@@ -1,11 +1,11 @@
 <p align="center">
-  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/devneet/rune" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/devneet/rune" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/devneet/rune" alt="License"></a>
+  <a href="https://packagist.org/packages/devneet/rune"><img src="https://img.shields.io/packagist/dt/devneet/rune" alt="Total Downloads"></a>
+  <a href="https://packagist.org/packages/devneet/rune"><img src="https://img.shields.io/packagist/v/devneet/rune" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/devneet/rune"><img src="https://img.shields.io/packagist/l/devneet/rune" alt="License"></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/devneet-id/rune target="_blank">
+  <a href="https://github.com/devneet-id/rune" target="_blank">
     <img src="https://raw.githubusercontent.com/devneet-id/rune-art/refs/heads/main/official/card-2.svg" width="300" alt="Logo">
   </a>
 </p>
