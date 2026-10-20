@@ -33,6 +33,9 @@ class Manifest extends \Rune\Manifest {
 
     if ($CHANTER_ARG == AETHER_FILE) {
       $run = chanter_cast_get('rune');
+    }else if ($CHANTER_ARG_CAST === '') {
+      // only spells given (e.g. `php cast --resonance`) -> base rune cast with those spells
+      $run = chanter_cast_get(trim('rune ' . $spell));
     }else {
       $run = chanter_cast_get($cast);
     }
