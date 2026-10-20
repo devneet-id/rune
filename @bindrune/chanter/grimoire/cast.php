@@ -192,6 +192,14 @@ Chanter::cast(
     *  */
     $processing__arcane = function() {
       $file = Forger::item(KEEPER_ECHOES_ARCANE);
+
+      // no arcane recorded yet (runite without Keeper::begin() ... Keeper::end())
+      if (empty(trim((string) $file))) {
+        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} No arcane recorded yet.{{nl}}");
+        Whisper::echo("{{COLOR-SECONDARY}} Engrave Keeper in your runite (Keeper::begin() ... Keeper::end()) to record the arcane.{{nl}}");
+        return;
+      }
+
       $file = explode(PHP_EOL, $file);
 
       global $KEEPER_ARCANE;
