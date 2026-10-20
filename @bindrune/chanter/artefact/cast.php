@@ -141,16 +141,30 @@ Chanter::cast(
       // dd('x');
       if (defined('KEEPER_ECHOES')) {
         if (file_exists(KEEPER_ECHOES)) {
-          // create echoes
-          if (file_exists(KEEPER_ECHOES . '/' . AETHER_FILE . '.json')) {
+          // create echoes (runite echoes live in .echoes/<runite>/rune.json, written by `rune --resonance`)
+          $rune_echoes_file = KEEPER_ECHOES . '/rune.json';
+          if (file_exists($rune_echoes_file) || file_exists(KEEPER_ECHOES_SHARD)) {
             $format_echoes = Weaver::item(__DIR__ . '/format-echoes.txt');
             $stack_echoes = [];
-            // get echoes runite
-            $rune_echoes = json_encode(json_decode(Forger::item(KEEPER_ECHOES . '/' . AETHER_FILE . '.json')));
+            // get echoes runite (built now when `rune --resonance` was never run, so shards are not lost)
+            if (file_exists($rune_echoes_file)) {
+              $rune_echoes = json_encode(json_decode(Forger::item($rune_echoes_file)));
+            }else {
+              global $CHANTER_ECHO;
+              $memory = aether_memoryusage();
+              $rune_echoes = json_encode([
+                'FILE'=> AETHER_FILE,
+                'VERSION'=> AETHER_VERSION,
+                'CAST'=> $CHANTER_ECHO,
+                'SIZE'=> filesize(AETHER_FILE),
+                'MEMORY'=> [$memory[0], $memory[1]],
+                'RUNE'=> aether_arised(),
+              ]);
+            }
             $rune_echoes = Cipher::runic(Cipher::base64($rune_echoes), false, $runic);
             $stack_echoes[] = "RUNITE/////" . $rune_echoes;
             // get echoes shard
-            $shard_echoes = json_encode(json_decode(Forger::item(KEEPER_ECHOES . '/shard.json')));
+            $shard_echoes = file_exists(KEEPER_ECHOES_SHARD) ? json_encode(json_decode(Forger::item(KEEPER_ECHOES_SHARD))) : '{}';
             $shard_echoes = Cipher::runic(Cipher::base64($shard_echoes), false, $runic);
             $stack_echoes[] = "SHARD/////" . $shard_echoes;
             // create echoes
