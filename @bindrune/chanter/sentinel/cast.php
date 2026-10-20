@@ -371,6 +371,8 @@ Chanter::cast(
 
       // processing
       if ($processing__remove_rune($name, $repo) ) {
+        // also revoke it from the runite, so no `use`/awaken line points to a deleted rune
+        $processing_revoke($name);
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success remove rune: $name {{nl}}");
       }else {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: $name {{nl}}");
