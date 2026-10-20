@@ -69,7 +69,7 @@ function weaver_wrap_letter($text, $wrap = 50, $divider = '', $cutFirst = false)
  * todo binding string
  *  */
 #NOTE: Replace a variable placeholder in a template with given data
-function weaver_bind( $template, $search, String $data = '' ) {
+function weaver_bind( $template, $search, String $data = '', Bool $bond = true ) {
   global $WEAVER_BOND;
 
   $template = (!empty($template)) ? $template : '';
@@ -81,7 +81,10 @@ function weaver_bind( $template, $search, String $data = '' ) {
   $template = str_replace( strtoupper("{{ ".$search." }}"), $data, $template);
   $template = str_replace( strtoupper("{{".$search."}}"), $data, $template);
 
-  weaver_bond_set($search, $data);
+  // $bond = false: replace only, don't remember the value in the global bond
+  if ($bond) {
+    weaver_bond_set($search, $data);
+  }
 
   aether_arcane('Weaver.entity.weaver_bind');
   return $template;
@@ -97,11 +100,14 @@ function weaver_bind_extract( $value ) {
   return $vars;
 }
 #NOTE: Bind multiple placeholders in a template using key-value data
-function weaver_bind_multiple( $template, $datas ) {
-  $datas = weaver_bond_combine($datas);
+function weaver_bind_multiple( $template, $datas, Bool $bond = true ) {
+  global $WEAVER_BOND;
+
+  // $bond = false: still read the global bond, but don't write these datas into it
+  $datas = ($bond) ? weaver_bond_combine($datas) : array_replace_recursive($WEAVER_BOND, $datas);
 
   foreach ($datas as $search => $value) {
-    $template = weaver_bind($template, $search, $value);
+    $template = weaver_bind($template, $search, $value, $bond);
   }
 
   aether_arcane('Weaver.entity.weaver_bind_multiple');
