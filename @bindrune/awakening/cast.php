@@ -299,7 +299,7 @@ Chanter::cast('awakening', function() {
     if ($revoking) {
       $selfFile = AETHER_FILE;
       Whisper::echo("{{text-success}}{{icon-success}} Awakening successfully. \n");
-      Whisper::echo("{{text-info}}{{icon-info}}{{end}}{{text-secondary}} Checkout your runite with '{{text-danger}}php $selfFile run{{end}}'. \n");
+      Whisper::echo("{{text-info}}{{icon-info}}{{end}}{{text-secondary}} Checkout your runite with '{{text-danger}}php $selfFile{{end}}'. \n");
       
       Aether::exit(true);
     }
