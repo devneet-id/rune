@@ -371,7 +371,7 @@ Chanter::cast(
 
       // processing
       if ($processing__remove_rune($name, $repo) ) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success create rune: $name {{nl}}");
+        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success remove rune: $name {{nl}}");
       }else {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: $name {{nl}}");
       }
