@@ -30,13 +30,14 @@ function aether_memoryusage() {
   return $output;
 }
 
+#NOTE: Gets or sets the zero-trust state of the flow.
 function aether_zero_trust( Mixed $state = '' ) {
   global $AETHER_ZERO_TRUST;
-  if (!is_bool($state)) {
+  // bool -> set, empty -> read
+  if (is_bool($state)) {
     $AETHER_ZERO_TRUST = $state;
-  }else {
-    return $AETHER_ZERO_TRUST;
   }
+  return $AETHER_ZERO_TRUST;
 }
 #NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper)
 function aether_exit( $force = false ) {
@@ -64,6 +65,9 @@ function aether_exit( $force = false ) {
     $patch = 0;
     foreach (aether_list_runes() as $rune) {
       $phantasm = 'Rune\\'.$rune.'\\Phantasm';
+      if (!class_exists($phantasm)) {
+        continue; // a rune folder without Phantasm is not counted
+      }
       $phantasm = new $phantasm();
       $patch += (float) $phantasm->version;
     }
@@ -142,6 +146,7 @@ function aether_dd( $data, $force=false ) {
 
 
 /* PHANTASM OF WHISPER */
+#NOTE: Prints text without Whisper (style tokens removed).
 function aether_whisper( $text ) {
   // if (aether_has_entity('whisper')) {
   //   whisper_echo($text);
@@ -149,6 +154,7 @@ function aether_whisper( $text ) {
   // }
   print(preg_replace('/\{\{.*?\}\}/', '', $text).PHP_EOL);
 }
+#NOTE: Echoes through Whisper when awakened, otherwise prints plain text.
 function aether_whisper_echo( $text ) {
   if (aether_has_entity('whisper')) {
     whisper_echo($text);
@@ -210,6 +216,7 @@ function aether_arcane(String $text, String $value = '') {
     }
   }
 }
+#NOTE: Old arcane recorder (kept for reference).
 function aether_arcane_old(String $text, String $value = '') {
   if (aether_zero_trust()) return;
   
@@ -263,6 +270,7 @@ function aether_arcane_disable() {
   return true;
 }
 
+#NOTE: Prints the arcane records of this flow (development).
 function aether_arcane_pretty_print() {
   global $AETHER_ARCANE;
 
@@ -301,6 +309,7 @@ function aether_arcane_pretty_print() {
 
 
 
+#NOTE: Lists origin runes plus @liberations runes in liberation mode.
 function aether_list_runes() {
   $manifests = [];
   // internal rune
@@ -309,10 +318,10 @@ function aether_list_runes() {
       $manifests[] = basename($manifest);
     }
   }
-  // external rune
-  if (file_exists(AETHER_REPO . '/@bindrune')) {
-    foreach (glob(AETHER_REPO . '/@bindrune/*') as $manifest) {
-      if (is_dir($manifest)) {
+  // external rune (liberation mode only, never the same name as an origin rune)
+  if (defined('LIBERATION') && file_exists(LIBERATION)) {
+    foreach (glob(LIBERATION . '*', GLOB_ONLYDIR) as $manifest) {
+      if (!in_array(basename($manifest), $manifests)) {
         $manifests[] = basename($manifest);
       }
     }
