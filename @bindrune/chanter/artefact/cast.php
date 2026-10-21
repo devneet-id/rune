@@ -426,30 +426,5 @@ Chanter::cast(
       Forger::item(KEEPER_ECHOES_SHARD, '{}');
       Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}}{{LABEL-SUCCESS}}Shards successfully cleaned");
     }
-
-
-
-    if (Chanter::spell('shards')) {
-      $result = [];
-      $no = 1;
-      Whisper::echo('{{COLOR-INFO}} Your artefact shard is: {{nl}}');
-      foreach (glob(AETHER_ECHOES_ARTEFACT . '/*.rune') as $file) {
-        $time = filemtime($file);
-        $file = pathinfo($file);
-        $file['timestamp'] = date('Y-m-d H:i:s', $time);
-        Whisper::echo('['.$no.'] ' . $file['basename'] . ' - ' . date('Y-m-d H:i:s', $time) . ' {{nl}}');
-        $result[] = $file;
-        $no++;
-      }
-      keeper_set('shards.json', json_encode($result));
-    }
-
-    if (Chanter::spell('remove')) {
-      $target = AETHER_ECHOES_ARTEFACT . '/' . Chanter::spell('remove_process');
-      if (file_exists($target)) {
-        unlink($target);
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}}{{LABEL-SUCCESS}}Artefact successfully removed.");
-      }
-    }
   }
 );
