@@ -9,7 +9,7 @@
  */
 
 #NOTE: Placeholder function that currently returns true, possibly for future cipher logic.
-function chipher() {
+function cipher() {
   return true;
 }
 
