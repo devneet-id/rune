@@ -23,7 +23,7 @@ Chanter::cast(
     foreach ($CHANTER_ECHO as $key => $echo) {
       $text = '{{color-secondary}} ♦ {{color-info}}{{php}} ' . AETHER_FILE . '{{color-end}} ' . $echo[1];
       if (!empty($echo[2])) {
-        $echoWrapped = weaver_wrap_letter($echo[2], 40, '{{tab}}{{tab}}', true);
+        $echoWrapped = weaver_wrap_word($echo[2], 40, '{{tab}}{{tab}}  ', true);
         $text .= '{{nl}}{{tab}}{{tab}}{{text-secondary}}≈ ' . $echoWrapped . '{{color-end}}';
       }
       $list_chanter[] = $text;
@@ -94,7 +94,7 @@ Chanter::cast(
           $memory = aether_memoryusage();
           keeper_item('rune', [
             'FILE'=> AETHER_FILE,
-            'REPO'=> AETHER_REPO,
+            'REPO'=> basename(AETHER_REPO),
             'VERSION'=> AETHER_VERSION,
             'CAST'=> $CHANTER_ECHO,
             'SIZE'=> filesize(AETHER_FILE),
