@@ -113,6 +113,14 @@ function specter_cast_set( string $arg, array $options = [] ) {
     // UNIX / LINUX / MACOS
     $cmd = $opt['exit'] ? "$arg; exit" : "$arg; exec bash";
 
+    // macOS has no gnome-terminal: open a Terminal window in the same folder
+    if (PHP_OS_FAMILY === 'Darwin' && $opt['visible']) {
+      $script = 'cd ' . escapeshellarg(getcwd()) . '; ' . $arg;
+      $script = str_replace(['\\', '"'], ['\\\\', '\\"'], $script);
+      shell_exec('osascript -e ' . escapeshellarg('tell application "Terminal" to do script "' . $script . '"') . ' > /dev/null 2>&1');
+      return;
+    }
+
     if ($opt['blocking']) {
       if ($opt['visible']) {
         shell_exec("gnome-terminal --title=\"{$opt['title']}\" -- bash -c \"$cmd\"");
