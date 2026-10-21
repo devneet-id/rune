@@ -31,8 +31,8 @@ class Ethereal {
     // add bindrune
     $loader->addPsr4('Rune\\', self::$origin);
 
-    // register
-    $loader->register(true);
+    // register after the origin loader (append): a liberation rune never replaces an origin rune
+    $loader->register(false);
 
     // define to system
     define('LIBERATION', self::$origin);
