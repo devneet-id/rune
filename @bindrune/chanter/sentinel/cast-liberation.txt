@@ -8,3 +8,4 @@
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix-node {{text-success}}{{icon-success}}
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix-note {{text-success}}{{icon-success}}
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix-link {{text-success}}{{icon-success}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-fix-link-all {{text-success}}{{icon-success}}
