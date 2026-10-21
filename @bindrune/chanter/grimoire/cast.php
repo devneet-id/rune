@@ -75,17 +75,20 @@ Chanter::cast(
           }
         }
       }
-      // external rune
-      if (file_exists(AETHER_REPO . '/@ethereal')) {
-        foreach (glob(AETHER_REPO . '/@ethereal/*') as $manifest) {
-          if (is_dir($manifest)) {
-            $pathinfo = pathinfo($manifest);
-            $manifests[] = [
-              'Rune\\' . $pathinfo['basename'] . '\\Manifest',
-              realpath(AETHER_REPO . '/@ethereal'),
-              'external'
-            ];
+      // external rune (liberation mode only, never the same name as an origin rune)
+      if (defined('LIBERATION') && file_exists(LIBERATION)) {
+        $origins = array_map(function($m) { return $m[0]; }, $manifests);
+        foreach (glob(LIBERATION . '*', GLOB_ONLYDIR) as $manifest) {
+          $pathinfo = pathinfo($manifest);
+          $class = 'Rune\\' . $pathinfo['basename'] . '\\Manifest';
+          if (in_array($class, $origins) || !class_exists('Rune\\' . $pathinfo['basename'] . '\\Phantasm')) {
+            continue;
           }
+          $manifests[] = [
+            $class,
+            realpath(LIBERATION),
+            'external'
+          ];
         }
       }
       return $manifests;

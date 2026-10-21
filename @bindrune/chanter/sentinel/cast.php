@@ -53,6 +53,7 @@ Chanter::cast(
 
     // todo get all rune
     $avalaible_rune = function() {
+      static $warned = false;
       $result = [];
       foreach (glob(AETHER_RUNE_LOCATION . '/*') as $rune) {
         if (is_dir($rune)) {
@@ -61,13 +62,20 @@ Chanter::cast(
           }
         }
       }
-      // external rune
+      // external rune (a liberation rune never replaces an origin rune)
       if (defined('LIBERATION')) {
         foreach (glob(AETHER_REPO . '/@liberations/*') as $rune) {
           if (is_dir($rune)) {
+            if (in_array(basename($rune), $result)) {
+              if (!$warned) {
+                Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} @liberations/" . basename($rune) . " is skipped, it has the name of an origin rune. Rename it (e.g. MY" . basename($rune) . "). {{nl}}");
+              }
+              continue;
+            }
             $result[] = basename($rune);
           }
         }
+        $warned = true;
       }
       return $result;
     };
@@ -336,8 +344,14 @@ Chanter::cast(
       }
       
       // set data
-      $name = ucfirst(strtolower($name));
+      $name = ucfirst(strtolower(trim((string) $name)));
       $repo = LIBERATION . $name . '/';
+
+      // an origin rune can not be replaced by a liberation rune
+      if ($name === '' || is_dir(AETHER_RUNE_LOCATION . '/' . $name)) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} '$name' is an origin rune, use another name (e.g. MY$name). {{nl}}");
+        return;
+      }
 
       // processing
       $processing__create_rune($name, $repo);
@@ -393,6 +407,14 @@ Chanter::cast(
 
 
 
+
+    /* PHANTASM (liberation mode only: these spells write into a rune's Phantasm) */
+    foreach (['phantasm-up', 'phantasm-fix', 'phantasm-fix-node', 'phantasm-fix-note', 'phantasm-fix-link', 'phantasm-fix-link-all'] as $phantasm_spell) {
+      if (Chanter::spell($phantasm_spell) && !defined('LIBERATION')) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
+        die();
+      }
+    }
 
     /* PHANTASM UP */
     $processing__phantasm_up = function($name) {
@@ -453,16 +475,19 @@ Chanter::cast(
 
       if (isset($phantasm->origin)) {
         
-        $read_ether = Forger::item($phantasm->origin . '/Ether.php');
+        // block comments are skipped (template examples like `define('STARTER', '')` are not nodes)
+        $uncomment = function($source) { return preg_replace(['#/\*.*?\*/#s', '#^\s*(//|\#).*$#m'], '', (string) $source); };
+
+        $read_ether = $uncomment(Forger::item($phantasm->origin . '/Ether.php'));
         preg_match_all("/define\(\s*['\"]([^'\"]+)['\"]\s*,/", $read_ether, $matches);
         $find_ether = $matches[1];
 
-        $read_essence = Forger::item($phantasm->origin . '/Essence.php');
+        $read_essence = $uncomment(Forger::item($phantasm->origin . '/Essence.php'));
         preg_match_all("/\\\$GLOBALS\\[['\"]([^'\"]+)['\"]\\]/", $read_essence, $matches);
         $find_essence = $matches[1];
 
         $name_entity = strtoupper($name);
-        $read_entity = Forger::item($phantasm->origin . '/Entity.php');
+        $read_entity = $uncomment(Forger::item($phantasm->origin . '/Entity.php'));
         preg_match_all('/function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/i', $read_entity, $matches);
         $find_entity = array_filter(array_map(function ($func, $params) use ($name_entity) {
             if (stripos($func, $name_entity) !== false) {
@@ -471,7 +496,7 @@ Chanter::cast(
             return null;
         }, $matches[1], $matches[2]));
 
-        $read_manifest = Forger::item($phantasm->origin . '/Manifest.php');
+        $read_manifest = $uncomment(Forger::item($phantasm->origin . '/Manifest.php'));
         preg_match_all('/\bstatic\s+function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/i', $read_manifest, $matches);
         $find_manifest = array_map(function ($name, $params) {
             return $name . '(' . $params . ')';
@@ -556,7 +581,7 @@ Chanter::cast(
       
       $founds = [];
       foreach ($rune_finds as $rf) {
-        $content = Forger::item($rf);
+        $content = preg_replace(['#/\*.*?\*/#s', '#^\s*(//|\#).*$#m'], '', (string) Forger::item($rf)); // skip comments
         foreach ($rune_list as $rune) {
           $phantasm_class_select = 'Rune\\' . $rune . '\\Phantasm';
           $phantasm_select = new $phantasm_class_select();
@@ -567,14 +592,17 @@ Chanter::cast(
 
             foreach ($phantasm_select->node as $item) {
               $type = $item['type'];
-              $pattern = preg_quote($item['call'], '/');
+              // match by name only: `keeper_item_get( String $name )` -> `keeper_item_get`
+              $call_name = preg_match('/^\s*\$?([A-Za-z_][A-Za-z0-9_]*)/', $item['call'], $call_match) ? $call_match[1] : $item['call'];
+              $pattern = preg_quote($call_name, '/');
 
               if ($type === 'entity') {
                 $match = preg_match("/\\b$pattern\\s*\\(/i", $content);
               } elseif ($type === 'manifest') {
-                $match = preg_match("/\\b$phantasm_select->main::\\s*$pattern\\b/i", $content);
+                $match = preg_match("/\\b$phantasm_select->main::\\s*$pattern\\s*\\(/i", $content);
               } else {
-                $match = preg_match("/\\b$pattern\\b/i", $content);
+                // ether (constant) & essence (global) are case sensitive
+                $match = preg_match("/\\b$pattern\\b/", $content);
               }
 
               if ($match) {

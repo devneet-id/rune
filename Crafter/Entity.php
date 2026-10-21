@@ -277,9 +277,9 @@ function crafter_spark_bundling() {
     $templates = weaver_bind($templates, 'COPYRIGHT', AETHER_COPYRIGHT); // Reinjection
   }
 
-  // Bind all clusters to the template
-  foreach ($CRAFTER_SPARK_CLUSTER as $type => $cluster) {
-    $search = CRAFTER_VARIABLE[$type];
+  // Bind all clusters to the template (a cluster without shard is bound empty, so no {{...}} stays behind)
+  foreach (CRAFTER_VARIABLE as $type => $search) {
+    $cluster = $CRAFTER_SPARK_CLUSTER[$type] ?? [];
     $source = implode("\n", $cluster);
 
     if (CRAFTER_WEAVER[$weaver_selected][2] == 2) {

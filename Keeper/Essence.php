@@ -18,4 +18,5 @@ $GLOBALS['KEEPER_ARCANE'] = [
   [10.000, 'OVERCLOCK'],
 ];
 
+#NOTE: Whether Keeper is saving echoes in this flow.
 $GLOBALS['KEEPER_SAVING_ACTIVE'] = false;

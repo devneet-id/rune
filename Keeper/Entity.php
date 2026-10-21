@@ -5,6 +5,7 @@
  * Represents functions related to this domain.
  */
 
+#NOTE: Main entity
 function keeper() {
   return true;
 }
@@ -140,6 +141,7 @@ function keeper_shard_set( String $source_path ) {
     }
   }
 }
+#NOTE: Adds many files and folders to the shard list at once.
 function keeper_shard_set_all( Array $file_maps ) {
   $map = [];
   foreach ($file_maps as $row) {
@@ -300,6 +302,7 @@ function keeper_glitch_boot() {
   ini_set('display_errors', '0');
   error_reporting(E_ALL);
 }
+#NOTE: Shows the glitch screen (severity, line, file, message).
 function keeper_glitch_message( $glitch ) {
   whisper_clear();
   whisper_echo("{{text-secondary}}///////////////////////////////////{{text-end}}\n");

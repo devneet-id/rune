@@ -11,12 +11,16 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.5';
+  public $version = '1.6';
   
   public $main = 'Cipher';
 
+  public $user = 'Anwar Achilles';
+
+  public $note = 'Keeps secrets and identities of the system—unique ids, fast hashes, base64 and runic cipher that turns text into runes and back, used to seal artefacts.';
+
   public $link = [
-    ['Aether', 'essence:entity', '1.14'],
+    ['Aether', 'entity', '1.17'],
   ];
 
   public $node = [
@@ -42,32 +46,37 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_id',
+      'call' => 'cipher()',
+      'note' => 'Placeholder function that currently returns true, possibly for future cipher logic.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'cipher_id( String $prefix = "", $entropy = false )',
       'note' => 'Generates a unique ID using optional prefix and entropy (via uniqid).',
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_hash',
+      'call' => 'cipher_hash( String $text )',
       'note' => 'Creates a fast and lightweight hash of the input text using "xxh3" algorithm.',
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_base64',
+      'call' => 'cipher_base64( String $text, Int $isDecode = 0 )',
       'note' => 'Encodes or decodes Base64 based on $isDecode flag (0 = encode, 1 = decode).',
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_runic',
+      'call' => 'cipher_runic( String $text, Bool $isDecode = false, String $variant = "default" )',
       'note' => 'Main handler for encoding or decoding runic cipher text using helper functions based on $isDecode flag.',
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_runic_encode',
+      'call' => 'cipher_runic_encode( String $text, String $variant = "default" )',
       'note' => 'Encodes plain text into runic characters based on the selected variant mapping from CIPHER_RUNIC.',
     ],
     [
       'type' => 'entity',
-      'call' => 'cipher_runic_decode',
+      'call' => 'cipher_runic_decode( String $text, String $variant = "default")',
       'note' => 'Decodes runic characters back into plain text by flipping the selected variant mapping from CIPHER_RUNIC.',
     ],
     [
@@ -87,7 +96,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'runic( String $text, Bool $isDecode = false )',
+      'call' => 'runic( String $text, Bool $isDecode = false, String $variant = "default" )',
       'note' => 'Encodes or decodes text using runic character mapping.',
     ],
   ];

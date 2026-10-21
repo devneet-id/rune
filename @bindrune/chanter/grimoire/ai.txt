@@ -20,7 +20,7 @@
     Phantasm.php: core parent for all rune phantasm, conditional normally not in process
   ::MODE -- 
     user avaliable rune: conventional user use rune for create a project
-    liberation mode rune: expertise in rune can binding system rune with own rune with repository @ethereal
+    liberation mode rune: expertise in rune can binding system rune with own rune with repository @liberations
 
 [#] RULES & FLOW: --
   ::INTRO

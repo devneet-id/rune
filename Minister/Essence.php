@@ -8,4 +8,5 @@
  * $GLOBALS['STARTER'] = '';
  */
 
+#NOTE: Answers collected from the familiar.
 $GLOBALS['MINISTER_RESPONSE'] = [];

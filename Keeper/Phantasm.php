@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.11';
+  public $version = '1.12';
   
   public $main = 'Keeper';
 
@@ -20,12 +20,12 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
   public $link = [
-    ['Aether', 'ether', '1.16'],
-    ['Chanter', 'essence', '1.12'],
-    ['Cipher', 'ether:entity', '1.5'],
-    ['Forger', 'entity', '1.13'],
-    ['Specter', 'ether:essence', '1.7'],
-    ['Crafter', 'ether:essence', '1.11'],
+    ['Aether', 'ether', '1.17'],
+    ['Chanter', 'entity', '1.13'],
+    ['Cipher', 'entity', '1.6'],
+    ['Forger', 'entity', '1.14'],
+    ['Specter', 'entity', '1.9'],
+    ['Whisper', 'entity', '1.13'],
   ];
 
   public $node = [
@@ -70,6 +70,21 @@ class Phantasm extends \Rune\Phantasm {
       'note' => 'Directory for encoded shard backups.',
     ],
     [
+      'type' => 'ether',
+      'call' => 'KEEPER_ECHOES_SHARD',
+      'note' => 'Shard list of the runite (files carried into the artefact).',
+    ],
+    [
+      'type' => 'ether',
+      'call' => 'KEEPER_SAVING_ECHOES',
+      'note' => 'Flag bit for Keeper::begin(): save echoes.',
+    ],
+    [
+      'type' => 'ether',
+      'call' => 'KEEPER_SHOW_GLITCH',
+      'note' => 'Flag bit for Keeper::begin(): show glitch screen.',
+    ],
+    [
       'type' => 'essence',
       'call' => 'KEEPER',
       'note' => 'main essence',
@@ -80,9 +95,14 @@ class Phantasm extends \Rune\Phantasm {
       'note' => 'Defines stepwatch thresholds for classifying performance stages in arcane processing (e.g., BURST to OVERCLOCK).',
     ],
     [
+      'type' => 'essence',
+      'call' => 'KEEPER_SAVING_ACTIVE',
+      'note' => 'Whether Keeper is saving echoes in this flow.',
+    ],
+    [
       'type' => 'entity',
       'call' => 'keeper()',
-      'note' => '',
+      'note' => 'Main entity',
     ],
     [
       'type' => 'entity',
@@ -126,28 +146,13 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'keeper_shard( Array $file_maps, Bool $is_revoke = false )',
-      'note' => 'Handles shard storage or restoration based on revoke flag.',
-    ],
-    [
-      'type' => 'entity',
-      'call' => 'keeper_shard_set( Array $file_maps )',
+      'call' => 'keeper_shard_set( String $source_path )',
       'note' => 'Traces files, collects valid items, and stores them as encoded rune shards.',
     ],
     [
       'type' => 'entity',
-      'call' => 'keeper_shard_invoke( Object $forger_info )',
-      'note' => 'Encodes file metadata and content into base64 then runic format, and saves it as a shard.',
-    ],
-    [
-      'type' => 'entity',
-      'call' => 'keeper_shard_get( Array $file_maps )',
-      'note' => 'Retrieves and restores files from saved rune shards by name.',
-    ],
-    [
-      'type' => 'entity',
-      'call' => 'keeper_shard_revoke( String $raw_source )',
-      'note' => 'Decodes and rewrites a file from its stored runic shard format.',
+      'call' => 'keeper_shard_set_all( Array $file_maps )',
+      'note' => 'Adds many files and folders to the shard list at once.',
     ],
     [
       'type' => 'entity',
@@ -161,6 +166,11 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
+      'call' => 'keeper_glitch_message( $glitch )',
+      'note' => 'Shows the glitch screen (severity, line, file, message).',
+    ],
+    [
+      'type' => 'entity',
       'call' => 'keeper_glitch_detect()',
       'note' => 'Dumps the current glitch state for inspection.',
     ],
@@ -171,13 +181,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_awaken_after()',
-      'note' => '',
+      'call' => 'begin( $flags = 0 )',
+      'note' => 'Special hook for aether-based awakening phase, executed at the start of the crafter process.',
     ],
     [
       'type' => 'manifest',
@@ -196,7 +201,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'shard( Array $file_maps, Bool $is_revoke = false )',
+      'call' => 'shard(Array|String $source)',
       'note' => 'Saves rune shard(s) from string or array source.',
     ],
   ];
