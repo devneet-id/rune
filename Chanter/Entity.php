@@ -228,7 +228,7 @@ function chanter_spell_chain() {
   return $spell;
 }
 
-#NOTE: Missing return statement – function does not return the result.
+#NOTE: Checks whether a spell is given with a value (not only as a flag)
 function chanter_spell_has( String $name ) {
   global $CHANTER_ARG_SPELL;
 
@@ -237,6 +237,8 @@ function chanter_spell_has( String $name ) {
   }else {
     $return = false;
   };
+
+  return $return;
 }
 
 
@@ -244,10 +246,20 @@ function chanter_spell_has( String $name ) {
 /* ECHO
  * todo set echo in chanter */
 
+#NOTE: Takes the cast name from a cast signature (`quest --add --rank` -> `quest`)
+function chanter_echo_name( String $arg ) {
+  $words = array_filter(explode(' ', trim($arg)), function($word) {
+    return $word !== '' && strpos($word, '--') !== 0;
+  });
+
+  return trim(implode(' ', $words));
+}
+
 #NOTE: Adds notes to the echo data if the entry doesn’t exist yet.
 function chanter_echo_set( String $arg, String $notes ) {
   global $CHANTER_ECHO;
 
+  $arg = chanter_echo_name($arg);
   if (isset($CHANTER_ECHO[$arg])) {
     $CHANTER_ECHO[$arg][2] = $notes;
   }
@@ -260,6 +272,7 @@ function chanter_echo_set( String $arg, String $notes ) {
 function chanter_echo_get( String $arg ) {
   global $CHANTER_ECHO;
 
+  $arg = chanter_echo_name($arg);
   $return = (isset($CHANTER_ECHO[$arg])) ? $CHANTER_ECHO[$arg] : false;
   
   aether_arcane("Chanter.entity.chanter_echo_get");
@@ -269,6 +282,7 @@ function chanter_echo_get( String $arg ) {
 
 
 /* WHISPER LATCH */
+#NOTE: Runs a cast while draining Whisper output, then echoes it at once (zero-trust).
 function chanter_whisper_drain( $run ) {
   whisper_drain_start();
   $x = $run();
