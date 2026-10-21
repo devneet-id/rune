@@ -38,6 +38,7 @@ $GLOBALS['CHANTER_CAST_LIST'] = [];
 /* SPELL
  * todo spell mangement
  *  */
+#NOTE: Spells set from code (Chanter::spell(key, value)), read on the next cast.
 $GLOBALS['CHANTER_SPELL'] = [];
 
 

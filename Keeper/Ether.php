@@ -29,10 +29,13 @@ define('KEEPER_ECHOES_ARCANES', KEEPER_ECHOES.'/arcanes/');
 #NOTE: Directory for encoded shard backups.
 define('KEEPER_ECHOES_SHARDS', KEEPER_ECHOES.'/shards/');
 
+#NOTE: Shard list of the runite (files carried into the artefact).
 define('KEEPER_ECHOES_SHARD', KEEPER_ECHOES.'/shard.json');
 
 
 
+#NOTE: Flag bit for Keeper::begin(): save echoes.
 define('KEEPER_SAVING_ECHOES', \Rune\Ethereal::energy());
 
+#NOTE: Flag bit for Keeper::begin(): show glitch screen.
 define('KEEPER_SHOW_GLITCH', \Rune\Ethereal::energy());

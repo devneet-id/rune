@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
   
-  public $version = '1.6';
+  public $version = '1.7';
 
   public $main = 'Weaver';
 
@@ -15,8 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for advanced string manipulation, data binding, and template weaving—transforming raw data into structured text with flexible, context-aware logic.';
 
   public $link = [
-    ['Aether', 'essence:entity', '1.15'],
-    ['Crafter', 'ether:essence', '1.6'],
+    ['Aether', 'entity', '1.17'],
   ];
 
   public $node = [
@@ -47,7 +46,17 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'weaver_bind( $template, $search, String $data = "" )',
+      'call' => 'weaver_wrap_word($text, $wrap = 50, $divider = "", $cutFirst = false)',
+      'note' => 'wraps text by word length using space as word boundary',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'weaver_wrap_letter($text, $wrap = 50, $divider = "", $cutFirst = false)',
+      'note' => 'wraps text by exact letter count without word boundary',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'weaver_bind( $template, $search, String $data = "", Bool $bond = true )',
       'note' => 'Replace a variable placeholder in a template with given data',
     ],
     [
@@ -57,7 +66,7 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'weaver_bind_multiple( $template, $datas )',
+      'call' => 'weaver_bind_multiple( $template, $datas, Bool $bond = true )',
       'note' => 'Bind multiple placeholders in a template using key-value data',
     ],
     [

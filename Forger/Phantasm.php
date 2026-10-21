@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.13';
+  public $version = '1.14';
   
   public $main = 'Forger';
 
@@ -20,79 +20,89 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for structured file and directory operations such as tracing, scanning, fixing, moving, and cloning. Enables content analysis and automated organization through dynamic, logic-driven routines.';
 
   public $link = [
-    ['Aether', 'essence:entity', '1.16'],
-    ['Crafter', 'ether:essence', '1.7'],
+    ['Aether', 'entity', '1.17'],
+    ['Keeper', 'entity', '1.12'],
   ];
 
   public $node = [
+    [
+      'type' => 'ether',
+      'call' => 'FORGER',
+      'note' => 'main ether',
+    ],
     [
       'type' => 'essence',
       'call' => 'FORGER',
       'note' => 'main essence',
     ],
     [
+      'type' => 'essence',
+      'call' => 'FORGER_KEEPER_SHARD',
+      'note' => 'Whether files written by Forger are kept as shards by Keeper.',
+    ],
+    [
       'type' => 'entity',
-      'call' => 'forger',
+      'call' => 'forger()',
       'note' => 'Placeholder function for the Forger system, currently returns true.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_trace',
+      'call' => 'forger_trace( String $source_path, ?Callable $callback = null )',
       'note' => 'Traces and resolves each part of a given path, tagging them as file ("item") or folder ("repo") along with their existence.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_trace_recursive',
+      'call' => 'forger_trace_recursive(string $path)',
       'note' => 'Recursively traces a given path and all its children, returning structured info for both files and directories.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_scan',
+      'call' => 'forger_scan( String $source_path, ?Callable $callback )',
       'note' => 'Scans a directory for items, applies a callback to each, and returns the result list.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_fix',
+      'call' => 'forger_fix( Array $source_path )',
       'note' => 'Ensures all given paths exist by creating missing directories or files based on their type.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_move',
+      'call' => 'forger_move(Array $source_path)',
       'note' => 'Moves or clones items and repositories to their target paths, ensuring destination structure exists beforehand.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_sort',
+      'call' => 'forger_sort(array $trace, string $priority = "item")',
       'note' => 'Sorts traced paths by type priority and path length, placing prioritized types first and longer paths earlier.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_clean',
+      'call' => 'forger_clean( String $source_path, $force_repo = false )',
       'note' => 'Cleans a file or directory; if forced as repo, recursively traces and removes all contained files and folders.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_repo',
+      'call' => 'forger_repo(string $source_path, bool $isRecursion = false)',
       'note' => 'Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_item',
+      'call' => 'forger_item(string $source_path, mixed $content = false, int $flags = 0)',
       'note' => 'Ensures the file exists, optionally writes content to it, and returns its contents.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_info',
+      'call' => 'forger_info( String $source_path )',
       'note' => 'Retrieves detailed information about a file or directory, including type, basename, name, extension, and path.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_clone',
+      'call' => 'forger_clone( string $from, string $to )',
       'note' => 'Recursively clones a directory and its contents to a target location, creating folders as needed and copying files.',
     ],
     [
       'type' => 'entity',
-      'call' => 'forger_observer',
+      'call' => 'forger_observer($path)',
       'note' => 'Observes a directory recursively and returns the latest modification timestamp among all files.',
     ],
     [
@@ -112,12 +122,12 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'trace( String $source_path )',
+      'call' => 'trace( String $source_path, ?Callable $callback = null )',
       'note' => 'Traces and resolves each part of a given path, tagging them as file (item) or folder (repo) along with their existence.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'scan( String $source_path, $callback )',
+      'call' => 'scan( String $source_path, ?Callable $callback = null )',
       'note' => 'Scans a directory for items, applies a callback to each, and returns the result list.',
     ],
     [
@@ -142,12 +152,12 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'repo( String $source_path, ?Callable $callback )',
+      'call' => 'repo( string $source_path, bool $isRecursion = false )',
       'note' => 'Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'item( String $source_path, $content = false )',
+      'call' => 'item( string $source_path, Mixed $content = false, int $flags = 0 )',
       'note' => 'Ensures the file exists, optionally writes content to it, and returns its contents.',
     ],
     [

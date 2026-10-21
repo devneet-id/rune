@@ -11,6 +11,7 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
+  #NOTE: Begins Chanter: loads the built-in casts from @bindrune/chanter.
   public static function begin() {
     // bindrune
     $bindrunes = glob(\Rune\Ethereal::$bindrune . "/chanter/*");
