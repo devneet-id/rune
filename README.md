@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/devneet-id/rune" target="_blank">
-    <img src="https://raw.githubusercontent.com/devneet-id/rune-art/refs/heads/main/official/card-2.svg" width="300" alt="Logo">
+    <img src="https://raw.githubusercontent.com/devneet-id/.github/refs/heads/main/design/mreazenith/rune/v2-card-2.svg" width="300" alt="Logo">
   </a>
 </p>
 
