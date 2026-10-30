@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.13';
+  public $version = '1.14';
   
   public $main = 'Chanter';
 
@@ -15,7 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Encapsulates processes and CLI-style operations to maintain immutability—structures input, spell logic, and execution flow into controlled, traceable, and reusable command definitions.';
 
   public $link = [
-    ['Aether', 'entity', '1.17'],
+    ['Aether', 'entity', '1.18'],
     ['Whisper', 'entity', '1.13'],
     ['Specter', 'entity', '1.9'],
   ];

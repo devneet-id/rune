@@ -20,8 +20,8 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for structured file and directory operations such as tracing, scanning, fixing, moving, and cloning. Enables content analysis and automated organization through dynamic, logic-driven routines.';
 
   public $link = [
-    ['Aether', 'entity', '1.17'],
-    ['Keeper', 'entity', '1.12'],
+    ['Aether', 'entity', '1.18'],
+    ['Keeper', 'entity', '1.13'],
   ];
 
   public $node = [

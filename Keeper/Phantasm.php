@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.12';
+  public $version = '1.13';
   
   public $main = 'Keeper';
 
@@ -20,8 +20,8 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
   public $link = [
-    ['Aether', 'ether', '1.17'],
-    ['Chanter', 'entity', '1.13'],
+    ['Aether', 'ether', '1.18'],
+    ['Chanter', 'entity', '1.14'],
     ['Cipher', 'entity', '1.6'],
     ['Forger', 'entity', '1.14'],
     ['Specter', 'entity', '1.9'],
@@ -37,7 +37,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES',
-      'note' => 'Base directory for all Keeper-related output files and logs.',
+      'note' => 'Base directory for all Keeper-related output files and logs (next to the runite).',
     ],
     [
       'type' => 'ether',
@@ -146,13 +146,18 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
+      'call' => 'keeper_shard_place( String $path )',
+      'note' => 'Places a shard path in the runite folder: a relative path is read from AETHER_REPO, an absolute one is kept.',
+    ],
+    [
+      'type' => 'entity',
       'call' => 'keeper_shard_set( String $source_path )',
-      'note' => 'Traces files, collects valid items, and stores them as encoded rune shards.',
+      'note' => 'Adds one file to the shard list (only files inside the runite folder, stored relative to it).',
     ],
     [
       'type' => 'entity',
       'call' => 'keeper_shard_set_all( Array $file_maps )',
-      'note' => 'Adds many files and folders to the shard list at once.',
+      'note' => 'Adds many files and folders to the shard list at once (paths relative to the runite folder).',
     ],
     [
       'type' => 'entity',

@@ -20,8 +20,8 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Enables out-of-process operations through soul-like abstractions—designed for managing complex, asynchronous, or decoupled executions by temporarily separating logic from the main flow while maintaining active control.';
 
   public $link = [
-    ['Keeper', 'ether', '1.12'],
-    ['Aether', 'ether', '1.17'],
+    ['Keeper', 'ether', '1.13'],
+    ['Aether', 'ether', '1.18'],
     ['Weaver', 'entity', '1.7'],
     ['Forger', 'entity', '1.14'],
     ['Whisper', 'entity', '1.13'],

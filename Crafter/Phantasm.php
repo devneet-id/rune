@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.12';
+  public $version = '1.13';
   
   public $main = 'Crafter';
 
@@ -20,7 +20,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Focused on dynamic creation and composition—designed to build, shape, and assemble various data structures or logic units through modular, seed-based, and spark-driven processes.';
 
   public $link = [
-    ['Aether', 'ether', '1.17'],
+    ['Aether', 'ether', '1.18'],
     ['Cipher', 'entity', '1.6'],
     ['Forger', 'essence:entity', '1.14'],
     ['Weaver', 'entity', '1.7'],
