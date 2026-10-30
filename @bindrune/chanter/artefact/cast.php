@@ -112,6 +112,132 @@ Chanter::cast(
     };
 
 
+    /* ONLINE (--online)
+    *  The artefact comes from the internet, like composer & npm:
+    *    --revoke=https://.../cast.rune --online   a direct link to a .rune
+    *    --revoke=how-to-casting --online          a name registered in the vault
+    *  Vault: devneet-id/vault by default, --vault=<index.json url> to use another one.
+    *  index.json: { "<name>": { "url": "...", "sha256": "..." } } (or a list with "name")
+    *  */
+    $vault_index = (Chanter::spell('vault') && Chanter::spell('vault') !== '1')
+      ? Chanter::spell('vault')
+      : 'https://raw.githubusercontent.com/devneet-id/vault/main/index.json';
+
+    $processing__download = function($url) {
+      if (stripos($url, 'https://') === 0 && !extension_loaded('openssl') && !extension_loaded('curl')) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}PHP can not open https: enable openssl (or curl) in php.ini.{{nl}}");
+        return false;
+      }
+      if (ini_get('allow_url_fopen')) {
+        $context = stream_context_create(['http'=> [
+          'timeout'=> 30,
+          'user_agent'=> 'rune-artefact',
+          'follow_location'=> 1,
+          'ignore_errors'=> true,
+        ]]);
+        $body = @file_get_contents($url, false, $context);
+        $status = 0;
+        foreach ($http_response_header ?? [] as $line) {
+          if (preg_match('#^HTTP/\S+\s+(\d{3})#', $line, $match)) {
+            $status = (int) $match[1]; // the last status wins (after redirects)
+          }
+        }
+        if ($body === false || ($status && ($status < 200 || $status > 299))) {
+          return false;
+        }
+        return $body;
+      }
+      if (function_exists('curl_init')) {
+        $curl = curl_init($url);
+        curl_setopt_array($curl, [
+          CURLOPT_RETURNTRANSFER=> true,
+          CURLOPT_FOLLOWLOCATION=> true,
+          CURLOPT_TIMEOUT=> 30,
+          CURLOPT_USERAGENT=> 'rune-artefact',
+        ]);
+        $body = curl_exec($curl);
+        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        curl_close($curl);
+        return ($body === false || $status < 200 || $status > 299) ? false : $body;
+      }
+      Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}PHP can not go online: enable allow_url_fopen (or curl) in php.ini.{{nl}}");
+      return false;
+    };
+
+    // returns a local temp file of the artefact, or false
+    $processing__online = function($source) use ($vault_index, $processing__download) {
+      $source = trim($source);
+      $sha256 = null;
+
+      // a name: look it up in the vault
+      if (!preg_match('#^https?://#i', $source)) {
+        $index = $processing__download($vault_index);
+        if ($index === false) {
+          Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The vault can not be reached: $vault_index{{nl}}");
+          return false;
+        }
+        $index = json_decode($index, true);
+        if (!is_array($index)) {
+          Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The vault index is not valid JSON: $vault_index{{nl}}");
+          return false;
+        }
+        $entry = null;
+        foreach ($index as $key=>$item) {
+          if (!is_array($item)) {
+            continue;
+          }
+          $name = is_string($key) ? $key : ($item['name'] ?? '');
+          if (strcasecmp($name, $source) === 0 || strcasecmp($item['name'] ?? '', $source) === 0) {
+            $entry = $item;
+            break;
+          }
+        }
+        if (!$entry || empty($entry['url'])) {
+          Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}'$source' is not in the vault.{{nl}}");
+          return false;
+        }
+        $source = $entry['url'];
+        $sha256 = $entry['sha256'] ?? null;
+      }
+
+      Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Fetching $source{{nl}}");
+      $body = $processing__download($source);
+      if ($body === false) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The artefact can not be fetched: $source{{nl}}");
+        return false;
+      }
+      if ($sha256 && !hash_equals(strtolower($sha256), hash('sha256', $body))) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The seal is broken: sha256 does not match the vault. Refused.{{nl}}");
+        return false;
+      }
+      if (strpos($body, '[ᚱᚾ]') === false) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}This is not an artefact: $source{{nl}}");
+        return false;
+      }
+
+      $temp = tempnam(sys_get_temp_dir(), 'rune');
+      file_put_contents($temp, $body);
+      return $temp;
+    };
+
+    // read --revoke / --inspect: a local file, or (with --online) a link or a vault name
+    $processing__source = function($link, $run) use ($processing__online) {
+      if (Chanter::spell('online')) {
+        $temp = $processing__online($link);
+        if ($temp) {
+          $run($temp);
+          @unlink($temp);
+        }
+        return;
+      }
+      if (preg_match('#^https?://#i', $link)) {
+        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}This is a link, add --online to fetch it.{{nl}}");
+        return;
+      }
+      $run($link);
+    };
+
+
 
 
     /* INVOKE
@@ -280,10 +406,10 @@ Chanter::cast(
         $link = Chanter::spell('revoke');
       }else {
         Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}}{{LABEL-INFO}}You will revoke the artefact, Where the artefact?{{nl}}");
-        $link = Whisper::call('File location: ');
+        $link = Whisper::call(Chanter::spell('online') ? 'Name or link: ' : 'File location: ');
       }
       if ($link) {
-        $processing_revoke($link);
+        $processing__source($link, $processing_revoke);
       }
     }
 
@@ -374,10 +500,10 @@ Chanter::cast(
         $link = Chanter::spell('inspect');
       }else {
         Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}}{{LABEL-INFO}}You will inspect the artefact, Where the artefact?{{nl}}");
-        $link = Whisper::call('File location: ');
+        $link = Whisper::call(Chanter::spell('online') ? 'Name or link: ' : 'File location: ');
       }
       if ($link) {
-        $processing__inspect($link);
+        $processing__source($link, $processing__inspect);
       }
     }
 
