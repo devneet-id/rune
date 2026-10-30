@@ -117,16 +117,10 @@ Chanter::cast(
 
 
     /* ONLINE (--online)
-    *  The artefact comes from the internet, like composer & npm:
+    *  The artefact comes straight from the internet:
     *    --revoke=https://.../cast.rune --online   a direct link to a .rune
-    *    --revoke=how-to-casting --online          a name registered in the vault
-    *  Vault: devneet-id/vault by default, --vault=<index.json url> to use another one.
-    *  index.json: { "<name>": { "url": "...", "sha256": "..." } } (or a list with "name")
+    *  It is read in memory and never saved to disk.
     *  */
-    $vault_index = (Chanter::spell('vault') && Chanter::spell('vault') !== '1')
-      ? Chanter::spell('vault')
-      : 'https://raw.githubusercontent.com/devneet-id/vault/main/index.json';
-
     $processing__download = function($url) {
       if (stripos($url, 'https://') === 0 && !extension_loaded('openssl') && !extension_loaded('curl')) {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}PHP can not open https: enable openssl (or curl) in php.ini.{{nl}}");
@@ -169,49 +163,17 @@ Chanter::cast(
     };
 
     // returns the artefact source string (nothing is written to disk), or false
-    $processing__online = function($source) use ($vault_index, $processing__download) {
+    $processing__online = function($source) use ($processing__download) {
       $source = trim($source);
-      $sha256 = null;
-
-      // a name: look it up in the vault
       if (!preg_match('#^https?://#i', $source)) {
-        $index = $processing__download($vault_index);
-        if ($index === false) {
-          Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The vault can not be reached: $vault_index{{nl}}");
-          return false;
-        }
-        $index = json_decode($index, true);
-        if (!is_array($index)) {
-          Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The vault index is not valid JSON: $vault_index{{nl}}");
-          return false;
-        }
-        $entry = null;
-        foreach ($index as $key=>$item) {
-          if (!is_array($item)) {
-            continue;
-          }
-          $name = is_string($key) ? $key : ($item['name'] ?? '');
-          if (strcasecmp($name, $source) === 0 || strcasecmp($item['name'] ?? '', $source) === 0) {
-            $entry = $item;
-            break;
-          }
-        }
-        if (!$entry || empty($entry['url'])) {
-          Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}'$source' is not in the vault.{{nl}}");
-          return false;
-        }
-        $source = $entry['url'];
-        $sha256 = $entry['sha256'] ?? null;
+        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}--online needs a link to a .rune: https://.../cast.rune{{nl}}");
+        return false;
       }
 
       Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Fetching $source{{nl}}");
       $body = $processing__download($source);
       if ($body === false) {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The artefact can not be fetched: $source{{nl}}");
-        return false;
-      }
-      if ($sha256 && !hash_equals(strtolower($sha256), hash('sha256', $body))) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}The seal is broken: sha256 does not match the vault. Refused.{{nl}}");
         return false;
       }
       if (strpos($body, '[ᚱᚾ]') === false) {
@@ -222,7 +184,7 @@ Chanter::cast(
       return $body;
     };
 
-    // read --revoke / --inspect: a local file, or (with --online) a link or a vault name
+    // read --revoke / --inspect: a local file, or (with --online) a link
     $processing__source = function($link, $run) use ($processing__online) {
       if (Chanter::spell('online')) {
         $source = $processing__online($link);
