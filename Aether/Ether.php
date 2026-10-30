@@ -8,11 +8,11 @@
 #NOTE: Flag that the Aether flow is active.
 define('AETHER', true);
 
-#NOTE: The runite being cast (the file run by PHP, e.g. cast).
+#NOTE: The runite being cast, as it was typed (e.g. cast, realm/cast).
 define('AETHER_FILE', $_SERVER['PHP_SELF']);
 
-#NOTE: The working folder of the runite (getcwd).
-define('AETHER_REPO', getcwd());
+#NOTE: The folder of the runite itself, wherever it is cast from (falls back to getcwd).
+define('AETHER_REPO', (($AETHER_RUNITE = realpath($_SERVER['SCRIPT_FILENAME'] ?? '')) !== false && is_file($AETHER_RUNITE)) ? dirname($AETHER_RUNITE) : getcwd());
 
 #NOTE: Version of the Rune core.
 define('AETHER_VERSION', '1.11');
@@ -33,7 +33,7 @@ define('AETHER_LOGS', AETHER_REPO.'/.echoes/logs/');
 define('AETHER_ECHOES', AETHER_REPO.'/.echoes/');
 
 #NOTE: Legacy echoes folder of the runite (Keeper now keeps the echoes).
-define('AETHER_ECHOES_RUNE', AETHER_ECHOES . '/' . AETHER_FILE . '/');
+define('AETHER_ECHOES_RUNE', AETHER_ECHOES . '/' . basename(AETHER_FILE) . '/');
 
 #NOTE: Legacy information file of the runite echoes.
 define('AETHER_ECHOES_INFORMATION', AETHER_ECHOES_RUNE.'/information.json');

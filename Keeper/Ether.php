@@ -8,8 +8,8 @@
 #NOTE: main ether
 define('KEEPER', true);
 
-#NOTE: Base directory for all Keeper-related output files and logs.
-define('KEEPER_ECHOES', AETHER_REPO . '/.echoes/' . AETHER_FILE . '/');
+#NOTE: Base directory for all Keeper-related output files and logs (next to the runite).
+define('KEEPER_ECHOES', AETHER_REPO . '/.echoes/' . basename(AETHER_FILE) . '/');
 
 #NOTE: Path to the main keeper state file.
 define('KEEPER_ECHOES_KEEPER', KEEPER_ECHOES.'/keeper.json');
