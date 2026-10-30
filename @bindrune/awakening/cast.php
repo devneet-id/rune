@@ -186,20 +186,23 @@ Chanter::cast('awakening', function() {
     $result = $processing__inspect_raw($from);
 
     // check version
-    if (version_compare($result->ARTEFACT['version'], AETHER_VERSION) > 0) {
+    if (version_compare($result->ARTEFACT['version'], aether_version()) > 0) {
       return false;
     }
     
     // deploy runite
     $runite = str_replace('{file}', basename(AETHER_FILE), $result->RUNITE);
+    // a runite without .php starts with the shebang (editors and ./cast read it as PHP)
+    if (strtolower(pathinfo(AETHER_FILE, PATHINFO_EXTENSION)) !== 'php' && substr($runite, 0, 2) !== '#!') {
+      $runite = "#!/usr/bin/env php" . (strpos($runite, "\r\n") !== false ? "\r\n" : "\n") . $runite;
+    }
     Forger::item(AETHER_FILE, $runite);
 
     // deploy shards
     if (isset($result->SHARDS)) {
       foreach ($result->SHARDS as $ID=>$shard) {
-        Forger::fix(Forger::trace($shard['info']['target']));
-        
         $target = AETHER_REPO . DIRECTORY_SEPARATOR . $shard['info']['target'];
+        Forger::fix(Forger::trace($target));
 
         $isHidden = (substr(basename($target), 0, 1) === '.');
         
@@ -237,7 +240,7 @@ Chanter::cast('awakening', function() {
   if (Whisper::call('Begin anew, or use an artefact [y/n]: ') !== 'y') {
     $revoking = $processing_revoke(
       __DIR__ . '/src/Blank+Starter.2025-10-01.Anwar+Achilles.rune',
-      AETHER_REPO.'/'.AETHER_FILE
+      AETHER_REPO.'/'.basename(AETHER_FILE)
     );
     if ($revoking) {
       Whisper::echo("{{COLOR-SUCCESS}}Awakening successfully. \n");
@@ -295,7 +298,7 @@ Chanter::cast('awakening', function() {
     $target = $list[$selected];
     $revoking = $processing_revoke(
       $target,
-      AETHER_REPO.'/'.AETHER_FILE
+      AETHER_REPO.'/'.basename(AETHER_FILE)
     );
     if ($revoking) {
       $selfFile = AETHER_FILE;
