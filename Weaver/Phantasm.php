@@ -15,7 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for advanced string manipulation, data binding, and template weaving—transforming raw data into structured text with flexible, context-aware logic.';
 
   public $link = [
-    ['Aether', 'entity', '1.17'],
+    ['Aether', 'entity', '1.18'],
   ];
 
   public $node = [

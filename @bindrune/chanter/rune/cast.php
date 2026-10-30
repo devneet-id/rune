@@ -95,7 +95,7 @@ Chanter::cast(
           keeper_item('rune', [
             'FILE'=> AETHER_FILE,
             'REPO'=> basename(AETHER_REPO),
-            'VERSION'=> AETHER_VERSION,
+            'VERSION'=> aether_version(),
             'CAST'=> $CHANTER_ECHO,
             'SIZE'=> filesize(AETHER_FILE),
             'MEMORY'=> [$memory[0], $memory[1]],

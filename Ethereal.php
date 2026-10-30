@@ -14,8 +14,9 @@ class Ethereal {
     // rebase autoloader composer
     $loader = new \Composer\Autoload\ClassLoader();
 
-    // replace the origin
-    self::$origin = getcwd() . '/@liberations/';
+    // replace the origin: @liberations/ lives next to the runite, wherever it is cast from
+    $runite = realpath($_SERVER['SCRIPT_FILENAME'] ?? '');
+    self::$origin = (($runite !== false && is_file($runite)) ? dirname($runite) : getcwd()) . '/@liberations/';
 
     // if not exists repo
     if (!file_exists(self::$origin)) {

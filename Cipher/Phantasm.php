@@ -20,7 +20,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Keeps secrets and identities of the system—unique ids, fast hashes, base64 and runic cipher that turns text into runes and back, used to seal artefacts.';
 
   public $link = [
-    ['Aether', 'entity', '1.17'],
+    ['Aether', 'entity', '1.18'],
   ];
 
   public $node = [

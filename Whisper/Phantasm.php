@@ -15,7 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles user-facing output through styled messages, prompts, and echoes—focused on delivering clear, customizable system feedback and visual communication.';
 
   public $link = [
-    ['Aether', 'entity', '1.17'],
+    ['Aether', 'entity', '1.18'],
     ['Weaver', 'entity', '1.7'],
   ];
 

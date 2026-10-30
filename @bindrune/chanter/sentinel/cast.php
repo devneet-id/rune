@@ -127,7 +127,7 @@ Chanter::cast(
 
         $codex_arise = $manifest . '::' . implode('()::', $selected_methods) . '();';
 
-        $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
+        $rune = Forger::item(AETHER_REPO . '/' . basename(AETHER_FILE));
         $eol = (strpos($rune, "\r\n") !== false) ? "\r\n" : "\n"; // keep the runite's own line ending
 
         $prefix_manifest = '#sentinel-manifest';
@@ -148,7 +148,7 @@ Chanter::cast(
 
         $rune = str_replace($prefix_arise, $codex_arise . $eol . $prefix_arise, $rune);
         
-        Forger::item(AETHER_REPO . '/'. AETHER_FILE, $rune);
+        Forger::item(AETHER_REPO . '/' . basename(AETHER_FILE), $rune);
         return true;
       }else {
         return false;
@@ -190,7 +190,7 @@ Chanter::cast(
           $arise = 'all';
         }
 
-        $rune = Forger::item(AETHER_REPO . '/' . AETHER_FILE);
+        $rune = Forger::item(AETHER_REPO . '/' . basename(AETHER_FILE));
         $eol = (strpos($rune, "\r\n") !== false) ? "\r\n" : "\n"; // keep the runite's own line ending
         $prefix_manifest = '#sentinel-manifest';
         $prefix_arise = '#sentinel-awaken';
@@ -236,7 +236,7 @@ Chanter::cast(
           }
         }
         
-        Forger::item(AETHER_REPO . '/'. AETHER_FILE, $rune);
+        Forger::item(AETHER_REPO . '/' . basename(AETHER_FILE), $rune);
         return true;
       }else {
         return false;
@@ -416,6 +416,23 @@ Chanter::cast(
       }
     }
 
+    /* PHANTASM: keep the file's own line ending (the origin runes are CRLF) */
+    $keep_eol = function($path, $content) {
+      $original = file_exists($path) ? (string) Forger::item($path) : '';
+      $content = str_replace("\r\n", "\n", $content);
+      $content = preg_replace("/\n{3,}/", "\n\n", $content); // never more than one empty line
+      return (strpos($original, "\r\n") !== false) ? str_replace("\n", "\r\n", $content) : $content;
+    };
+
+    /* PHANTASM: the rune must exist (no fatal error on a wrong name) */
+    $processing__phantasm_exists = function($name) {
+      if ($name === '' || !class_exists('Rune\\' . $name . '\\Phantasm')) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: $name {{nl}}");
+        return false;
+      }
+      return true;
+    };
+
     /* PHANTASM UP */
     $processing__phantasm_up = function($name) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
@@ -427,6 +444,12 @@ Chanter::cast(
 
         preg_match('/public\s+\$version\s*=\s*[\'"]?([\d.]+)[\'"]?/i', $read_phantasm, $matches);
         $current_version = isset($matches[1]) ? $matches[1] : '1.0';
+
+        // only <major>.<minor> (whole numbers): anything else would be cut silently
+        if (!preg_match('/^\d+\.\d+$/', $current_version)) {
+          Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Version '$current_version' of $name is not <major>.<minor>, fix it by hand. {{nl}}");
+          return false;
+        }
 
         $parts = explode('.', $current_version);
         $major = isset($parts[0]) ? $parts[0] : '1';
@@ -461,15 +484,17 @@ Chanter::cast(
       // set data
       $name = ucfirst(strtolower($name));
       // processing
-      if ( $processing__phantasm_up($name) ) {
+      if (!$processing__phantasm_exists($name)) {
+        // nothing to raise
+      }else if ( $processing__phantasm_up($name) ) {
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
       }else {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not updated: $name {{nl}}");
       }
     }
 
     /* PHANTASM FIX NODE */
-    $processing__phantasm_fix_node = function($name) {
+    $processing__phantasm_fix_node = function($name) use ($keep_eol) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
       $phantasm = new $phantasm_class();
 
@@ -538,7 +563,7 @@ Chanter::cast(
         
         $template = weaver_bind($templates_phantasm, 'node', $templates);
         
-        Forger::item($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template));
+        Forger::item($phantasm->origin . '/Phantasm.php', $keep_eol($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template)));
 
         return $maps; // T15: return the fresh node list so --phantasm-fix can pass it to fix-note
       }else {
@@ -566,7 +591,7 @@ Chanter::cast(
     }
 
     /* PHANTASM FIX LINK */
-    $processing__phantasm_fix_link = function ($name) use ($avalaible_rune) {
+    $processing__phantasm_fix_link = function ($name) use ($avalaible_rune, $keep_eol) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
       $phantasm = new $phantasm_class();
 
@@ -632,7 +657,7 @@ Chanter::cast(
       
       $template = weaver_bind($templates_phantasm_link, 'TARGET', $templates);
       
-      Forger::item($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template));
+      Forger::item($phantasm->origin . '/Phantasm.php', $keep_eol($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template)));
 
       return true;
     };
@@ -657,7 +682,7 @@ Chanter::cast(
     }
     
     /* PHANTASM FIX NOTE */
-    $processing__phantasm_fix_note = function ($name, $nodes = null) {
+    $processing__phantasm_fix_note = function ($name, $nodes = null) use ($keep_eol) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
       $phantasm = new $phantasm_class();
 
@@ -719,7 +744,7 @@ Chanter::cast(
         $templates .= '  ];' . PHP_EOL;
         $template = weaver_bind($templates_phantasm, 'node', $templates);
 
-        Forger::item($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template));
+        Forger::item($phantasm->origin . '/Phantasm.php', $keep_eol($phantasm->origin . '/Phantasm.php', str_ireplace(PHP_EOL.PHP_EOL.PHP_EOL, PHP_EOL.PHP_EOL, $template)));
 
         return true;
       }else {
@@ -759,6 +784,13 @@ Chanter::cast(
       }
       // set data
       $name = ucfirst(strtolower($name));
+      if (!$processing__phantasm_exists($name)) {
+        return;
+      }
+      // remember the Phantasm before fixing: the version is raised only when something changed
+      $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
+      $phantasm_path = (new $phantasm_class())->origin . '/Phantasm.php';
+      $phantasm_before = file_exists($phantasm_path) ? Forger::item($phantasm_path) : null;
       // fixing node
       $nodeFixed = $processing__phantasm_fix_node($name);
       if ($nodeFixed !== false) {
@@ -780,9 +812,10 @@ Chanter::cast(
       } else {
         Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix note for phantasm: $name {{nl}}");
       }
-      // update phantasm
-      $updatePhantasm = $processing__phantasm_up($name);
-      if ($updatePhantasm) {
+      // update phantasm (only when node, link or note changed it)
+      if ($phantasm_before !== null && Forger::item($phantasm_path) === $phantasm_before) {
+        Whisper::echo("{{COLOR-INFO}}{{ICON-INFO}} Nothing changed, version kept: $name {{nl}}");
+      } else if ($processing__phantasm_up($name)) {
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Update phantasm: $name {{nl}}");
       } else {
         Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to update phantasm: $name {{nl}}");

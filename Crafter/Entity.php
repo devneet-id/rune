@@ -266,7 +266,7 @@ function crafter_spark_bundling() {
   }
 
   // Inject copyright
-  $templates = weaver_bind($templates, 'COPYRIGHT', AETHER_COPYRIGHT);
+  $templates = weaver_bind($templates, 'COPYRIGHT', str_replace(AETHER_VERSION, aether_version(), AETHER_COPYRIGHT));
 
   // If class type is 2, apply encryption and constructor
   if (CRAFTER_WEAVER[$weaver_selected][2] == 2) {
@@ -274,7 +274,7 @@ function crafter_spark_bundling() {
 
     $plain = weaver_item(CRAFTER_WEAVER[0][3]);
     $templates = weaver_bind($templates, 'CONSTRUCT', $encoding($plain));
-    $templates = weaver_bind($templates, 'COPYRIGHT', AETHER_COPYRIGHT); // Reinjection
+    $templates = weaver_bind($templates, 'COPYRIGHT', str_replace(AETHER_VERSION, aether_version(), AETHER_COPYRIGHT)); // Reinjection
   }
 
   // Bind all clusters to the template (a cluster without shard is bound empty, so no {{...}} stays behind)

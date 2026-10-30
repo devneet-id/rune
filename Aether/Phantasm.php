@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.17';
+  public $version = '1.18';
   
   public $main = 'Aether';
 
@@ -20,7 +20,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
   public $link = [
-    ['Chanter', 'entity', '1.13'],
+    ['Chanter', 'entity', '1.14'],
     ['Whisper', 'entity', '1.13'],
   ];
 
@@ -33,12 +33,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'ether',
       'call' => 'AETHER_FILE',
-      'note' => 'The runite being cast (the file run by PHP, e.g. cast).',
+      'note' => 'The runite being cast, as it was typed (e.g. cast, realm/cast).',
     ],
     [
       'type' => 'ether',
       'call' => 'AETHER_REPO',
-      'note' => 'The working folder of the runite (getcwd).',
+      'note' => 'The folder of the runite itself, wherever it is cast from (falls back to getcwd).',
     ],
     [
       'type' => 'ether',
@@ -249,6 +249,11 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'entity',
       'call' => 'aether_arcane_pretty_print()',
       'note' => 'Prints the arcane records of this flow (development).',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'aether_version( Bool $all = false )',
+      'note' => 'Version of Rune: <major AETHER_VERSION>.<minor AETHER_VERSION + sum of rune majors>.<sum of rune minors>, read as integers; $all adds liberation runes.',
     ],
     [
       'type' => 'entity',

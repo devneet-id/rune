@@ -22,8 +22,8 @@ class Phantasm extends \Rune\Phantasm {
   public $mark = 'DEVELOPMENT';
 
   public $link = [
-    ['Aether', 'entity', '1.17'],
-    ['Keeper', 'ether:entity', '1.12'],
+    ['Aether', 'entity', '1.18'],
+    ['Keeper', 'ether:entity', '1.13'],
     ['Whisper', 'entity', '1.13'],
   ];
 
