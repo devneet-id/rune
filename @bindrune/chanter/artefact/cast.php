@@ -33,9 +33,8 @@ Chanter::cast(
 
 
 
-    $processing__inspect_raw = function($link) {
-      $target = str_replace('.rune', '', $link);
-      $file = Forger::item($link);
+    // parse an artefact from its source string (a local file or a fetched one)
+    $processing__parse = function($file) {
       $file = trim($file);
       // strip every line ending (CRLF/LF/CR) so artefacts parse on any OS
       $file = str_replace(["\r\n", "\r", "\n"], '', $file);
@@ -111,6 +110,11 @@ Chanter::cast(
       return (object) $format;
     };
 
+    // read an artefact: its source string when given (--online), else the local file
+    $processing__inspect_raw = function($link, $source = null) use ($processing__parse) {
+      return $processing__parse($source ?? Forger::item($link));
+    };
+
 
     /* ONLINE (--online)
     *  The artefact comes from the internet, like composer & npm:
@@ -164,7 +168,7 @@ Chanter::cast(
       return false;
     };
 
-    // returns a local temp file of the artefact, or false
+    // returns the artefact source string (nothing is written to disk), or false
     $processing__online = function($source) use ($vault_index, $processing__download) {
       $source = trim($source);
       $sha256 = null;
@@ -215,18 +219,15 @@ Chanter::cast(
         return false;
       }
 
-      $temp = tempnam(sys_get_temp_dir(), 'rune');
-      file_put_contents($temp, $body);
-      return $temp;
+      return $body;
     };
 
     // read --revoke / --inspect: a local file, or (with --online) a link or a vault name
     $processing__source = function($link, $run) use ($processing__online) {
       if (Chanter::spell('online')) {
-        $temp = $processing__online($link);
-        if ($temp) {
-          $run($temp);
-          @unlink($temp);
+        $source = $processing__online($link);
+        if ($source !== false) {
+          $run($link, $source);
         }
         return;
       }
@@ -253,7 +254,7 @@ Chanter::cast(
         // OS, release, version and machine only -- no host name (privacy when sharing artefacts)
         'system'=> php_uname('s') . ' ' . php_uname('r') . ' ' . php_uname('v') . ' ' . php_uname('m'),
         'php-version'=> phpversion(),
-        'version'=> AETHER_VERSION,
+        'version'=> aether_version(),
         'runic'=> $runic,
         'encryption'=> 'base64',
       ]);
@@ -280,7 +281,7 @@ Chanter::cast(
               $memory = aether_memoryusage();
               $rune_echoes = json_encode([
                 'FILE'=> AETHER_FILE,
-                'VERSION'=> AETHER_VERSION,
+                'VERSION'=> aether_version(),
                 'CAST'=> $CHANTER_ECHO,
                 'SIZE'=> filesize(AETHER_FILE),
                 'MEMORY'=> [$memory[0], $memory[1]],
@@ -305,10 +306,10 @@ Chanter::cast(
             // $items = Forger::scan(KEEPER_ECHOES_SHARDS, function($item) {
             //   return Forger::item($item->target);
             // });
-            $shards_list = json_decode(Forger::item(KEEPER_ECHOES_SHARD));
+            $shards_list = json_decode((string) Forger::item(KEEPER_ECHOES_SHARD)) ?: []; // an empty shard.json carries no shard
             $shard_source = [];
             foreach ($shards_list as $ID=>$shard) {
-              $shard = Forger::item($shard->target);
+              $shard = Forger::item(keeper_shard_place($shard->target));
               $shard = Cipher::runic(Cipher::base64($shard), false, $runic);
               $shard_source[] = $ID . "/////" . $shard;
             }
@@ -359,12 +360,13 @@ Chanter::cast(
 
     /* REVOKE
     *  */
-    $processing_revoke = function( $link ) use ($processing__inspect_raw) {
-      $result = $processing__inspect_raw($link);
+    $processing_revoke = function( $link, $source = null ) use ($processing__inspect_raw) {
+      $result = $processing__inspect_raw($link, $source);
 
       
       // check version
-      if (version_compare($result->ARTEFACT['version'], AETHER_VERSION) > 0) {
+      if (version_compare($result->ARTEFACT['version'], aether_version()) > 0) {
+        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}This artefact needs Rune {$result->ARTEFACT['version']}, you have " . aether_version() . ".{{nl}}");
         return false;
       }
       
@@ -374,8 +376,13 @@ Chanter::cast(
       // deploy shards
       if (isset($result->SHARDS)) {
         foreach ($result->SHARDS as $ID=>$shard) {
-          Forger::fix(Forger::trace($shard['info']['target']));
-          Forger::item($shard['info']['target'], $shard['source']);
+          // shards land next to the runite (an absolute target is kept as it is)
+          $target = $shard['info']['target'];
+          if (!preg_match('#^([A-Za-z]:[\\\\/]|/)#', $target)) {
+            $target = AETHER_REPO . DIRECTORY_SEPARATOR . $target;
+          }
+          Forger::fix(Forger::trace($target));
+          Forger::item($target, $shard['source']);
         }
       }
 
@@ -417,8 +424,8 @@ Chanter::cast(
     /* INSPECT
     * */
     
-    $processing__inspect = function($link) use ($processing__inspect_raw) {
-      $result = $processing__inspect_raw($link);
+    $processing__inspect = function($link, $source = null) use ($processing__inspect_raw) {
+      $result = $processing__inspect_raw($link, $source);
 
       Whisper::clear(true);
       $template = Weaver::item(__DIR__.'/inspect.txt');
@@ -456,7 +463,7 @@ Chanter::cast(
         'encryption'=> $result->ARTEFACT['encryption'],
         'system'=> $result->ARTEFACT['system'],
         'version'=> $result->ARTEFACT['version'],
-        'my_version'=> AETHER_VERSION,
+        'my_version'=> aether_version(),
         'my_php'=> phpversion(),
         'my_system'=> php_uname('s') . ' ' . php_uname('r') . ' ' . php_uname('v') . ' ' . php_uname('m'),
         'cast'=> $casts,
