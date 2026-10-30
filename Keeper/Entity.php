@@ -129,33 +129,49 @@ function keeper_echo_get( String $repo, String $name ) {
 /* SHARDS
  * todo managements file as shards
  *  */
+#NOTE: Places a shard path in the runite folder: a relative path is read from AETHER_REPO, an absolute one is kept.
+function keeper_shard_place( String $path ) {
+  if (preg_match('#^([A-Za-z]:[\\\\/]|/)#', $path)) {
+    return $path;
+  }
+  return AETHER_REPO . DIRECTORY_SEPARATOR . $path;
+}
+#NOTE: Adds one file to the shard list (only files inside the runite folder, stored relative to it).
 function keeper_shard_set( String $source_path ) {
   if (!str_contains($source_path, '.echoes')) {
-    $source_path = str_replace(AETHER_REPO, '', $source_path);
-    if (realpath($source_path)) {
-      $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
-      $name = cipher_hash($source_path);
-      $source = forger_info($source_path);
-      $shard[$name] = $source;
+    $absolute = realpath($source_path);
+    $repo = AETHER_REPO . DIRECTORY_SEPARATOR;
+    if ($absolute && is_file($absolute) && str_starts_with($absolute, $repo)) {
+      $relative = substr($absolute, strlen($repo));
+      $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true) ?: [];
+      $source = forger_info($absolute);
+      $source->target = $relative;
+      $source->path = dirname($relative);
+      $shard[cipher_hash($relative)] = $source;
       file_put_contents(KEEPER_ECHOES_SHARD, str_replace('    ', '  ', json_encode($shard, JSON_PRETTY_PRINT)));
     }
   }
 }
-#NOTE: Adds many files and folders to the shard list at once.
+#NOTE: Adds many files and folders to the shard list at once (paths relative to the runite folder).
 function keeper_shard_set_all( Array $file_maps ) {
   $map = [];
   foreach ($file_maps as $row) {
-    $map = array_merge($map, forger_trace_recursive($row));
+    $map = array_merge($map, forger_trace_recursive(keeper_shard_place($row)));
   }
 
-  $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
+  $repo = AETHER_REPO . DIRECTORY_SEPARATOR;
+  $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true) ?: [];
   foreach ($map as $row) {
     if ($row['type'] == 'item') {
       if ($row['ready'] == true) {
         if (!str_contains($row['target'], '.echoes')) {
           $file = forger_info($row['target']);
-          $shard_key = str_replace(AETHER_REPO, '', $file->target);
-          $shard[cipher_hash($shard_key)] = $file;
+          // stored relative to the runite folder, so the artefact opens anywhere
+          if (str_starts_with($file->target, $repo)) {
+            $file->target = substr($file->target, strlen($repo));
+            $file->path = dirname($file->target);
+          }
+          $shard[cipher_hash($file->target)] = $file;
         }
       }
     }
@@ -313,9 +329,9 @@ function keeper_glitch_message( $glitch ) {
   whisper_echo("{{text-secondary}} ♦ Severity: \n");
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->type \n");
   whisper_echo("{{text-secondary}} ♦ On Line Number: \n");
-  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->file \n");
-  whisper_echo("{{text-secondary}} ♦ File Location: \n");
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->line \n");
+  whisper_echo("{{text-secondary}} ♦ File Location: \n");
+  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->file \n");
   whisper_echo("{{text-secondary}} ♦ Message: \n");
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->message  \n");
   whisper_echo("\n{{bg-danger}} # {{bg-end}} T R A C E \n");
@@ -323,7 +339,10 @@ function keeper_glitch_message( $glitch ) {
   if (is_array($glitch->trace)) {
     foreach ($glitch->trace as $trace) {
       $trace = (object) $trace;
-      whisper_echo("{{text-secondary}} ♦ $trace->file [$trace->line] \n");
+      // internal frames (closures, call_user_func) have no file/line
+      $file = $trace->file ?? '[internal]';
+      $line = $trace->line ?? '-';
+      whisper_echo("{{text-secondary}} ♦ $file [$line] \n");
     }
   }
 }
