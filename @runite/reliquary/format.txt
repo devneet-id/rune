@@ -1,0 +1,9 @@
+The Relic of Runite
+
+[ᚱᚾ] R E L I C
+  ::time={{time}}
+  ::version={{version}}
+  ::runic={{runic}}
+  ::encryption={{encryption}}
+  ::php={{php-version}}
+  ::system={{system}}
