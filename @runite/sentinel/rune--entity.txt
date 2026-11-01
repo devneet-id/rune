@@ -1,0 +1,10 @@
+<?php
+
+/*
+ * ENTITY
+ * Represents functions related to this domain.
+ */
+
+function {{name-lower}}() {
+  return true;
+}

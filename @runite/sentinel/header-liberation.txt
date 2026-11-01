@@ -1,0 +1,14 @@
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} L I B E R A T I O N{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runic-create {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Create a rune in @liberation/: <Rune>
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runic-delete {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Delete a rune in @liberation/: <Rune>
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-upgrade {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Raise the Phantasm version of a rune: <Rune>
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --phantasm-repair {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Repair the Phantasm of a rune: <Rune> (--mode=node|note|link, --all)

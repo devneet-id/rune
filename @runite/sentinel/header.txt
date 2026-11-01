@@ -1,0 +1,32 @@
+{{text-secondary}}///////////////////////////////////{{text-end}}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+██ ▄▄▄ ██ ▄▄▄██ ▀██ █▄▄ ▄▄█▄ ▄██ ▀██ ██ ▄▄▄██ ████
+██▄▄▄▀▀██ ▄▄▄██ █ █ ███ ████ ███ █ █ ██ ▄▄▄██ ████
+██ ▀▀▀ ██ ▀▀▀██ ██▄ ███ ███▀ ▀██ ██▄ ██ ▀▀▀██ ▀▀ █
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+{{text-secondary}}
+Your Sentinel helps build your app, monitor
+performance, and keep things running.
+Confused or need help with runes? Sentinel's
+got your back.
+{{text-end}}
+{{text-end}}
+{{bg-danger}} # {{bg-end}} H E L P{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --gitignore {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Write the rune block in .gitignore (vendor/, .echoes/)
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} U N L O C K{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --liberation {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Unlock The Liberation of Forte: runes of your own in @liberation/
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --federation {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Unlock The Federation of Fides: your own reliquary, relics in @federation/
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} R U N I T E{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runite-insert {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Insert a rune to this runite: <Rune>[.ether.essence.entity]
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runite-remove {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Remove a rune from this runite: <Rune>[.ether.essence.entity]
