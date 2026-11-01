@@ -5,7 +5,7 @@
 ██╔══██╗ ██║   ██║ ██║╚██╗██║ ██╔══╝   
 ██║  ██║ ╚██████╔╝ ██║ ╚████║ ███████╗ PHP-Lang
 ╚═╝  ╚═╝  ╚═════╝  ╚═╝  ╚═══╝ ╚══════╝ v{{VERSION}}
-{{bg-danger}} D E V N E E T {{bg-end}} {{liberation}}
+{{bg-danger}} D E V N E E T {{bg-end}} {{MODE}}
 {{COLOR-SECONDARY}}
 Rune is a lore-driven, modular concept beneath PHP,  
 designed not to dictate development — but to respond.

@@ -290,9 +290,8 @@ function forger_info( String $source_path ) {
     $return['type'] = (is_dir($source_path)) ? 'repo' : 'item';
     $return['base'] = $file['basename'];
     $return['name'] = $file['filename'];
-    if (isset($file['extension'])) {
-      $return['ext'] = (isset($file['extension'])) ? $file['extension'] : '';
-    }
+    // always set: a file without extension (e.g. the runite `cast`) has ext ''
+    $return['ext'] = $file['extension'] ?? '';
     $return['path'] = $file['dirname'];
   }else {
     $return = false;

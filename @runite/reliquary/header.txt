@@ -1,0 +1,44 @@
+{{text-secondary}}///////////////////////////////////{{text-end}}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+█ ▄▄▀██ ▄▄▄██ ████▄ ▄███ ▄▄▄ ███ ███ █ ▄▄▀██ ▄▄▀██ ███ █
+█ ▀▀▄██ ▄▄▄██ █████ ████ ███ ███ ███ █ ▀▀ ██ ▀▀▄███▄ ▄██
+█ ██ ██ ▀▀▀██ ▀▀ █▀ ▀███ ▀▀▀  ██ ▀▀▀ █ ██ ██ ██ ████ ███
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+{{text-secondary}}
+The reliquary keeps your runite as a relic (.rune),
+opens relics into your runite, and reads the
+reliquaries of Rune — devneet-id and its forks.
+{{text-end}}
+{{text-end}}
+{{bg-danger}} # {{bg-end}} R U N I T E{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --runite-inspect {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Inspect a relic before opening it (default: the .rune of this runite)
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --runite-relic {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ This runite to a relic, next to it ({{AETHER-FILE}}.rune)
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} S H A R D{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --shard {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Inspect one shard by ID
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --shards {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ List the shards this runite carries in its relic
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --shard-remove {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Remove one shard by ID
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --shard-clean {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Remove every shard
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} R E L I C{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --relic-runite {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ A relic to this runite: <vendor>/<repo> (--tag=, --yes), empty = {{AETHER-FILE}}.rune
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --relic {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Inspect one relic of the reliquary: <vendor>/<repo>
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --relics {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ List the relics of the reliquary ({{RELIQUARY}})
+

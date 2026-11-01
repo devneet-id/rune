@@ -1,0 +1,55 @@
+<?php
+/**
+ * Act. 0 - The Awakening of Void
+ * THE AWAKENING ✦
+ * 
+ * From the silence of nothingness, echoes rise from the void.
+ * A journey begins — with runes at your side.
+ * 
+ * Run this script using:
+ *   $ php {file}
+ *   $ php {file} grimoire
+ */
+require_once __DIR__ . '/vendor/autoload.php';
+
+
+
+/**
+ * I N V O C A T I O N
+ * 
+ * Step 1 — Summon the runes:  
+ * Import each module's manifest.
+ * 
+ * Step 2 — Channel the energy:  
+ * Initialize ether, essence, and entity.
+ * 
+ * Note: Keep #sentinel markers if you're using Sentinel support.
+ */
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+#sentinel-manifest
+
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+#sentinel-awaken
+
+
+
+/**
+ * I N C A N T A T I O N
+ * 
+ * This is your working space.  
+ * Use begin() and end() to define the active logic scope.
+ */
+Aether::begin();
+Chanter::begin();
+
+// ✦ Main logic lives here
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

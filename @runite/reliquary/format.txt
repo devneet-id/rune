@@ -1,6 +1,6 @@
-The Artefact of Runite
+The Relic of Runite
 
-[ᚱᚾ] A R T E F A C T
+[ᚱᚾ] R E L I C
   ::time={{time}}
   ::version={{version}}
   ::runic={{runic}}

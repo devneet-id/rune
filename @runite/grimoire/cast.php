@@ -10,7 +10,7 @@ use Rune\Keeper\Manifest as Keeper;
 // grimoire
 Chanter::cast(
   arg: 'grimoire',
-  echo: 'will help you read the system structure and flow.',
+  echo: 'Read the runes and the arcane of this runite.',
   execute: function() {
     Weaver::ether()::essence()::entity();
     Whisper::ether()::essence()::entity();
@@ -45,6 +45,14 @@ Chanter::cast(
       ]
     ];
 
+    // old spells answer with the new one
+    foreach (['rune-all'=> '--runic-list', 'rune'=> '--runic'] as $old=>$new) {
+      if (Chanter::spell($old) !== false) {
+        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}--$old is now $new{{nl}}");
+        return;
+      }
+    }
+
     $header = Weaver::item(__DIR__ . '/header.txt');
     $footer = Weaver::item(__DIR__ . '/footer.txt');
     $header = Weaver::bind($header, [
@@ -56,40 +64,22 @@ Chanter::cast(
 
 
 
+
     /* Rune
     * todo get rune
     *  */
     $processing_get_all_rune = function() use ($default_node) {
       $manifests = [];
-      // internal rune
-      foreach (glob(AETHER_RUNE_LOCATION . '/*') as $manifest) {
-        if (is_dir($manifest)) {
-          if (basename($manifest)!=='@bindrune') {
-            $pathinfo = pathinfo($manifest);
-      
-            $manifests[] = [
-              'Rune\\' . $pathinfo['basename'] . '\\Manifest',
-              AETHER_RUNE_LOCATION, 
-              'internal'
-            ];
-          }
-        }
+      // origin runes (one by one)
+      foreach (AETHER_RUNES as $rune) {
+        $manifests[] = ['Rune\\' . $rune . '\\Manifest', AETHER_RUNE_LOCATION, 'internal'];
       }
-      // external rune (liberation mode only, never the same name as an origin rune)
-      if (defined('LIBERATION') && file_exists(LIBERATION)) {
-        $origins = array_map(function($m) { return $m[0]; }, $manifests);
-        foreach (glob(LIBERATION . '*', GLOB_ONLYDIR) as $manifest) {
-          $pathinfo = pathinfo($manifest);
-          $class = 'Rune\\' . $pathinfo['basename'] . '\\Manifest';
-          if (in_array($class, $origins) || !class_exists('Rune\\' . $pathinfo['basename'] . '\\Phantasm')) {
-            continue;
-          }
-          $manifests[] = [
-            $class,
-            realpath(LIBERATION),
-            'external'
-          ];
+      // liberation runes (liberation mode only, never the same name as an origin rune)
+      foreach (aether_list_liberation() as $rune) {
+        if (in_array($rune, AETHER_RUNES) || !class_exists('Rune\\' . $rune . '\\Phantasm')) {
+          continue;
         }
+        $manifests[] = ['Rune\\' . $rune . '\\Manifest', realpath(LIBERATION), 'external'];
       }
       return $manifests;
     };
@@ -153,14 +143,19 @@ Chanter::cast(
 
       return $phantasm;
     };
-    if (Chanter::spell('rune')) {
-      if (Chanter::spell('rune') !== '1') {
-        $input = Chanter::spell('rune');
+    if (Chanter::spell('runic') !== false) {
+      if (Chanter::spell('runic') !== '1') {
+        $input = Chanter::spell('runic');
       }else {
         $input = Whisper::call('Give us the rune name: ');
       }
       if ($input) {
         Whisper::clear(true);
+        $input = ucfirst(trim((string) $input));
+        if (!in_array($input, aether_list_runes()) || !class_exists('Rune\\' . $input . '\\Phantasm')) {
+          Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}Rune not found: $input{{nl}}");
+          return;
+        }
         $processing_get_rune( $input );
       }
       Whisper::echo($footer);
@@ -170,7 +165,7 @@ Chanter::cast(
     /* Runes
     * todo result all rune
     *  */
-    if (Chanter::spell('rune-all')) {
+    if (Chanter::spell('runic-list') !== false) {
       Whisper::clear();
       $list = $processing_get_all_rune();
       $keeper_runes = [];

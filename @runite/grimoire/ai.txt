@@ -20,7 +20,8 @@
     Phantasm.php: core parent for all rune phantasm, conditional normally not in process
   ::MODE -- 
     user avaliable rune: conventional user use rune for create a project
-    liberation mode rune: expertise in rune can binding system rune with own rune with repository @liberations
+    liberation mode rune: expertise in rune can binding system rune with own rune with repository @liberation (sentinel --liberation)
+    federation mode: own reliquary, relics kept in @federation (sentinel --federation, reliquary --initiate)
 
 [#] RULES & FLOW: --
   ::INTRO
@@ -186,8 +187,8 @@ Chanter::cast('ready', function() {
   Chanter::cast('build')();
   // run store
   Chanter::cast('store')();
-  // create artefact look this will blocking execution
-  Chanter::cast('artefact --invoke')();
+  // create relic look this will blocking execution
+  Chanter::cast('reliquary --runite-relic')();
   // then move to repo ready/
   Forger::move([
     [ 'type'=>'item', 'from'=>'dist/index.php', 'target'=>'ready/index.php' ],

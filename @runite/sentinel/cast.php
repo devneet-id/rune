@@ -12,8 +12,8 @@ use Rune\Specter\Manifest as Specter;
 
 // sentinel
 Chanter::cast(
-  arg:'sentinel',
-  echo: "Help you with maintain your runite as assistant.",
+  arg: 'sentinel',
+  echo: 'Help you maintain your runite as an assistant.',
   execute: function() {
     Weaver::ether()::essence()::entity();
     Whisper::ether()::essence()::entity();
@@ -23,25 +23,75 @@ Chanter::cast(
     Crafter::ether()::essence()::entity();
     Specter::ether()::essence()::entity();
 
+    // the runite, its .gitignore and the runes are never shards of this runite
     global $FORGER_KEEPER_SHARD;
     $FORGER_KEEPER_SHARD = false;
 
-    // prepare cast template
-    $template = Weaver::item(__DIR__ . '/header.txt');
-    $template .= Weaver::item(__DIR__.'/cast-avaliable.txt');
-    if (defined('LIBERATION')) {
-      $template .= Weaver::item(__DIR__.'/cast-liberation.txt');
+    // a spell with a value ('' when given without one)
+    $value = function( String $spell ) {
+      $value = Chanter::spell($spell);
+      return ($value === false || $value === '1') ? '' : trim((string) $value);
+    };
+
+    // the rune name as it is written (Ledger, MyAether), whatever case is given
+    $runic_name = function( $name ) {
+      $name = trim((string) $name);
+      foreach (aether_list_runes() as $rune) {
+        if (strcasecmp($rune, $name) === 0) {
+          return $rune;
+        }
+      }
+      return preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) ? $name : ucfirst(strtolower($name));
+    };
+
+    // ask the rune name when the spell has no value
+    $ask_rune = function( String $spell ) use ($value) {
+      $name = $value($spell);
+      if ($name === '') {
+        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Available rune: " . implode(', ', aether_list_runes()) . "{{nl}}");
+        $name = trim((string) Whisper::call('Give us the rune name: '));
+      }
+      return $name;
+    };
+
+    // old spells answer with the new one
+    $renamed = [
+      'invoke'=> '--runite-insert',
+      'revoke'=> '--runite-remove',
+      'create-rune'=> '--runic-create',
+      'remove-rune'=> '--runic-delete',
+      'phantasm-up'=> '--phantasm-upgrade',
+      'phantasm-fix-node'=> '--phantasm-repair --mode=node',
+      'phantasm-fix-note'=> '--phantasm-repair --mode=note',
+      'phantasm-fix-link-all'=> '--phantasm-repair --mode=link --all',
+      'phantasm-fix-link'=> '--phantasm-repair --mode=link',
+      'phantasm-fix'=> '--phantasm-repair',
+    ];
+    foreach ($renamed as $old=>$new) {
+      if (Chanter::spell($old) !== false) {
+        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}}{{LABEL-WARNING}}--$old is now $new{{nl}}");
+        return;
+      }
     }
-    $template = Weaver::bind($template, [
-      'AETHER-FILE'=> AETHER_FILE,
-    ]);
-    
-    // output the template
-    if (aether_has_entity('whisper')) {
-      whisper_clear();
-      Whisper::echo($template);
-    }else {
-      aether_whisper($template);
+
+    // main hall of the sentinel
+    $spells = ['altar', 'inspect', 'gitignore', 'liberation', 'federation', 'runite-insert', 'runite-remove', 'runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair', 'test'];
+    $asked = array_filter($spells, fn($spell) => Chanter::spell($spell) !== false);
+    if (!$asked) {
+      $template = Weaver::item(__DIR__ . '/header.txt');
+      if (defined('LIBERATION')) {
+        $template .= Weaver::item(__DIR__ . '/header-liberation.txt');
+      }
+      $template = Weaver::bind($template, [
+        'AETHER-FILE'=> AETHER_FILE,
+      ]);
+      if (aether_has_entity('whisper')) {
+        whisper_clear();
+        Whisper::echo($template);
+      }else {
+        aether_whisper($template);
+      }
+      return;
     }
 
     // spell of testing
@@ -51,36 +101,11 @@ Chanter::cast(
       Whisper::echo("\n{{color-success}}{{icon-success}} Successfully Invoked");
     }
 
-    // todo get all rune
-    $avalaible_rune = function() {
-      static $warned = false;
-      $result = [];
-      foreach (glob(AETHER_RUNE_LOCATION . '/*') as $rune) {
-        if (is_dir($rune)) {
-          if (basename($rune)!=='@bindrune') {
-            $result[] = basename($rune);
-          }
-        }
-      }
-      // external rune (a liberation rune never replaces an origin rune)
-      if (defined('LIBERATION')) {
-        foreach (glob(AETHER_REPO . '/@liberations/*') as $rune) {
-          if (is_dir($rune)) {
-            if (in_array(basename($rune), $result)) {
-              if (!$warned) {
-                Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} @liberations/" . basename($rune) . " is skipped, it has the name of an origin rune. Rename it (e.g. MY" . basename($rune) . "). {{nl}}");
-              }
-              continue;
-            }
-            $result[] = basename($rune);
-          }
-        }
-        $warned = true;
-      }
-      return $result;
-    };
+    // the runite file and its line ending
+    $runite_path = AETHER_REPO . '/' . basename(AETHER_FILE);
 
-    /* ALTAR
+
+    /* ALTAR (hidden)
     * */
     $processing__altar = function() {
       if (!file_exists(AETHER_REPO . '/altar.php')) {
@@ -97,28 +122,100 @@ Chanter::cast(
       $processing__altar();
     }
 
-    /* INSPECT
+    /* INSPECT (hidden, still in development)
     * */
     if (Chanter::spell('inspect')) {
-      $active_runes = aether_arised();
-
       Whisper::clear()::echo('{{COLOR-DANGER}} Under Development {{nl}}');
     }
 
-    /* INVOKE
-    * todo invoke manifest & arise to rune
+
+    /* HELP: GITIGNORE
+    * a marked block in the .gitignore next to the runite (the lines of the user are kept)
+    * */
+    if (Chanter::spell('gitignore')) {
+      $path = AETHER_REPO . '/.gitignore';
+      $original = file_exists($path) ? (string) file_get_contents($path) : '';
+      $eol = (strpos($original, "\r\n") !== false) ? "\r\n" : "\n";
+      $block = implode($eol, ['# rune (sentinel)', 'vendor/', '.echoes/', '# /rune']) . $eol;
+      $pattern = '/# rune \(sentinel\)\R.*?# \/rune(\R|$)/s';
+      if (preg_match($pattern, $original)) {
+        $content = preg_replace($pattern, str_replace('$', '\$', $block), $original, 1);
+        $done = 'updated';
+      }else {
+        $content = ($original === '' ? '' : rtrim($original, "\r\n") . $eol . $eol) . $block;
+        $done = 'written';
+      }
+      file_put_contents($path, $content);
+      Whisper::clear();
+      Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} The rune block of .gitignore is $done (vendor/, .echoes/) {{nl}}");
+    }
+
+
+    /* UNLOCK: LIBERATION & FEDERATION
+    * writes the mode line under the `require` line of the runite (already there = only told)
+    * */
+    $modes = [
+      'liberation'=> ['caption'=> 'The Liberation of Forte', 'folder'=> '@liberation', 'readme'=> 'liberation.md'],
+      'federation'=> ['caption'=> 'The Federation of Fides', 'folder'=> '@federation', 'readme'=> 'federation.md'],
+    ];
+    $processing__unlock = function( String $mode ) use ($runite_path) {
+      $runite = (string) Forger::item($runite_path);
+      $eol = (strpos($runite, "\r\n") !== false) ? "\r\n" : "\n";
+      $line = "Rune\\Ethereal::$mode();";
+
+      // already unlocked
+      if (preg_match('/^[ \t]*\\\\?Rune\\\\Ethereal::' . $mode . '\(\s*\)\s*;/m', $runite)) {
+        return 'unlocked';
+      }
+
+      // the `require ... autoload.php` line
+      if (!preg_match('/^[^\r\n]*require(_once)?[^\r\n]*autoload\.php[^\r\n]*/m', $runite, $require, PREG_OFFSET_CAPTURE)) {
+        return false;
+      }
+      $at = $require[0][1] + strlen($require[0][0]);
+
+      // after the mode lines already written there (side by side)
+      if (preg_match('/\G((\r?\n)+[ \t]*\\\\?Rune\\\\Ethereal::[a-z]+\(\s*\)\s*;[^\r\n]*)+/', $runite, $lines, 0, $at)) {
+        $runite = substr($runite, 0, $at + strlen($lines[0])) . $eol . $line . substr($runite, $at + strlen($lines[0]));
+      }else {
+        $runite = substr($runite, 0, $at) . $eol . $eol . $line . substr($runite, $at);
+      }
+      Forger::item($runite_path, $runite);
+      return 'written';
+    };
+    foreach ($modes as $mode=>$about) {
+      if (Chanter::spell($mode)) {
+        Whisper::clear();
+        Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
+        $done = $processing__unlock($mode);
+        if ($done === 'unlocked') {
+          Whisper::echo("{{COLOR-INFO}}{{ICON-INFO}} $about[caption] is already unlocked in " . AETHER_FILE . " {{nl}}");
+        }else if ($done === 'written') {
+          \Rune\Ethereal::mode($about['folder'], __DIR__ . '/' . $about['readme']);
+          Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} $about[caption] is unlocked: Rune\\Ethereal::$mode(); {{nl}}");
+          Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Read $about[folder]/README.md {{nl}}");
+        }else {
+          Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} No `require ... autoload.php` line found in " . AETHER_FILE . ", write Rune\\Ethereal::$mode(); under it by hand. {{nl}}");
+        }
+      }
+    }
+
+
+    /* RUNITE: INSERT
+    * insert the manifest & awaken of a rune to the runite
     *  */
-    $processing_invoke = function($target) use ($avalaible_rune) {
+    $processing_invoke = function($target) use ($runic_name) {
       (aether_has_entity('forger')) ?: die(PHP_EOL.'[!]WARNING: Required Forger:entity'.PHP_EOL);
 
-      $target = ucfirst(strtolower($target));
+      $target = trim((string) $target);
       if ($target) {
         $target_parts = explode('.', $target);
-        $manifest = $target_parts[0];
-        $methods = array_slice($target_parts, 1);
+        $manifest = $runic_name($target_parts[0]);
+        $methods = array_map('strtolower', array_slice($target_parts, 1));
 
-        // only invoke runes that exist (origin runes, plus @liberations runes in liberation mode)
-        if (!in_array($manifest, $avalaible_rune())) {
+        // only insert runes that exist (origin runes, plus @liberation/ runes in liberation mode)
+        if (!in_array($manifest, aether_list_runes())) {
           return false;
         }
 
@@ -154,39 +251,35 @@ Chanter::cast(
         return false;
       }
     };
-    if (Chanter::spell('invoke')) {
+    if (Chanter::spell('runite-insert')) {
+      (aether_has_entity('forger')) ?: die(PHP_EOL.'[!]WARNING: Required Forger:entity'.PHP_EOL);
       Whisper::clear();
-      if (Chanter::spell('invoke') !== '1') {
-        $input = Chanter::spell('invoke');
-      }else {
-        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Avaliable rune: " . implode(', ', $avalaible_rune()) . "{{nl}}");
-        $input = Whisper::call('Give us the rune name: ');
-      }
+      $input = $ask_rune('runite-insert');
       if ($input) {
         Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
         if ($processing_invoke($input)) {
-          Whisper::echo("{{color-success}}{{icon-success}} Successfully do Invoked with '$input' {{nl}}");
+          Whisper::echo("{{color-success}}{{icon-success}} Inserted '$input' to " . AETHER_FILE . " {{nl}}");
         }else {
-          Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Invoked with '$input' {{nl}}");
-          Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Avaliable rune: " . implode(', ', $avalaible_rune()) . "{{nl}}");
+          Whisper::echo("{{color-danger}}{{icon-warning}} Failed to insert '$input' {{nl}}");
+          Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Available rune: " . implode(', ', aether_list_runes()) . "{{nl}}");
         }
       }
     }
 
 
-    /* REVOKE
-    * todo revoke manifest & arise in rune
+    /* RUNITE: REMOVE
+    * remove the manifest & awaken of a rune from the runite
     *  */
-    $processing_revoke = function($target) {
-      $target = ucfirst(strtolower($target));
+    $processing_revoke = function($target) use ($runic_name) {
+      $target = trim((string) $target);
       if ($target) {
         if (strpos($target, '.') !== false) {
           $parts = explode('.', $target);
-          $manifest = $parts[0];
+          $manifest = $runic_name($parts[0]);
           unset($parts[0]);
-          $arise = array_values($parts);
+          $arise = array_values(array_map('strtolower', $parts));
         } else {
-          $manifest = $target;
+          $manifest = $runic_name($target);
           $arise = 'all';
         }
 
@@ -242,51 +335,32 @@ Chanter::cast(
         return false;
       }
     };
-    if (Chanter::spell('revoke')) {
+    if (Chanter::spell('runite-remove')) {
       (aether_has_entity('forger')) ?: die(PHP_EOL.'[!]WARNING: Required Forger:entity'.PHP_EOL);
-
       Whisper::clear();
-      if (Chanter::spell('revoke') !== '1') {
-        $input = Chanter::spell('revoke');
-      }else {
-        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Avaliable rune: " . implode(', ', $avalaible_rune())."{{nl}}");
-        $input = Whisper::call('Give us the rune name: ');
-      }
+      $input = $ask_rune('runite-remove');
       if ($input) {
         Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
-        if ( $processing_revoke($input) ) {
-          Whisper::echo("{{color-success}}{{icon-success}} Successfully do Revoke with '$input' {{nl}}");
+        if ($processing_revoke($input)) {
+          Whisper::echo("{{color-success}}{{icon-success}} Removed '$input' from " . AETHER_FILE . " {{nl}}");
         }else {
-          Whisper::echo("{{color-danger}}{{icon-warning}} Failed do Revoke with '$input' {{nl}}");
+          Whisper::echo("{{color-danger}}{{icon-warning}} Failed to remove '$input' {{nl}}");
         }
       }
     }
 
 
-    /* CODEX
-    * todo sentinel generate codex
-    *  */
-    if (Chanter::spell('codex')) {
-      Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Under Development, feature will be added soon.. {{nl}}");
-    }
-
-
-    /* CHRONICLE
-    * todo sentinel give you back to selected chronicle
-    *  */
-    if (Chanter::spell('cronicle')) {
-      Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Under Development, feature will be added soon.. {{nl}}");
-    }
-    
-
-
-
-
-    /* 
-    * FOR RUNE BUILDER (PRIVATE)
+    /*
+    * LIBERATION (liberation mode only: these spells write runes in @liberation/)
     * */
+    foreach (['runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair'] as $liberation_spell) {
+      if (Chanter::spell($liberation_spell) && !defined('LIBERATION')) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} --$liberation_spell needs The Liberation of Forte: php " . AETHER_FILE . " sentinel --liberation {{nl}}");
+        return;
+      }
+    }
 
-    /* CREATE RUNE */
+    /* RUNIC CREATE */
     $processing__create_rune = function($name, $repo) {
       Forger::fix(Forger::trace($repo));
 
@@ -325,42 +399,32 @@ Chanter::cast(
       forger_item($repo . '/Essence.php', $essence);
       forger_item($repo . '/Entity.php', $entity);
     };
-    if (Chanter::spell('create-rune')) {
-      // check bindrune
-      if (!defined('LIBERATION')) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
-        die();
-      }
-
-      // header
+    if (Chanter::spell('runic-create')) {
       Whisper::clear();
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Create Rune\n");
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runic Create\n");
 
-      // run spell and call
-      if (Chanter::spell('create-rune') !== '1') {
-        $name = Chanter::spell('create-rune');
-      }else {
-        $name = Whisper::call('Give us the rune name: ');
+      $name = $value('runic-create');
+      if ($name === '') {
+        $name = trim((string) Whisper::call('Give us the rune name: '));
       }
-      
-      // set data
-      $name = ucfirst(strtolower(trim((string) $name)));
+      $name = preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) ? $name : ucfirst(strtolower($name));
       $repo = LIBERATION . $name . '/';
 
       // an origin rune can not be replaced by a liberation rune
-      if ($name === '' || is_dir(AETHER_RUNE_LOCATION . '/' . $name)) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} '$name' is an origin rune, use another name (e.g. MY$name). {{nl}}");
+      if ($name === '' || in_array(strtolower($name), array_map('strtolower', AETHER_RUNES))) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} '$name' is an origin rune, use another name (e.g. My$name). {{nl}}");
+        return;
+      }
+      if (file_exists($repo)) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune already exists: @liberation/$name {{nl}}");
         return;
       }
 
-      // processing
       $processing__create_rune($name, $repo);
-
-      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success create rune: $name {{nl}}");
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Rune created: @liberation/$name {{nl}}");
     }
 
-
-    /* REMOVE RUNE */
+    /* RUNIC DELETE */
     $processing__remove_rune = function($name, $repo) {
       if (file_exists($repo)) {
         Forger::clean($repo, true);
@@ -369,60 +433,27 @@ Chanter::cast(
         return false;
       }
     };
-    if (Chanter::spell('remove-rune')) {
-      // check bindrune
-      if (!defined('LIBERATION')) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
-        die();
-      }
-
-      // header
+    if (Chanter::spell('runic-delete')) {
       Whisper::clear();
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Remove Rune\n");
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runic Delete\n");
 
-      // run spell and call
-      if (Chanter::spell('remove-rune') !== '1') {
-        $name = Chanter::spell('remove-rune');
-      }else {
-        $name = Whisper::call('Give us the rune name: ');
+      $name = $value('runic-delete');
+      if ($name === '') {
+        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Liberation rune: " . implode(', ', aether_list_liberation()) . "{{nl}}");
+        $name = trim((string) Whisper::call('Give us the rune name: '));
       }
-      
-      // set data
-      $name = ucfirst(strtolower($name));
+      $name = $runic_name($name);
       $repo = LIBERATION . $name . '/';
 
-      // processing
-      if ($processing__remove_rune($name, $repo) ) {
-        // also revoke it from the runite, so no `use`/awaken line points to a deleted rune
+      if ($name !== '' && $processing__remove_rune($name, $repo)) {
+        // also remove it from the runite, so no `use`/awaken line points to a deleted rune
         $processing_revoke($name);
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success remove rune: $name {{nl}}");
+        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Rune deleted: @liberation/$name {{nl}}");
       }else {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: $name {{nl}}");
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: @liberation/$name {{nl}}");
       }
     }
 
-
-
-
-
-
-
-
-    /* PHANTASM (liberation mode only: these spells write into a rune's Phantasm) */
-    foreach (['phantasm-up', 'phantasm-fix', 'phantasm-fix-node', 'phantasm-fix-note', 'phantasm-fix-link', 'phantasm-fix-link-all'] as $phantasm_spell) {
-      if (Chanter::spell($phantasm_spell) && !defined('LIBERATION')) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} You are not eligible!! {{nl}}");
-        die();
-      }
-    }
-
-    /* PHANTASM: keep the file's own line ending (the origin runes are CRLF) */
-    $keep_eol = function($path, $content) {
-      $original = file_exists($path) ? (string) Forger::item($path) : '';
-      $content = str_replace("\r\n", "\n", $content);
-      $content = preg_replace("/\n{3,}/", "\n\n", $content); // never more than one empty line
-      return (strpos($original, "\r\n") !== false) ? str_replace("\n", "\r\n", $content) : $content;
-    };
 
     /* PHANTASM: the rune must exist (no fatal error on a wrong name) */
     $processing__phantasm_exists = function($name) {
@@ -433,7 +464,15 @@ Chanter::cast(
       return true;
     };
 
-    /* PHANTASM UP */
+    /* PHANTASM UPGRADE: raise the minor version */
+    /* PHANTASM: keep the file's own line ending (the origin runes are CRLF) */
+    $keep_eol = function($path, $content) {
+      $original = file_exists($path) ? (string) Forger::item($path) : '';
+      $content = str_replace("\r\n", "\n", $content);
+      $content = preg_replace("/\n{3,}/", "\n\n", $content); // never more than one empty line
+      return (strpos($original, "\r\n") !== false) ? str_replace("\n", "\r\n", $content) : $content;
+    };
+
     $processing__phantasm_up = function($name) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
       $phantasm = new $phantasm_class();
@@ -471,28 +510,6 @@ Chanter::cast(
         return false;
       }
     };
-    if (Chanter::spell('phantasm-up')) {
-      // header
-      Whisper::clear(true);
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Up \n");
-      // run spell and call
-      if (Chanter::spell('phantasm-up') !== '1') {
-        $name = Chanter::spell('phantasm-up');
-      }else {
-        $name = Whisper::call('Give us the rune name: ');
-      }
-      // set data
-      $name = ucfirst(strtolower($name));
-      // processing
-      if (!$processing__phantasm_exists($name)) {
-        // nothing to raise
-      }else if ( $processing__phantasm_up($name) ) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
-      }else {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not updated: $name {{nl}}");
-      }
-    }
-
     /* PHANTASM FIX NODE */
     $processing__phantasm_fix_node = function($name) use ($keep_eol) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
@@ -570,32 +587,12 @@ Chanter::cast(
         return false;
       }
     };
-    if (Chanter::spell('phantasm-fix-node')) {
-      // header
-      Whisper::clear(true);
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Node \n");
-      // run spell and call
-      if (Chanter::spell('phantasm-fix-node') !== '1') {
-        $name = Chanter::spell('phantasm-fix-node');
-      }else {
-        $name = Whisper::call('Give us the rune name: ');
-      }
-      // set data
-      $name = ucfirst(strtolower($name));
-      // processing
-      if ( $processing__phantasm_fix_node($name) !== false ) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
-      }else {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
-      }
-    }
-
     /* PHANTASM FIX LINK */
-    $processing__phantasm_fix_link = function ($name) use ($avalaible_rune, $keep_eol) {
+    $processing__phantasm_fix_link = function ($name) use ($keep_eol) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
       $phantasm = new $phantasm_class();
 
-      $rune_list = $avalaible_rune();
+      $rune_list = aether_list_runes();
 
       $rune_finds = [
         $phantasm->origin.'/Ether.php',
@@ -661,26 +658,6 @@ Chanter::cast(
 
       return true;
     };
-    if (Chanter::spell('phantasm-fix-link')) {
-      // header
-      Whisper::clear(true);
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Node \n");
-      // run spell and call
-      if (Chanter::spell('phantasm-fix-link') !== '1') {
-        $name = Chanter::spell('phantasm-fix-link');
-      }else {
-        $name = Whisper::call('Give us the rune name: ');
-      }
-      // set data
-      $name = ucfirst(strtolower($name));
-      // processing
-      if ( $processing__phantasm_fix_link($name) ) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
-      }else {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
-      }
-    }
-    
     /* PHANTASM FIX NOTE */
     $processing__phantasm_fix_note = function ($name, $nodes = null) use ($keep_eol) {
       $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
@@ -751,90 +728,87 @@ Chanter::cast(
         return false;
       }
     };
-    if (Chanter::spell('phantasm-fix-note')) {
-      // header
+    if (Chanter::spell('phantasm-upgrade')) {
       Whisper::clear(true);
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Note \n");
-      // run spell and call
-      if (Chanter::spell('phantasm-fix-note') !== '1') {
-        $name = Chanter::spell('phantasm-fix-note');
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Upgrade \n");
+      $name = $runic_name($ask_rune('phantasm-upgrade'));
+      if (!$processing__phantasm_exists($name)) {
+        // nothing to raise
+      }else if ($processing__phantasm_up($name)) {
+        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Phantasm upgraded: $name {{nl}}");
       }else {
-        $name = Whisper::call('Give us the rune name: ');
-      }
-      // set data
-      $name = ucfirst(strtolower($name));
-      // processing
-      if ( $processing__phantasm_fix_note($name) ) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Success update phantasm: $name {{nl}}");
-      }else {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not have origin!! {{nl}}");
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Phantasm not upgraded: $name {{nl}}");
       }
     }
 
-    /* PHANTASM FIX */
-    if (Chanter::spell('phantasm-fix')) {
-      // header
+
+    /* PHANTASM REPAIR
+    * --phantasm-repair[=<Rune>] [--mode=node|note|link] [--all]
+    * no --mode = node, link and note (the version is raised when something changed)
+    * --all = every rune
+    *  */
+    if (Chanter::spell('phantasm-repair')) {
       Whisper::clear(true);
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Auto \n");
-      // run spell and call
-      if (Chanter::spell('phantasm-fix') !== '1') {
-        $name = Chanter::spell('phantasm-fix');
-      }else {
-        $name = Whisper::call('Give us the rune name: ');
-      }
-      // set data
-      $name = ucfirst(strtolower($name));
-      if (!$processing__phantasm_exists($name)) {
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Repair \n");
+
+      $mode = strtolower($value('mode'));
+      if ($mode !== '' && !in_array($mode, ['node', 'note', 'link'])) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} --mode is node, note or link {{nl}}");
         return;
       }
-      // remember the Phantasm before fixing: the version is raised only when something changed
-      $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
-      $phantasm_path = (new $phantasm_class())->origin . '/Phantasm.php';
-      $phantasm_before = file_exists($phantasm_path) ? Forger::item($phantasm_path) : null;
-      // fixing node
-      $nodeFixed = $processing__phantasm_fix_node($name);
-      if ($nodeFixed !== false) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Node fixed for phantasm: $name {{nl}}");
-      } else {
-        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix node for phantasm: $name {{nl}}");
-      }
-      // fixing link
-      $linkFixed = $processing__phantasm_fix_link($name);
-      if ($linkFixed) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Link fixed for phantasm: $name {{nl}}");
-      } else {
-        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix link for phantasm: $name {{nl}}");
-      }
-      // fixing note
-      $noteFixed = $processing__phantasm_fix_note($name, ($nodeFixed !== false) ? $nodeFixed : null);
-      if ($noteFixed) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Note fixed for phantasm: $name {{nl}}");
-      } else {
-        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix note for phantasm: $name {{nl}}");
-      }
-      // update phantasm (only when node, link or note changed it)
-      if ($phantasm_before !== null && Forger::item($phantasm_path) === $phantasm_before) {
-        Whisper::echo("{{COLOR-INFO}}{{ICON-INFO}} Nothing changed, version kept: $name {{nl}}");
-      } else if ($processing__phantasm_up($name)) {
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Update phantasm: $name {{nl}}");
-      } else {
-        Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to update phantasm: $name {{nl}}");
-      }
-    }
 
-    /* PHANTASM FIX LINK ALL */
-    if (Chanter::spell('phantasm-fix-link-all')) {
-      // header
-      Whisper::clear(true);
-      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Phantasm Fix Link All \n");
-      // fixing link
-      foreach ( $avalaible_rune() as $name) {
-        // fixing link
+      $names = Chanter::spell('all') ? aether_list_runes() : [$runic_name($ask_rune('phantasm-repair'))];
+      foreach ($names as $name) {
+        if (!$processing__phantasm_exists($name)) {
+          continue;
+        }
+        $phantasm_class = 'Rune\\' . $name . '\\Phantasm';
+        $phantasm = new $phantasm_class();
+        if (empty($phantasm->origin)) {
+          Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Phantasm has no origin: $name {{nl}}");
+          continue;
+        }
+
+        // one part only
+        if ($mode === 'node') {
+          $done = $processing__phantasm_fix_node($name) !== false;
+        }else if ($mode === 'note') {
+          $done = $processing__phantasm_fix_note($name);
+        }else if ($mode === 'link') {
+          $done = $processing__phantasm_fix_link($name);
+        }
+        if ($mode !== '') {
+          Whisper::echo($done
+            ? "{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Phantasm $mode repaired: $name {{nl}}"
+            : "{{COLOR-WARNING}}{{ICON-WARNING}} Phantasm $mode not repaired: $name {{nl}}");
+          continue;
+        }
+
+        // all three: remember the Phantasm before, the version is raised only when something changed
+        $phantasm_path = $phantasm->origin . '/Phantasm.php';
+        $phantasm_before = file_exists($phantasm_path) ? Forger::item($phantasm_path) : null;
+
+        $nodeFixed = $processing__phantasm_fix_node($name);
+        Whisper::echo(($nodeFixed !== false)
+          ? "{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Node repaired: $name {{nl}}"
+          : "{{COLOR-WARNING}}{{ICON-WARNING}} Node not repaired: $name {{nl}}");
+
         $linkFixed = $processing__phantasm_fix_link($name);
-        if ($linkFixed) {
-          Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Link fixed for phantasm: $name {{nl}}");
-        } else {
-          Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Failed to fix link for phantasm: $name {{nl}}");
+        Whisper::echo($linkFixed
+          ? "{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Link repaired: $name {{nl}}"
+          : "{{COLOR-WARNING}}{{ICON-WARNING}} Link not repaired: $name {{nl}}");
+
+        $noteFixed = $processing__phantasm_fix_note($name, ($nodeFixed !== false) ? $nodeFixed : null);
+        Whisper::echo($noteFixed
+          ? "{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Note repaired: $name {{nl}}"
+          : "{{COLOR-WARNING}}{{ICON-WARNING}} Note not repaired: $name {{nl}}");
+
+        if ($phantasm_before !== null && Forger::item($phantasm_path) === $phantasm_before) {
+          Whisper::echo("{{COLOR-INFO}}{{ICON-INFO}} Nothing changed, version kept: $name {{nl}}");
+        }else if ($processing__phantasm_up($name)) {
+          Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Phantasm upgraded: $name {{nl}}");
+        }else {
+          Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Phantasm not upgraded: $name {{nl}}");
         }
       }
     }

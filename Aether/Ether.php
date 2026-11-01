@@ -23,6 +23,9 @@ define('AETHER_COPYRIGHT', 'RUNE '.AETHER_VERSION.' | Created By @anwarachilles'
 #NOTE: Folder of the origin runes.
 define('AETHER_RUNE_LOCATION', realpath(__DIR__.'/../'));
 
+#NOTE: The origin runes of Rune, one by one (the release counts these only).
+define('AETHER_RUNES', ['Aether', 'Chanter', 'Cipher', 'Crafter', 'Forger', 'Keeper', 'Minister', 'Specter', 'Weaver', 'Whisper']);
+
 #NOTE: Folder of Aether's own weaver templates.
 define('AETHER_SELF_WEAVER', __DIR__.'/weaver/');
 
@@ -44,8 +47,6 @@ define('AETHER_ECHOES_ARCANE', AETHER_ECHOES_RUNE.'/arcane.txt');
 #NOTE: Legacy arcanes file of the runite echoes.
 define('AETHER_ECHOES_ARCANES', AETHER_ECHOES_RUNE.'/arcanes.txt');
 
-#NOTE: Legacy artefact folder of the runite echoes.
-define('AETHER_ECHOES_ARTEFACT', AETHER_ECHOES_RUNE.'/artefacts/');
 
 #NOTE: PHP version the Rune core was built with.
 define('AETHER_PHP_VERSION', '8.1.10');

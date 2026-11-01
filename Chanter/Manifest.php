@@ -11,13 +11,14 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  #NOTE: Begins Chanter: loads the built-in casts from @bindrune/chanter.
+  #NOTE: Begins Chanter: loads the built-in runites from @runite/ (awakening only through Rune\Ethereal::awakening).
   public static function begin() {
-    // bindrune
-    $bindrunes = glob(\Rune\Ethereal::$bindrune . "/chanter/*");
-    foreach ($bindrunes as $app) {
-      if (file_exists($app . "/cast.php")) {
-        require_once $app . "/cast.php";
+    foreach (glob(\Rune\Ethereal::$runite . '*', GLOB_ONLYDIR) as $runite) {
+      if (basename($runite) === 'awakening') {
+        continue;
+      }
+      if (file_exists($runite . '/cast.php')) {
+        require_once $runite . '/cast.php';
       }
     }
   }

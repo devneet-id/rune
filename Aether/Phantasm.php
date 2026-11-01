@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.18';
+  public $version = '1.19';
   
   public $main = 'Aether';
 
@@ -57,6 +57,11 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'ether',
+      'call' => 'AETHER_RUNES',
+      'note' => 'The origin runes of Rune, one by one (the release counts these only).',
+    ],
+    [
+      'type' => 'ether',
       'call' => 'AETHER_SELF_WEAVER',
       'note' => 'Folder of Aether"s own weaver templates.',
     ],
@@ -89,11 +94,6 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'ether',
       'call' => 'AETHER_ECHOES_ARCANES',
       'note' => 'Legacy arcanes file of the runite echoes.',
-    ],
-    [
-      'type' => 'ether',
-      'call' => 'AETHER_ECHOES_ARTEFACT',
-      'note' => 'Legacy artefact folder of the runite echoes.',
     ],
     [
       'type' => 'ether',
@@ -258,7 +258,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'aether_list_runes()',
-      'note' => 'Lists origin runes plus @liberations runes in liberation mode.',
+      'note' => 'Lists origin runes (one by one) plus @liberation runes in liberation mode.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'aether_list_liberation()',
+      'note' => 'Lists the runes in @liberation/ (liberation mode only): every folder with a PascalCase name.',
     ],
     [
       'type' => 'manifest',

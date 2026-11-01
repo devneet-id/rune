@@ -1,5 +1,5 @@
 {{text-secondary}}///////////////////////////{{text-end}}
-  {{text-default}}A R T E F A C T 
+  {{text-default}}R E L I C 
 {{bg-danger}} L O R E {{bg-end}} {{LORE}}
 
 
@@ -11,7 +11,7 @@
     {{text-danger}}»{{text-end}} {{RUNIC}} {{text-info}}with{{text-end}} {{ENCRYPTION}}
 
 {{text-secondary}} ♦ Rune & PHP Version{{text-end}}
-    {{text-danger}}»{{text-end}} {{VERSION}} {{text-info}}with PHP{{text-end}} {{ARTEFACT-PHP}}
+    {{text-danger}}»{{text-end}} {{VERSION}} {{text-info}}with PHP{{text-end}} {{RELIC-PHP}}
     {{text-info}}You »{{text-end}} {{MY_VERSION}} {{text-info}}with PHP{{text-end}} {{MY_PHP}}
 
 {{text-secondary}} ♦ Operation System{{text-end}}

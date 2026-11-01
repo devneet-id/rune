@@ -1,0 +1,11 @@
+{{text-end}}
+{{bg-danger}} # {{bg-end}} F E D E R A T I O N{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --initiate {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Use your own reliquary: --repo=<user>/reliquary
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --discover {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Find every relic on the chain of reliquaries (forks of forks)
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --retrieve {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Keep a relic in @federation/: <vendor>/<repo> (--tag=)
+

@@ -35,12 +35,13 @@ This makes Rune inherently lightweight and adaptable, aligning perfectly with pr
 - Phased Process Log (Arcane) (Grimoire)
 - Execution Result: Timestamp, Memory & Peak Memory
 - Fancy Command Line Interface (100% CLI support)
-- Save & Load Project as Package (Runite) (Artefact)
-- Project Item as Package (Shard) (Artefact)
+- Save & Load Project as Package (Relic) (Reliquary)
+- Project Item as Package (Shard) (Reliquary)
+- Share & Find Relics Online (Reliquary & Federation)
 - Metadata Storage & Handling `.echoes` (Keeper)
 - Zero Trust for Breaking Execution
 - Event-Driven & Encapsulation (Chanter)
-- Starter Template (Awakening)
+- Starter Template or Relic (Awakening)
 - Command Line UI & Interaction (Chanter & Whisper)
 - Text Styling & Reuse (Weaver)
 - File/Item & Directory/Repo Handling (Forger)
@@ -66,7 +67,7 @@ First invocation awaken Rune from the void:
 ```php
 <?php
 /*
- * Act. 0 - Awaken From The Void
+ * Act. 0 - The Awakening of Void
  * THE VOID
  *
  * From the silence of nothingness, echoes rise from the void.
@@ -113,10 +114,12 @@ By looking, writing, and growing, we can finally understand.
 - **Echoes** = sounds from the past
 - **Runite** = a rune that becomes a thing
 - **Shard** = a small piece of runite
-- **Bindrune** = many runes joined together
+- **Runite** (built-in) = the runites carried by Rune: awakening, rune, grimoire, sentinel, reliquary
 - **Grimoire** = a book that feels alive
 - **Sentinel** = someone or something that guards
-- **Artefact** = a thing we can see
+- **Relic** = a runite preserved to travel (`.rune`)
+- **Reliquary** = a place where relics are kept
+- **Federation** = reliquaries joined together
 
 
 ## Origin Runes
@@ -137,8 +140,8 @@ Ten runes live at the origin. Each holds one purpose, and Aether flows through a
 
 Read any rune from the Grimoire:
 ```bash
-php cast grimoire --rune=Keeper
-php cast grimoire --rune-all
+php cast grimoire --runic=Keeper
+php cast grimoire --runic-list
 ```
 
 
@@ -155,38 +158,50 @@ php cast grimoire --rune-all
 
 
 ## The Journey
-1. **Awakening** — `Rune\Ethereal::awakening()` turns an empty `cast` into a runite, from a blank start or an artefact.
+1. **Awakening** — `Rune\Ethereal::awakening()` turns an empty `cast` into a runite, from a blank start or a relic of `devneet-id/reliquary`.
 2. **Engraving** — write casts in the runite: `Chanter::cast('wind --art', fn() => ..., 'note')`.
 3. **Echoes & Arcane** — Keeper remembers in `.echoes/`; Aether records every step as arcane, revealed by `grimoire --arcane`.
-4. **Artefact** — `php cast artefact --invoke` seals the runite, its echoes and shards into a `.rune` file to share.
-5. **Revoke** — `php cast artefact --revoke=<file>.rune` brings an artefact back to life in another place.
+4. **Relic** — `php cast reliquary --runite-relic` seals the runite, its echoes and shards into a `.rune` file to share.
+5. **Return** — `php cast reliquary --relic-runite` brings a relic back to life in another place (`=<vendor>/<repo>` takes one from the reliquary).
 
-Sentinel guards the runite: `php cast sentinel --invoke=Keeper` engraves a rune into it, `--revoke` takes it out.
+Sentinel guards the runite: `php cast sentinel --runite-insert=Keeper` engraves a rune into it, `--runite-remove` takes it out, `--gitignore` keeps `vendor/` and `.echoes/` out of git.
 
 
 
 ## Liberation
 Liberation opens the gate to create your own runes beside the origin runes.
 
-```php
-require_once __DIR__ . '/vendor/autoload.php';
-
-Rune\Ethereal::liberation();
-```
-
-Your runes live in `@liberations/` of the working folder, and Sentinel helps to shape them:
 ```bash
-php cast sentinel --create-rune=ledger
-php cast sentinel --phantasm-fix=Ledger
-php cast sentinel --invoke=Ledger
+php cast sentinel --liberation
 ```
+
+Sentinel writes `Rune\Ethereal::liberation();` under the `require` line of your runite. Your runes live in `@liberation/` next to it, and Sentinel helps to shape them:
+```bash
+php cast sentinel --runic-create=Ledger
+php cast sentinel --phantasm-repair=Ledger
+php cast sentinel --runite-insert=Ledger
+```
+
+
+
+## Federation
+Federation lets you keep your own reliquary (a fork of `devneet-id/reliquary`) and the relics you take from it.
+
+```bash
+php cast sentinel --federation
+php cast reliquary --initiate --repo=<user>/reliquary
+php cast reliquary --discover
+php cast reliquary --retrieve=<vendor>/<repo>
+```
+
+Relics are kept in `@federation/` next to the runite, and `@federation/federation.json` records what was found. Without federation every relic comes from `devneet-id/reliquary`.
 
 
 
 ## Versioning
 The footer of every cast shows the version of your rune world:
 ```
-Version=1.12.31
+Version=1.20.114
 ```
 It is the major version of the core followed by the sum of every Phantasm version (origin runes, plus liberation runes in liberation mode) — so the number grows as the runes grow.
 
