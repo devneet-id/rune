@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.14';
+  public $version = '1.15';
   
   public $main = 'Chanter';
 
@@ -164,7 +164,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'begin()',
-      'note' => 'Begins Chanter: loads the built-in casts from @bindrune/chanter.',
+      'note' => 'Begins Chanter: loads the built-in runites from @runite/ (awakening only through Rune\Ethereal::awakening).',
     ],
     [
       'type' => 'manifest',

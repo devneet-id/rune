@@ -1,3 +1,0 @@
-{{tab}}{{tab}}{{COLOR}}{{TYPE}}{{text-end}}
-{{tab}}{{tab}}{{CALL}}
-{{text-secondary}}{{NOTE}}{{text-end}}

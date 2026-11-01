@@ -307,7 +307,7 @@ function aether_version( Bool $all = false ) {
   $runes_minor = 0;
   foreach (aether_list_runes() as $rune) {
     // origin runes only, unless $all
-    if (!$all && !is_dir(AETHER_RUNE_LOCATION . '/' . $rune)) {
+    if (!$all && !in_array($rune, AETHER_RUNES)) {
       continue;
     }
     $phantasm = 'Rune\\'.$rune.'\\Phantasm';
@@ -322,19 +322,24 @@ function aether_version( Bool $all = false ) {
   aether_arcane('Aether.entity.aether_version');
   return (int) $major . '.' . ((int) $minor + $runes_major) . '.' . $runes_minor;
 }
-#NOTE: Lists origin runes plus @liberations runes in liberation mode.
+#NOTE: Lists origin runes (one by one) plus @liberation runes in liberation mode.
 function aether_list_runes() {
-  $manifests = [];
-  // internal rune
-  foreach (glob(AETHER_RUNE_LOCATION . '/*') as $manifest) {
-    if (is_dir($manifest) && strpos($manifest, '@bindrune') === false) {
-      $manifests[] = basename($manifest);
+  // origin runes
+  $manifests = AETHER_RUNES;
+  // liberation runes (liberation mode only, never the same name as an origin rune)
+  foreach (aether_list_liberation() as $manifest) {
+    if (!in_array($manifest, $manifests)) {
+      $manifests[] = $manifest;
     }
   }
-  // external rune (liberation mode only, never the same name as an origin rune)
+  return $manifests;
+}
+#NOTE: Lists the runes in @liberation/ (liberation mode only): every folder with a PascalCase name.
+function aether_list_liberation() {
+  $manifests = [];
   if (defined('LIBERATION') && file_exists(LIBERATION)) {
     foreach (glob(LIBERATION . '*', GLOB_ONLYDIR) as $manifest) {
-      if (!in_array(basename($manifest), $manifests)) {
+      if (preg_match('/^[A-Z][A-Za-z0-9]*$/', basename($manifest))) {
         $manifests[] = basename($manifest);
       }
     }
