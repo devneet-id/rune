@@ -206,7 +206,7 @@ function crafter_spark_clustering() {
     if (strpos($shard->name, '.head') !== false) {
       $CRAFTER_SPARK_CLUSTER['head.html'][] = $source;
     } else {
-      $CRAFTER_SPARK_CLUSTER[$shard->ext][] = $source;
+      $CRAFTER_SPARK_CLUSTER[$shard->ext ?? ''][] = $source;
     }
   }
 
@@ -308,7 +308,8 @@ function crafter_spark_distributing() {
   $FORGER_KEEPER_SHARD = false;
 
   $dist = $CRAFTER_SEED['DIST'];
-  forger_fix(forger_trace($dist));
+  // only the folders: a dist without extension is still a file
+  forger_fix([['type'=> 'repo', 'target'=> dirname($dist)]]);
   forger_item($dist, $CRAFTER_SPARK_DISTRIBUTE);
 
   aether_arcane("Crafter.entity.crafter_spark_distributing");
