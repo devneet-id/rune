@@ -14,6 +14,9 @@ reliquaries of Rune — devneet-id and its forks.
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --runite-inspect {{text-success}}{{icon-success}}
   {{text-secondary}}≈ Inspect a relic before opening it (default: the .rune of this runite)
 
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --runite-relic {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ This runite to a relic, next to it ({{AETHER-FILE}}.rune)
+
 {{text-end}}
 {{bg-danger}} # {{bg-end}} S H A R D{{text-danger}}.{{text-end}}
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --shard {{text-success}}{{icon-success}}
@@ -30,9 +33,6 @@ reliquaries of Rune — devneet-id and its forks.
 
 {{text-end}}
 {{bg-danger}} # {{bg-end}} R E L I C{{text-danger}}.{{text-end}}
-{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --runite-relic {{text-success}}{{icon-success}}
-  {{text-secondary}}≈ This runite to a relic, next to it ({{AETHER-FILE}}.rune)
-
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} reliquary --relic-runite {{text-success}}{{icon-success}}
   {{text-secondary}}≈ A relic to this runite: <vendor>/<repo> (--tag=, --yes), empty = {{AETHER-FILE}}.rune
 
