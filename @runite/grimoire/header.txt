@@ -1,0 +1,28 @@
+{{text-secondary}}///////////////////////////////////{{text-end}}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+██ ▄▄ ██ ▄▄▀█▄ ▄██ ▄▀▄ ██ ▄▄▄ █▄ ▄██ ▄▄▀██ ▄▄▄██
+██ █▀▀██ ▀▀▄██ ███ █ █ ██ ███ ██ ███ ▀▀▄██ ▄▄▄██
+██ ▀▀▄██ ██ █▀ ▀██ ███ ██ ▀▀▀ █▀ ▀██ ██ ██ ▀▀▀██
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+{{bg-info}} Carefull use rune BETA/DEPRECATED. {{bg-end}}
+{{text-secondary}}
+Grimoire is your gateway to understanding
+system structure and flow. It lets you read
+how everything connects and moves behind the
+scenes.
+{{text-end}}
+
+{{bg-danger}} # {{bg-end}} R U N I C{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} grimoire --runic {{text-success}}{{icon-success}}
+    {{text-secondary}}≈ Read one rune: --runic=<Rune>
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} grimoire --runic-list {{text-success}}{{icon-success}}
+    {{text-secondary}}≈ Read every rune.
+
+{{text-end}}
+{{bg-danger}} # {{bg-end}} A R C A N E{{text-danger}}.{{text-end}}
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} grimoire --arcane {{text-success}}{{icon-success}}
+    {{text-secondary}}≈ See what your system does while processing.
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} grimoire --arcane-clean {{text-success}}{{icon-success}}
+    {{text-secondary}}≈ Clean every arcane.
