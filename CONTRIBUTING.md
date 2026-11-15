@@ -63,19 +63,18 @@ php cast
 
 7. Prepare the additional rune using the Sentinel.
 ```php
-php cast sentinel --invoke=Forger
-php cast sentinel --invoke=Whisper
-php cast sentinel --invoke=Cipher
+php cast sentinel --runite-insert=Forger
+php cast sentinel --runite-insert=Whisper
+php cast sentinel --runite-insert=Cipher
 ```
 
-8. Enter **Liberation Mode** in the cast file.
-```php
-require_once __DIR__ . '/vendor/autoload.php';
-
-Rune\Ethereal::liberation();
+8. Enter **Evolution Mode** in the cast file.
+```shell
+php cast sentinel --evolution
 ```
+Sentinel writes `Rune\Ethereal::evolution();` under the `require` line.
 
-9. Run the `php cast` command again. If it enters liberation mode, you will see **Liberation of Forte** at the entrance.
+9. Run the `php cast` command again. If it enters evolution mode, you will see **The Evolution of Eidos** at the entrance.
 
 
 
@@ -189,7 +188,7 @@ It also applies to the flow/logic already existing in the rune. To fix it, the c
 
 
 ### Contribute new Rune
-The concept is simple: check the **@liberation** folder, run `php cast sentinel --create-rune=Ghost`, done. 
+The concept is simple: check the **@evolution** folder, run `php cast sentinel --runic-create=Ghost`, done. 
 (Under Development)
 
 
