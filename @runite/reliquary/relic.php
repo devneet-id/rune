@@ -183,8 +183,8 @@ function reliquary_relic_deploy( Object $relic ) {
 
 /* RELIQUARY (online) */
 
-#NOTE: GET a url: [status, body]; status 0 = can not be reached.
-function reliquary_fetch( String $url ) {
+#NOTE: GET a url: [status, body]; status 0 = can not be reached (timeout in seconds, 30 by default).
+function reliquary_fetch( String $url, int $timeout = 30 ) {
   if (stripos($url, 'https://') === 0 && !extension_loaded('openssl') && !extension_loaded('curl')) {
     Whisper::echo("{{COLOR-DANGER}}{{ICON-DANGER}}{{LABEL-DANGER}}PHP can not open https: enable openssl (or curl) in php.ini.{{nl}}");
     return [0, ''];
@@ -194,7 +194,7 @@ function reliquary_fetch( String $url ) {
     curl_setopt_array($curl, [
       CURLOPT_RETURNTRANSFER=> true,
       CURLOPT_FOLLOWLOCATION=> true,
-      CURLOPT_TIMEOUT=> 30,
+      CURLOPT_TIMEOUT=> $timeout,
       CURLOPT_USERAGENT=> 'rune-reliquary',
     ]);
     $body = curl_exec($curl);
@@ -204,7 +204,7 @@ function reliquary_fetch( String $url ) {
   }
   if (ini_get('allow_url_fopen')) {
     $context = stream_context_create(['http'=> [
-      'timeout'=> 30,
+      'timeout'=> $timeout,
       'user_agent'=> 'rune-reliquary',
       'follow_location'=> 1,
       'ignore_errors'=> true,
