@@ -48,7 +48,9 @@ This makes Rune inherently lightweight and adaptable, aligning perfectly with pr
 - Fancy Error Handling (Keeper)
 - Process-Focusable (Whisper.drain)
 - Multi-Process & Interaction (Specter)
-- Open All Possibilities & Potential (Liberation)
+- Runes of Your Own (Evolution)
+- Your Own Reliquary (Federation)
+- Bring Your Own PHP Runtime (Liberation)
 
 
 
@@ -110,7 +112,9 @@ By looking, writing, and growing, we can finally understand.
 
 3. Others
 - **Awakening** = starting something, from anywhere
-- **Liberation** = being free and making something new
+- **Evolution** = rebuilding something in your own form
+- **Federation** = many places that trust each other
+- **Liberation** = being free from what holds you
 - **Echoes** = sounds from the past
 - **Runite** = a rune that becomes a thing
 - **Shard** = a small piece of runite
@@ -153,7 +157,7 @@ php cast grimoire --runic-list
 - **Phantasm is the contract.** It replaces Reflection: version, user, note, mark, link and node are read by the Grimoire.
 - **Aether flows everywhere.** Runes are not standalone packages; they awaken together inside one flow.
 - **Every change raises the Phantasm version** of the rune that changed.
-- **A liberation rune never replaces an origin rune.** Need another version? Create a new rune with its own name (e.g. `MYWeaver`).
+- **An evolution rune never replaces an origin rune.** Need another version? Create a new rune with its own name (e.g. `MYWeaver`).
 
 
 
@@ -168,14 +172,17 @@ Sentinel guards the runite: `php cast sentinel --runite-insert=Keeper` engraves 
 
 
 
-## Liberation
-Liberation opens the gate to create your own runes beside the origin runes.
+## Modes
+A runite can unlock three modes. Sentinel writes one line under the `require` line and opens a folder next to the runite. The caption of the highest one wins: *The Liberation of Forte* > *The Federation of Fides* > *The Evolution of Eidos* > *The Awakening of Void*.
+
+## Evolution
+Evolution opens the gate to create your own runes beside the origin runes.
 
 ```bash
-php cast sentinel --liberation
+php cast sentinel --evolution
 ```
 
-Sentinel writes `Rune\Ethereal::liberation();` under the `require` line of your runite. Your runes live in `@liberation/` next to it, and Sentinel helps to shape them:
+Sentinel writes `Rune\Ethereal::evolution();`. Your runes live in `@evolution/` next to the runite, and Sentinel helps to shape them:
 ```bash
 php cast sentinel --runic-create=Ledger
 php cast sentinel --phantasm-repair=Ledger
@@ -198,12 +205,27 @@ Relics are kept in `@federation/` next to the runite, and `@federation/federatio
 
 
 
+## Liberation
+Liberation frees your app from the PHP of the machine it lands on: it keeps a PHP runtime in `@liberation/`.
+
+```bash
+php cast sentinel --liberation
+php cast sentinel --runtime-install                 # the PHP you are running now
+php cast sentinel --runtime-install=php@8.3 --os=windows
+php cast sentinel --runtime-list
+php cast sentinel --runtime-remove=php@8.3.36
+```
+
+Runtimes land in `@liberation/php@<version>/` and `@liberation/liberation.json` records the one in use. Windows builds come from windows.php.net (checked by sha256), Linux and macOS builds from static-php (`dl.static-php.dev`, give the full version, e.g. `php@8.3.14`).
+
+
+
 ## Versioning
 The footer of every cast shows the version of your rune world:
 ```
-Version=1.20.114
+Version=1.21.117
 ```
-It is the major version of the core followed by the sum of every Phantasm version (origin runes, plus liberation runes in liberation mode) — so the number grows as the runes grow.
+It is the major version of the core followed by the sum of every Phantasm version (origin runes, plus evolution runes in evolution mode) — so the number grows as the runes grow.
 
 
 

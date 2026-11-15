@@ -26,10 +26,6 @@ Chanter::begin();
 
 // awakening: the first runite, a blank template or a relic of devneet-id/reliquary
 Chanter::cast('awakening', function() {
-  // the runite is never a shard
-  global $FORGER_KEEPER_SHARD;
-  $FORGER_KEEPER_SHARD = false;
-
   Whisper::clear();
   Whisper::echo("{{text-secondary}}///////////////////////////// \n");
   Whisper::echo(" A W A K E N I N G \n");

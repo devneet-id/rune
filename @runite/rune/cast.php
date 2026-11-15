@@ -17,8 +17,6 @@ Chanter::cast(
     global $AETHER_RUNE_ENTITY;
     global $CHANTER_ARGS;
     global $CHANTER_ECHO;
-    global $FORGER_KEEPER_SHARD;
-    $FORGER_KEEPER_SHARD = false;
     
     // the built-in runites of @runite/ are the default casts; rune itself and old names stay hidden
     $hidden = ['rune', 'artefact'];
@@ -73,11 +71,13 @@ Chanter::cast(
       }
     }
     
-    // the caption of the highest mode wins: federation > liberation > none
-    if (defined('FEDERATION')) {
-      $mode_text = 'The Federation of Fides';
-    }else if (defined('LIBERATION')) {
+    // the caption of the highest mode wins: liberation > federation > evolution > none
+    if (defined('LIBERATION')) {
       $mode_text = 'The Liberation of Forte';
+    }else if (defined('FEDERATION')) {
+      $mode_text = 'The Federation of Fides';
+    }else if (defined('EVOLUTION')) {
+      $mode_text = 'The Evolution of Eidos';
     }else {
       $mode_text = 'The Awakening of Void';
     }

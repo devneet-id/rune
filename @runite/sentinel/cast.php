@@ -23,10 +23,6 @@ Chanter::cast(
     Crafter::ether()::essence()::entity();
     Specter::ether()::essence()::entity();
 
-    // the runite, its .gitignore and the runes are never shards of this runite
-    global $FORGER_KEEPER_SHARD;
-    $FORGER_KEEPER_SHARD = false;
-
     // a spell with a value ('' when given without one)
     $value = function( String $spell ) {
       $value = Chanter::spell($spell);
@@ -75,10 +71,13 @@ Chanter::cast(
     }
 
     // main hall of the sentinel
-    $spells = ['altar', 'inspect', 'gitignore', 'liberation', 'federation', 'runite-insert', 'runite-remove', 'runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair', 'test'];
+    $spells = ['altar', 'inspect', 'gitignore', 'evolution', 'federation', 'liberation', 'runite-insert', 'runite-remove', 'runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair', 'runtime-install', 'runtime-list', 'runtime-remove', 'test'];
     $asked = array_filter($spells, fn($spell) => Chanter::spell($spell) !== false);
     if (!$asked) {
       $template = Weaver::item(__DIR__ . '/header.txt');
+      if (defined('EVOLUTION')) {
+        $template .= Weaver::item(__DIR__ . '/header-evolution.txt');
+      }
       if (defined('LIBERATION')) {
         $template .= Weaver::item(__DIR__ . '/header-liberation.txt');
       }
@@ -152,12 +151,13 @@ Chanter::cast(
     }
 
 
-    /* UNLOCK: LIBERATION & FEDERATION
+    /* UNLOCK: EVOLUTION, FEDERATION & LIBERATION
     * writes the mode line under the `require` line of the runite (already there = only told)
     * */
     $modes = [
-      'liberation'=> ['caption'=> 'The Liberation of Forte', 'folder'=> '@liberation', 'readme'=> 'liberation.md'],
+      'evolution'=> ['caption'=> 'The Evolution of Eidos', 'folder'=> '@evolution', 'readme'=> 'evolution.md'],
       'federation'=> ['caption'=> 'The Federation of Fides', 'folder'=> '@federation', 'readme'=> 'federation.md'],
+      'liberation'=> ['caption'=> 'The Liberation of Forte', 'folder'=> '@liberation', 'readme'=> 'liberation.md'],
     ];
     $processing__unlock = function( String $mode ) use ($runite_path) {
       $runite = (string) Forger::item($runite_path);
@@ -214,7 +214,7 @@ Chanter::cast(
         $manifest = $runic_name($target_parts[0]);
         $methods = array_map('strtolower', array_slice($target_parts, 1));
 
-        // only insert runes that exist (origin runes, plus @liberation/ runes in liberation mode)
+        // only insert runes that exist (origin runes, plus @evolution/ runes in evolution mode)
         if (!in_array($manifest, aether_list_runes())) {
           return false;
         }
@@ -351,11 +351,11 @@ Chanter::cast(
 
 
     /*
-    * LIBERATION (liberation mode only: these spells write runes in @liberation/)
+    * EVOLUTION (evolution mode only: these spells write runes in @evolution/)
     * */
-    foreach (['runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair'] as $liberation_spell) {
-      if (Chanter::spell($liberation_spell) && !defined('LIBERATION')) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} --$liberation_spell needs The Liberation of Forte: php " . AETHER_FILE . " sentinel --liberation {{nl}}");
+    foreach (['runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair'] as $evolution_spell) {
+      if (Chanter::spell($evolution_spell) && !defined('EVOLUTION')) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} --$evolution_spell needs The Evolution of Eidos: php " . AETHER_FILE . " sentinel --evolution {{nl}}");
         return;
       }
     }
@@ -408,20 +408,20 @@ Chanter::cast(
         $name = trim((string) Whisper::call('Give us the rune name: '));
       }
       $name = preg_match('/^[A-Z][A-Za-z0-9]*$/', $name) ? $name : ucfirst(strtolower($name));
-      $repo = LIBERATION . $name . '/';
+      $repo = EVOLUTION . $name . '/';
 
-      // an origin rune can not be replaced by a liberation rune
+      // an origin rune can not be replaced by an evolution rune
       if ($name === '' || in_array(strtolower($name), array_map('strtolower', AETHER_RUNES))) {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} '$name' is an origin rune, use another name (e.g. My$name). {{nl}}");
         return;
       }
       if (file_exists($repo)) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune already exists: @liberation/$name {{nl}}");
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune already exists: @evolution/$name {{nl}}");
         return;
       }
 
       $processing__create_rune($name, $repo);
-      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Rune created: @liberation/$name {{nl}}");
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Rune created: @evolution/$name {{nl}}");
     }
 
     /* RUNIC DELETE */
@@ -439,18 +439,18 @@ Chanter::cast(
 
       $name = $value('runic-delete');
       if ($name === '') {
-        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Liberation rune: " . implode(', ', aether_list_liberation()) . "{{nl}}");
+        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Evolution rune: " . implode(', ', aether_list_evolution()) . "{{nl}}");
         $name = trim((string) Whisper::call('Give us the rune name: '));
       }
       $name = $runic_name($name);
-      $repo = LIBERATION . $name . '/';
+      $repo = EVOLUTION . $name . '/';
 
       if ($name !== '' && $processing__remove_rune($name, $repo)) {
         // also remove it from the runite, so no `use`/awaken line points to a deleted rune
         $processing_revoke($name);
-        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Rune deleted: @liberation/$name {{nl}}");
+        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Rune deleted: @evolution/$name {{nl}}");
       }else {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: @liberation/$name {{nl}}");
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: @evolution/$name {{nl}}");
       }
     }
 
@@ -810,6 +810,79 @@ Chanter::cast(
         }else {
           Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} Phantasm not upgraded: $name {{nl}}");
         }
+      }
+    }
+
+
+    /*
+    * LIBERATION (liberation mode only: the runtimes in @liberation/, for now PHP)
+    * --runtime-install[=php@<version>] [--os=windows|linux|macos] [--arch=x86_64|aarch64]
+    * */
+    foreach (['runtime-install', 'runtime-list', 'runtime-remove'] as $liberation_spell) {
+      if (Chanter::spell($liberation_spell) && !defined('LIBERATION')) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} --$liberation_spell needs The Liberation of Forte: php " . AETHER_FILE . " sentinel --liberation {{nl}}");
+        return;
+      }
+    }
+    if (defined('LIBERATION') && (Chanter::spell('runtime-install') || Chanter::spell('runtime-list') || Chanter::spell('runtime-remove'))) {
+      require_once __DIR__ . '/runtime.php';
+    }
+
+    /* RUNTIME INSTALL */
+    if (Chanter::spell('runtime-install')) {
+      Whisper::clear();
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime Install\n");
+
+      // php@8.3 · php@8.3.14 · 8.3 — empty: the PHP running now
+      $asked = $value('runtime-install');
+      $asked = preg_replace('/^php@?/i', '', $asked);
+      $asked = $asked !== '' ? $asked : PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
+      [$os, $arch] = runtime_target($value('os'), $value('arch'));
+
+      [$build, $problem] = runtime_php_find($asked, $os, $arch);
+      if (!$build) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} php@$asked: $problem {{nl}}");
+        return;
+      }
+      Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} php@{$build['version']} for $os $arch: {$build['url']} {{nl}}");
+      [$path, $problem] = runtime_php_install($build, $os, $arch);
+      if (!$path) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} php@{$build['version']}: $problem {{nl}}");
+        return;
+      }
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Runtime kept: @liberation/php@{$build['version']}/ {{nl}}");
+      $binary = 'php@' . $build['version'] . '/' . ($os === 'windows' ? 'php.exe' : 'php');
+      Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Run with it: @liberation/$binary " . basename(AETHER_FILE) . " {{nl}}");
+    }
+
+    /* RUNTIME LIST */
+    if (Chanter::spell('runtime-list')) {
+      Whisper::clear();
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime List\n");
+      $record = runtime_record();
+      $in_use = isset($record['php']['version']) ? 'php@' . $record['php']['version'] : '';
+      $list = runtime_list();
+      foreach ($list as $name) {
+        $mark = ($name === $in_use) ? " {{text-success}}in use ({$record['php']['os']} {$record['php']['arch']}){{text-end}}" : '';
+        Whisper::echo("{{text-secondary}} ♦ {{text-default}}$name$mark{{nl}}");
+      }
+      Whisper::echo(count($list) . " runtime(s) in @liberation/{{nl}}");
+    }
+
+    /* RUNTIME REMOVE */
+    if (Chanter::spell('runtime-remove')) {
+      Whisper::clear();
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime Remove\n");
+      $name = $value('runtime-remove');
+      if ($name === '') {
+        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Runtime: " . implode(', ', runtime_list()) . "{{nl}}");
+        $name = trim((string) Whisper::call('Give us the runtime (php@<version>): '));
+      }
+      $name = preg_match('/^php@/i', $name) ? strtolower($name) : 'php@' . $name;
+      if (runtime_remove($name)) {
+        Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Runtime removed: @liberation/$name {{nl}}");
+      }else {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Runtime not found: @liberation/$name {{nl}}");
       }
     }
   }

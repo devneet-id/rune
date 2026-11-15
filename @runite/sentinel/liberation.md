@@ -1,20 +1,21 @@
 # @liberation — The Liberation of Forte
 
-Hello, and welcome to the freedom of Rune.
+Hello, and welcome to the liberation of Rune.
 
 This folder opened because your runite calls `Rune\Ethereal::liberation();`.
-Liberation sets Rune free from its origin: what stays is only the **Concept of Paradigm**,
-everything else is yours to shape.
+*Forte* is freedom in ability: your app is no longer bound to the PHP of the machine it lands on.
+Liberation keeps the runtimes your app runs on — first of all PHP.
 
 ## ✦ What lives here
-- `<Rune>/` — runes of your own (`Ether.php`, `Essence.php`, `Entity.php`, `Manifest.php`, `Phantasm.php`).
-  Make one with `php cast sentinel --runic-create=<Name>`.
+- `php@<version>/` — a PHP runtime (`php` / `php.exe`, `ext/`, `php.ini`).
+  Take one with `php cast sentinel --runtime-install=php@8.3`.
+- `liberation.json` — the runtime in use: version, OS, architecture, extensions.
 
-A liberation rune never replaces an origin rune (Aether, Chanter, Cipher, …).
+## ✦ First steps
+1. `php cast sentinel --runtime-install` — the PHP you are running now (`php@<version>` for another one).
+2. `php cast sentinel --runtime-list` — the runtimes kept here.
+3. `@liberation/php@<version>/php cast` — run your runite with it.
 
-## ✦ The possibility obtained
-- [x] Building an entirely new working environment.
-- [x] Creating a completely different workflow.
-- [x] Making your own Rune, either Public (contribute) or Private (local).
+Windows runtimes come from windows.php.net, Linux and macOS ones from static-php (dl.static-php.dev).
 
 *This file is only a greeting — Rune does not read it.*

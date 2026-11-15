@@ -19,8 +19,6 @@ Chanter::cast(
     Keeper::ether()::essence()::entity();
 
     global $AETHER_ARISED;
-    global $FORGER_KEEPER_SHARD;
-    $FORGER_KEEPER_SHARD = false;
 
     $default_node = [
       [
@@ -74,12 +72,12 @@ Chanter::cast(
       foreach (AETHER_RUNES as $rune) {
         $manifests[] = ['Rune\\' . $rune . '\\Manifest', AETHER_RUNE_LOCATION, 'internal'];
       }
-      // liberation runes (liberation mode only, never the same name as an origin rune)
-      foreach (aether_list_liberation() as $rune) {
+      // evolution runes (evolution mode only, never the same name as an origin rune)
+      foreach (aether_list_evolution() as $rune) {
         if (in_array($rune, AETHER_RUNES) || !class_exists('Rune\\' . $rune . '\\Phantasm')) {
           continue;
         }
-        $manifests[] = ['Rune\\' . $rune . '\\Manifest', realpath(LIBERATION), 'external'];
+        $manifests[] = ['Rune\\' . $rune . '\\Manifest', realpath(EVOLUTION), 'external'];
       }
       return $manifests;
     };

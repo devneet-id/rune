@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.14';
+  public $version = '1.15';
   
   public $main = 'Crafter';
 
@@ -20,9 +20,9 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Focused on dynamic creation and composition—designed to build, shape, and assemble various data structures or logic units through modular, seed-based, and spark-driven processes.';
 
   public $link = [
-    ['Aether', 'ether', '1.18'],
+    ['Aether', 'ether', '1.19'],
     ['Cipher', 'entity', '1.6'],
-    ['Forger', 'essence:entity', '1.14'],
+    ['Forger', 'entity', '1.16'],
     ['Weaver', 'entity', '1.7'],
     ['Whisper', 'entity', '1.13'],
   ];
@@ -171,7 +171,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'crafter_spark_clustering()',
-      'note' => 'Inject and group each shard’s content into the appropriate cluster based on name or file type.',
+      'note' => 'Inject and group each shard’s content into the appropriate cluster based on name or file type; only the languages of the seed are read, other shards are skipped.',
     ],
     [
       'type' => 'entity',
