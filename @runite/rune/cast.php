@@ -17,8 +17,6 @@ Chanter::cast(
     global $AETHER_RUNE_ENTITY;
     global $CHANTER_ARGS;
     global $CHANTER_ECHO;
-    global $FORGER_KEEPER_SHARD;
-    $FORGER_KEEPER_SHARD = false;
     
     // the built-in runites of @runite/ are the default casts; rune itself and old names stay hidden
     $hidden = ['rune', 'artefact'];

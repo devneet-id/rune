@@ -20,10 +20,6 @@ Chanter::cast(
     Forger::ether()::essence()::entity();
     Keeper::ether()::essence()::entity();
 
-    // relics and the federation record are never shards of this runite
-    global $FORGER_KEEPER_SHARD;
-    $FORGER_KEEPER_SHARD = false;
-
     // a spell with a value ('' when given without one)
     $value = function( String $spell ) {
       $value = Chanter::spell($spell);

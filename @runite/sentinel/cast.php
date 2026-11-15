@@ -23,10 +23,6 @@ Chanter::cast(
     Crafter::ether()::essence()::entity();
     Specter::ether()::essence()::entity();
 
-    // the runite, its .gitignore and the runes are never shards of this runite
-    global $FORGER_KEEPER_SHARD;
-    $FORGER_KEEPER_SHARD = false;
-
     // a spell with a value ('' when given without one)
     $value = function( String $spell ) {
       $value = Chanter::spell($spell);

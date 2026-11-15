@@ -19,8 +19,6 @@ Chanter::cast(
     Keeper::ether()::essence()::entity();
 
     global $AETHER_ARISED;
-    global $FORGER_KEEPER_SHARD;
-    $FORGER_KEEPER_SHARD = false;
 
     $default_node = [
       [
