@@ -15,7 +15,7 @@ define('AETHER_FILE', $_SERVER['PHP_SELF']);
 define('AETHER_REPO', (($AETHER_RUNITE = realpath($_SERVER['SCRIPT_FILENAME'] ?? '')) !== false && is_file($AETHER_RUNITE)) ? dirname($AETHER_RUNITE) : getcwd());
 
 #NOTE: Version of the Rune core.
-define('AETHER_VERSION', '1.11');
+define('AETHER_VERSION', '1.12');
 
 #NOTE: Copyright line placed in crafted and artefact output.
 define('AETHER_COPYRIGHT', 'RUNE '.AETHER_VERSION.' | Created By @anwarachilles');

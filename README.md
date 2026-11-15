@@ -223,7 +223,7 @@ Runtimes land in `@liberation/php@<version>/` and `@liberation/liberation.json` 
 ## Versioning
 The footer of every cast shows the version of your rune world:
 ```
-Version=1.20.117
+Version=1.21.117
 ```
 It is the major version of the core followed by the sum of every Phantasm version (origin runes, plus evolution runes in evolution mode) — so the number grows as the runes grow.
 
