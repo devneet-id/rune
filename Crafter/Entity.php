@@ -105,7 +105,8 @@ function crafter_shard_set(String $file_path, ?Callable $injection = NULL) {
   global $CRAFTER_SHARD_LIST;
   global $CRAFTER_SHARD_INJECTION;
 
-  if (file_exists($file_path)) {
+  // only files: a folder is never a shard
+  if (is_file($file_path)) {
     $CRAFTER_SHARD[$file_path] = forger_info($file_path);
     $CRAFTER_SHARD_LIST[] = $file_path;
     $CRAFTER_SHARD_INJECTION[$file_path] = $injection;
@@ -178,20 +179,37 @@ function crafter_spark_message() {
   $name        = $CRAFTER_SPARK['item'];
   $file_path   = $CRAFTER_SPARK['seed']['DIST'];
   $file_size   = aether_formatFileSize(filesize($file_path));
-  $total_shard = count($CRAFTER_SPARK['shard']);
+  $skipped     = (int) ($CRAFTER_SPARK['skipped'] ?? 0);
+  $total_shard = count($CRAFTER_SPARK['shard']) - $skipped;
+  $skip_note   = $skipped ? ", Skipped={{color-warning}}$skipped{{color-end}}" : '';
 
   // Display crafting success message
   whisper_echo("{{color-success}}{{icon-success}}{{color-end}} Crafting {{color-success}}$name{{color-end}} has been Sparked!!\n");
-  whisper_echo("{{color-info}}{{icon-info}}{{label-info}}{{color-end}}Path={{color-info}}$file_path{{color-end}}, Size={{color-info}}$file_size{{color-end}}, Shard={{color-info}}$total_shard{{color-end}}\n");
+  whisper_echo("{{color-info}}{{icon-info}}{{label-info}}{{color-end}}Path={{color-info}}$file_path{{color-end}}, Size={{color-info}}$file_size{{color-end}}, Shard={{color-info}}$total_shard{{color-end}}$skip_note\n");
 }
 
-#NOTE: Inject and group each shard’s content into the appropriate cluster based on name or file type.
+#NOTE: Inject and group each shard’s content into the appropriate cluster based on name or file type; only the languages of the seed are read, other shards are skipped.
 function crafter_spark_clustering() {
   global $CRAFTER_SPARK;
   global $CRAFTER_SPARK_CLUSTER;
   global $CRAFTER_SHARD_INJECTION;
 
+  // the languages of the seed (an array, or "html,css,js")
+  $languages = $CRAFTER_SPARK['seed']['LANGUAGE'] ?? [];
+  $languages = is_array($languages) ? $languages : array_map('trim', explode(',', (string) $languages));
+  $CRAFTER_SPARK['skipped'] = 0;
+
   foreach ($CRAFTER_SPARK['shard'] as $shard) {
+    // a *.head.html goes into <head>, any other file by its extension
+    $cluster = (strpos($shard->name, '.head') !== false && ($shard->ext ?? '') === 'html') ? 'head.html' : strtolower($shard->ext ?? '');
+    $language = ($cluster === 'head.html') ? 'html' : $cluster;
+
+    // not a file, or not a language of the seed: skipped, never read
+    if (!is_file($shard->target) || !isset(CRAFTER_VARIABLE[$cluster]) || !in_array($language, $languages)) {
+      $CRAFTER_SPARK['skipped']++;
+      continue;
+    }
+
     $source = forger_item($shard->target);
 
     // Run custom injection if available
@@ -202,12 +220,7 @@ function crafter_spark_clustering() {
       }
     }
 
-    // Cluster based on file naming or extension
-    if (strpos($shard->name, '.head') !== false) {
-      $CRAFTER_SPARK_CLUSTER['head.html'][] = $source;
-    } else {
-      $CRAFTER_SPARK_CLUSTER[$shard->ext ?? ''][] = $source;
-    }
+    $CRAFTER_SPARK_CLUSTER[$cluster][] = $source;
   }
 
   aether_arcane("Crafter.entity.crafter_spark_clustering");
@@ -223,14 +236,14 @@ function crafter_spark_cleaning() {
 
   foreach ($CRAFTER_SPARK_CLUSTER as $lang => $items) {
     foreach ($items as $item) {
-      $cleaner = CRAFTER_CLEANING[$lang];
+      $cleaner = CRAFTER_CLEANING[$lang] ?? [];
 
       foreach ($cleaner as $row) {
         $item = str_ireplace($row, '', $item);
       }
 
       // Minify code
-      if (in_array($lang, $CRAFTER_SEED['MINIFIED'])) {
+      if (in_array($lang, $CRAFTER_SEED['MINIFIED'] ?? [])) {
         $item = weaver_min($item, $lang);
       }
 
@@ -303,9 +316,6 @@ function crafter_spark_bundling() {
 function crafter_spark_distributing() {
   global $CRAFTER_SEED;
   global $CRAFTER_SPARK_DISTRIBUTE;
-  global $FORGER_KEEPER_SHARD;
-  
-  $FORGER_KEEPER_SHARD = false;
 
   $dist = $CRAFTER_SEED['DIST'];
   // only the folders: a dist without extension is still a file
