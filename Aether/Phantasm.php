@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.19';
+  public $version = '1.20';
   
   public $main = 'Aether';
 
@@ -20,7 +20,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
   public $link = [
-    ['Chanter', 'entity', '1.14'],
+    ['Chanter', 'entity', '1.15'],
     ['Whisper', 'entity', '1.13'],
   ];
 
@@ -253,17 +253,17 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'aether_version( Bool $all = false )',
-      'note' => 'Version of Rune: <major AETHER_VERSION>.<minor AETHER_VERSION + sum of rune majors>.<sum of rune minors>, read as integers; $all adds liberation runes.',
+      'note' => 'Version of Rune: <major AETHER_VERSION>.<minor AETHER_VERSION + sum of rune majors>.<sum of rune minors>, read as integers; $all adds evolution runes.',
     ],
     [
       'type' => 'entity',
       'call' => 'aether_list_runes()',
-      'note' => 'Lists origin runes (one by one) plus @liberation runes in liberation mode.',
+      'note' => 'Lists origin runes (one by one) plus @evolution runes in evolution mode.',
     ],
     [
       'type' => 'entity',
-      'call' => 'aether_list_liberation()',
-      'note' => 'Lists the runes in @liberation/ (liberation mode only): every folder with a PascalCase name.',
+      'call' => 'aether_list_evolution()',
+      'note' => 'Lists the runes in @evolution/ (evolution mode only): every folder with a PascalCase name.',
     ],
     [
       'type' => 'manifest',

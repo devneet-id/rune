@@ -17,11 +17,14 @@ got your back.
 
 {{text-end}}
 {{bg-danger}} # {{bg-end}} U N L O C K{{text-danger}}.{{text-end}}
-{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --liberation {{text-success}}{{icon-success}}
-  {{text-secondary}}≈ Unlock The Liberation of Forte: runes of your own in @liberation/
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --evolution {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Unlock The Evolution of Eidos: runes of your own in @evolution/
 
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --federation {{text-success}}{{icon-success}}
   {{text-secondary}}≈ Unlock The Federation of Fides: your own reliquary, relics in @federation/
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --liberation {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Unlock The Liberation of Forte: runtimes in @liberation/ (PHP)
 
 {{text-end}}
 {{bg-danger}} # {{bg-end}} R U N I T E{{text-danger}}.{{text-end}}

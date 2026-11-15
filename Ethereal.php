@@ -20,7 +20,7 @@ class Ethereal {
     return ($runite !== false && is_file($runite)) ? dirname($runite) : getcwd();
   }
 
-  #NOTE: Opens a mode folder next to the runite (@liberation/, @federation/) with its README.
+  #NOTE: Opens a mode folder next to the runite (@evolution/, @federation/, @liberation/) with its README.
   public static function mode( String $folder, String $readme ) {
     $path = self::home() . '/' . $folder . '/';
     if (!file_exists($path)) {
@@ -32,26 +32,34 @@ class Ethereal {
     return $path;
   }
 
-  #NOTE: Liberation mode: runes of your own in @liberation/ (The Liberation of Forte).
-  public static function liberation() {
-    if (defined('LIBERATION')) {
+  #NOTE: Evolution mode: runes of your own in @evolution/ (The Evolution of Eidos).
+  public static function evolution() {
+    if (defined('EVOLUTION')) {
       return;
     }
 
     // rebase autoloader composer
     $loader = new \Composer\Autoload\ClassLoader();
 
-    // @liberation/ lives next to the runite, wherever it is cast from
-    self::$origin = self::mode('@liberation', self::$runite . 'sentinel/liberation.md');
+    // @evolution/ lives next to the runite, wherever it is cast from
+    self::$origin = self::mode('@evolution', self::$runite . 'sentinel/evolution.md');
 
-    // the runes of @liberation/
+    // the runes of @evolution/
     $loader->addPsr4('Rune\\', self::$origin);
 
-    // register after the origin loader (append): a liberation rune never replaces an origin rune
+    // register after the origin loader (append): an evolution rune never replaces an origin rune
     $loader->register(false);
 
     // define to system
-    define('LIBERATION', self::$origin);
+    define('EVOLUTION', self::$origin);
+  }
+
+  #NOTE: Liberation mode: runtimes kept in @liberation/, first of all PHP (The Liberation of Forte).
+  public static function liberation() {
+    if (defined('LIBERATION')) {
+      return;
+    }
+    define('LIBERATION', self::mode('@liberation', self::$runite . 'sentinel/liberation.md'));
   }
 
   #NOTE: Federation mode: your own reliquary, relics kept in @federation/ (The Federation of Fides).

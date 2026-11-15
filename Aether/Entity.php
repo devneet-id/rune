@@ -61,7 +61,7 @@ function aether_exit( $force = false ) {
       }
     }
     
-    // every rune counted, liberation runes too (the release tag counts origin runes only)
+    // every rune counted, evolution runes too (the release tag counts origin runes only)
     $version = aether_version(true);
 
     // whisper_echo("\n{{text-secondary}}{{icon-info}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
@@ -300,7 +300,7 @@ function aether_arcane_pretty_print() {
 
 
 
-#NOTE: Version of Rune: <major AETHER_VERSION>.<minor AETHER_VERSION + sum of rune majors>.<sum of rune minors>, read as integers; $all adds liberation runes.
+#NOTE: Version of Rune: <major AETHER_VERSION>.<minor AETHER_VERSION + sum of rune majors>.<sum of rune minors>, read as integers; $all adds evolution runes.
 function aether_version( Bool $all = false ) {
   list($major, $minor) = array_pad(explode('.', AETHER_VERSION), 2, '0');
   $runes_major = 0;
@@ -322,23 +322,23 @@ function aether_version( Bool $all = false ) {
   aether_arcane('Aether.entity.aether_version');
   return (int) $major . '.' . ((int) $minor + $runes_major) . '.' . $runes_minor;
 }
-#NOTE: Lists origin runes (one by one) plus @liberation runes in liberation mode.
+#NOTE: Lists origin runes (one by one) plus @evolution runes in evolution mode.
 function aether_list_runes() {
   // origin runes
   $manifests = AETHER_RUNES;
-  // liberation runes (liberation mode only, never the same name as an origin rune)
-  foreach (aether_list_liberation() as $manifest) {
+  // evolution runes (evolution mode only, never the same name as an origin rune)
+  foreach (aether_list_evolution() as $manifest) {
     if (!in_array($manifest, $manifests)) {
       $manifests[] = $manifest;
     }
   }
   return $manifests;
 }
-#NOTE: Lists the runes in @liberation/ (liberation mode only): every folder with a PascalCase name.
-function aether_list_liberation() {
+#NOTE: Lists the runes in @evolution/ (evolution mode only): every folder with a PascalCase name.
+function aether_list_evolution() {
   $manifests = [];
-  if (defined('LIBERATION') && file_exists(LIBERATION)) {
-    foreach (glob(LIBERATION . '*', GLOB_ONLYDIR) as $manifest) {
+  if (defined('EVOLUTION') && file_exists(EVOLUTION)) {
+    foreach (glob(EVOLUTION . '*', GLOB_ONLYDIR) as $manifest) {
       if (preg_match('/^[A-Z][A-Za-z0-9]*$/', basename($manifest))) {
         $manifests[] = basename($manifest);
       }
