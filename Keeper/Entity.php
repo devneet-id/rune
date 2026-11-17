@@ -102,7 +102,8 @@ function keeper_item_get( String $name ) {
  *  */
 #NOTE: Reads or writes a raw file inside a given repository, depending on whether a value is provided.
 function keeper_echo( String $repo, String $name, $value = '' ) {
-  if (empty($value)) {
+  // no value = read ('0' is a value to write)
+  if ($value === '' || $value === null) {
     $return = keeper_echo_get($repo, $name);
   }else {
     $return = keeper_echo_set($repo, $name, $value);
@@ -113,7 +114,7 @@ function keeper_echo( String $repo, String $name, $value = '' ) {
 }
 #NOTE: Ensures the target repository exists, then saves the given value as a plain file.
 function keeper_echo_set( String $repo, String $name, $value ) {
-  forger_fix([ 'target'=> $repo, 'type'=> 'repo' ]);
+  forger_fix([[ 'target'=> $repo, 'type'=> 'repo' ]]);
   forger_item($repo . '/' . $name, $value);
 
   aether_arcane('Keeper.entity.keeper_echo_set');
