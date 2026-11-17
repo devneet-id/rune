@@ -160,6 +160,7 @@ function chanter_cast_get( String $arg ) {
 #NOTE: Checks if a cast function exists for the given arguments
 function chanter_cast_has( String $arg ) {
   global $CHANTER_ARG_CAST;
+  global $CHANTER_CAST;
 
   chanter_arg_extract( $arg );
 
