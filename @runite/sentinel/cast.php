@@ -71,7 +71,7 @@ Chanter::cast(
     }
 
     // main hall of the sentinel
-    $spells = ['altar', 'inspect', 'gitignore', 'evolution', 'federation', 'liberation', 'runite-insert', 'runite-remove', 'runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair', 'runtime-install', 'runtime-list', 'runtime-remove', 'test'];
+    $spells = ['altar', 'inspect', 'gitignore', 'evolution', 'federation', 'liberation', 'runite-insert', 'runite-remove', 'runic-create', 'runic-delete', 'phantasm-upgrade', 'phantasm-repair', 'runtime-install', 'runtime-url', 'runtime-list', 'runtime-use', 'runtime-remove', 'runtime-launcher', 'test'];
     $asked = array_filter($spells, fn($spell) => Chanter::spell($spell) !== false);
     if (!$asked) {
       $template = Weaver::item(__DIR__ . '/header.txt');
@@ -815,58 +815,124 @@ Chanter::cast(
 
 
     /*
-    * LIBERATION (liberation mode only: the runtimes in @liberation/, for now PHP)
-    * --runtime-install[=php@<version>] [--os=windows|linux|macos] [--arch=x86_64|aarch64]
+    * LIBERATION (liberation mode only: the runtimes in @liberation/)
+    * --runtime-install[=php@<version>] [--os=windows|linux|macos] [--arch=x86_64|aarch64] [--from=local]
+    * --runtime-url=<archive url> --name=<runtime>@<version> [--sha256=<hash>]
+    * --runtime-list · --runtime-use=<runtime>@<version> · --runtime-remove=<runtime>@<version> · --runtime-launcher
     * */
-    foreach (['runtime-install', 'runtime-list', 'runtime-remove'] as $liberation_spell) {
+    $runtime_spells = ['runtime-install', 'runtime-url', 'runtime-list', 'runtime-use', 'runtime-remove', 'runtime-launcher'];
+    foreach ($runtime_spells as $liberation_spell) {
       if (Chanter::spell($liberation_spell) && !defined('LIBERATION')) {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} --$liberation_spell needs The Liberation of Forte: php " . AETHER_FILE . " sentinel --liberation {{nl}}");
         return;
       }
     }
-    if (defined('LIBERATION') && (Chanter::spell('runtime-install') || Chanter::spell('runtime-list') || Chanter::spell('runtime-remove'))) {
+    if (defined('LIBERATION') && array_filter($runtime_spells, fn($spell) => Chanter::spell($spell) !== false)) {
       require_once __DIR__ . '/runtime.php';
     }
 
-    /* RUNTIME INSTALL */
+    // the end of an install: where it is, and how to run with it
+    $runtime_kept = function( String $name, String $path ) {
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Runtime kept: @liberation/$name/ {{nl}}");
+      if (str_starts_with($name, 'php@')) {
+        $binary = file_exists($path . 'php.exe') ? 'php.exe' : 'php';
+        Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Run with it: @liberation/$name/$binary " . basename(AETHER_FILE) . " · or write a launcher: --runtime-launcher {{nl}}");
+      }
+    };
+
+    /* RUNTIME INSTALL: a runtime Rune knows (php), by version — or the PHP running now (--from=local) */
     if (Chanter::spell('runtime-install')) {
       Whisper::clear();
       Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime Install\n");
 
+      if (strtolower($value('from')) === 'local') {
+        [$path, $problem] = runtime_php_local();
+        if (!$path) {
+          Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} $problem {{nl}}");
+          return;
+        }
+        $runtime_kept(basename(rtrim($path, '/')), $path);
+        return;
+      }
+
       // php@8.3 · php@8.3.14 · 8.3 — empty: the PHP running now
       $asked = $value('runtime-install');
-      $asked = preg_replace('/^php@?/i', '', $asked);
-      $asked = $asked !== '' ? $asked : PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
+      [$runtime, $version] = str_contains($asked, '@') ? runtime_name($asked) : ['php', $asked];
+      if (!isset(runtime_catalog()[$runtime])) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune does not know '$runtime' yet: take it from a link with --runtime-url=<archive url> --name=$runtime@<version> {{nl}}");
+        return;
+      }
+      $version = $version !== '' ? $version : PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
       [$os, $arch] = runtime_target($value('os'), $value('arch'));
 
-      [$build, $problem] = runtime_php_find($asked, $os, $arch);
+      [$build, $problem] = runtime_php_find($version, $os, $arch);
       if (!$build) {
-        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} php@$asked: $problem {{nl}}");
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} php@$version: $problem {{nl}}");
         return;
       }
       Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} php@{$build['version']} for $os $arch: {$build['url']} {{nl}}");
-      [$path, $problem] = runtime_php_install($build, $os, $arch);
+      [$path, $problem] = runtime_install('php', $build['version'], $build, $os, $arch);
       if (!$path) {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} php@{$build['version']}: $problem {{nl}}");
         return;
       }
-      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Runtime kept: @liberation/php@{$build['version']}/ {{nl}}");
-      $binary = 'php@' . $build['version'] . '/' . ($os === 'windows' ? 'php.exe' : 'php');
-      Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Run with it: @liberation/$binary " . basename(AETHER_FILE) . " {{nl}}");
+      $runtime_kept('php@' . $build['version'], $path);
     }
 
-    /* RUNTIME LIST */
+    /* RUNTIME URL: any runtime, from a link to its archive (zip, tar.gz, tar.bz2, tar) or a single file */
+    if (Chanter::spell('runtime-url')) {
+      Whisper::clear();
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime URL\n");
+      $url = $value('runtime-url');
+      [$runtime, $version] = runtime_name($value('name'));
+      if (!preg_match('#^https?://#i', $url) || $runtime === '' || $version === '' || !preg_match('/^[a-z0-9._-]+$/', $runtime) || !preg_match('/^[A-Za-z0-9._-]+$/', $version)) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Give the link and the name: --runtime-url=<https://…/archive.zip> --name=<runtime>@<version> (--sha256=<hash>) {{nl}}");
+        return;
+      }
+      [$os, $arch] = runtime_target($value('os'), $value('arch'));
+      Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} $runtime@$version for $os $arch: $url {{nl}}");
+      [$path, $problem] = runtime_install($runtime, $version, ['url'=> $url, 'sha256'=> $value('sha256')], $os, $arch);
+      if (!$path) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} $runtime@$version: $problem {{nl}}");
+        return;
+      }
+      $runtime_kept("$runtime@$version", $path);
+    }
+
+    /* RUNTIME LIST: the runtimes Rune knows, and the ones kept in @liberation/ */
     if (Chanter::spell('runtime-list')) {
       Whisper::clear();
       Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime List\n");
+      Whisper::echo("{{text-secondary}}Known by Rune (--runtime-install=<runtime>@<version>):{{nl}}");
+      foreach (runtime_catalog() as $runtime=>$about) {
+        Whisper::echo("{{text-secondary}} ◆ {{text-default}}$runtime {{text-secondary}}— $about[note] (e.g. $about[example]){{nl}}");
+      }
+      Whisper::echo("{{text-secondary}} ◆ {{text-default}}any other {{text-secondary}}— from a link: --runtime-url=<archive url> --name=<runtime>@<version>{{nl}}{{nl}}");
+
       $record = runtime_record();
-      $in_use = isset($record['php']['version']) ? 'php@' . $record['php']['version'] : '';
       $list = runtime_list();
+      Whisper::echo("{{text-secondary}}Kept in @liberation/:{{nl}}");
       foreach ($list as $name) {
-        $mark = ($name === $in_use) ? " {{text-success}}in use ({$record['php']['os']} {$record['php']['arch']}){{text-end}}" : '';
+        [$runtime, $version] = runtime_name($name);
+        $use = $record[$runtime] ?? [];
+        $mark = (($use['version'] ?? '') === $version) ? " {{text-success}}in use ({$use['os']} {$use['arch']}){{text-end}}" : '';
         Whisper::echo("{{text-secondary}} ♦ {{text-default}}$name$mark{{nl}}");
       }
       Whisper::echo(count($list) . " runtime(s) in @liberation/{{nl}}");
+    }
+
+    /* RUNTIME USE: which kept runtime is the one in use (liberation.json, the launcher, the relic) */
+    if (Chanter::spell('runtime-use')) {
+      Whisper::clear();
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime Use\n");
+      $name = $value('runtime-use');
+      $name = str_contains($name, '@') ? $name : 'php@' . $name;
+      [$record, $problem] = runtime_use($name);
+      if (!$record) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} $problem {{nl}}");
+        return;
+      }
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} In use: $name ({$record['os']} {$record['arch']}) {{nl}}");
     }
 
     /* RUNTIME REMOVE */
@@ -876,14 +942,27 @@ Chanter::cast(
       $name = $value('runtime-remove');
       if ($name === '') {
         Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Runtime: " . implode(', ', runtime_list()) . "{{nl}}");
-        $name = trim((string) Whisper::call('Give us the runtime (php@<version>): '));
+        $name = trim((string) Whisper::call('Give us the runtime (<runtime>@<version>): '));
       }
-      $name = preg_match('/^php@/i', $name) ? strtolower($name) : 'php@' . $name;
+      $name = str_contains($name, '@') ? $name : 'php@' . $name;
       if (runtime_remove($name)) {
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Runtime removed: @liberation/$name {{nl}}");
       }else {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Runtime not found: @liberation/$name {{nl}}");
       }
+    }
+
+    /* RUNTIME LAUNCHER: <runite>.bat (Windows) or <runite>.sh next to the runite, running it with the PHP in use */
+    if (Chanter::spell('runtime-launcher')) {
+      Whisper::clear();
+      Whisper::echo("SENTINEL {{color-danger}}::{{color-end}} Runtime Launcher\n");
+      [$file, $problem] = runtime_launcher(AETHER_FILE);
+      if (!$file) {
+        Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} $problem {{nl}}");
+        return;
+      }
+      Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Launcher written: " . basename($file) . " {{nl}}");
+      Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Run it: " . (str_ends_with($file, '.bat') ? basename($file) : './' . basename($file)) . " <cast> {{nl}}");
     }
   }
 );

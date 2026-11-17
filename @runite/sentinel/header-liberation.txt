@@ -2,10 +2,19 @@
 {{text-end}}
 {{bg-danger}} # {{bg-end}} L I B E R A T I O N{{text-danger}}.{{text-end}}
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runtime-install {{text-success}}{{icon-success}}
-  {{text-secondary}}≈ Take a PHP runtime into @liberation/: php@<version> (--os=, --arch=)
+  {{text-secondary}}≈ Take a runtime Rune knows: php@<version> (--os=, --arch=, --from=local)
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runtime-url {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Take any runtime from a link: <archive url> --name=<runtime>@<version> (--sha256=)
 
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runtime-list {{text-success}}{{icon-success}}
-  {{text-secondary}}≈ List the runtimes in @liberation/
+  {{text-secondary}}≈ The runtimes Rune knows, and the ones in @liberation/
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runtime-use {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Make a kept runtime the one in use: <runtime>@<version>
 
 {{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runtime-remove {{text-success}}{{icon-success}}
-  {{text-secondary}}≈ Remove a runtime from @liberation/: php@<version>
+  {{text-secondary}}≈ Remove a runtime: <runtime>@<version>
+
+{{text-secondary}} ♦ {{color-info}}{{php}} {{AETHER-FILE}}{{text-end}} sentinel --runtime-launcher {{text-success}}{{icon-success}}
+  {{text-secondary}}≈ Write <runite>.bat / <runite>.sh to run this runite with the PHP in use
