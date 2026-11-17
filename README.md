@@ -210,20 +210,26 @@ Liberation frees your app from the PHP of the machine it lands on: it keeps a PH
 
 ```bash
 php cast sentinel --liberation
-php cast sentinel --runtime-install                 # the PHP you are running now
+php cast sentinel --runtime-install                 # the same PHP version you run now, downloaded
+php cast sentinel --runtime-install --from=local    # copy the PHP you run now
 php cast sentinel --runtime-install=php@8.3 --os=windows
-php cast sentinel --runtime-list
+php cast sentinel --runtime-url=https://example.com/node-v22.tar.gz --name=node@22 [--sha256=<hash>]
+php cast sentinel --runtime-list                    # what Rune knows, what you keep
+php cast sentinel --runtime-use=php@8.3.36          # make a kept runtime the one in use
 php cast sentinel --runtime-remove=php@8.3.36
+php cast sentinel --runtime-launcher                # writes cast.bat (Windows) or cast.sh
 ```
 
-Runtimes land in `@liberation/php@<version>/` and `@liberation/liberation.json` records the one in use. Windows builds come from windows.php.net (checked by sha256), Linux and macOS builds from static-php (`dl.static-php.dev`, give the full version, e.g. `php@8.3.14`).
+Runtimes land in `@liberation/<runtime>@<version>/` and `@liberation/liberation.json` records the one in use for each runtime. Rune knows **php**: Windows builds come from windows.php.net (checked by sha256), Linux and macOS builds from static-php (`dl.static-php.dev`, give the full version, e.g. `php@8.3.14`). Anything else comes from a link with `--runtime-url` (zip, tar.gz, tar.bz2, tar, or a single file). Downloads show a progress bar.
+
+The launcher runs your runite with the PHP in use, and a relic made in liberation mode records it (`::runtime=php@<version>`), so whoever opens it knows which PHP to fetch.
 
 
 
 ## Versioning
 The footer of every cast shows the version of your rune world:
 ```
-Version=1.21.117
+Version=1.21.120
 ```
 It is the major version of the core followed by the sum of every Phantasm version (origin runes, plus evolution runes in evolution mode) — so the number grows as the runes grow.
 
