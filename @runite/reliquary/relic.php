@@ -109,6 +109,14 @@ function reliquary_relic_make() {
     'encryption'=> 'base64',
   ]);
 
+  // liberation: the PHP runtime this runite runs on travels as a name (php@<version>), never as files
+  if (defined('LIBERATION') && file_exists(LIBERATION . 'liberation.json')) {
+    $liberation = json_decode((string) file_get_contents(LIBERATION . 'liberation.json'), true);
+    if (!empty($liberation['php']['version'])) {
+      $format .= "\n  ::runtime=php@" . $liberation['php']['version'];
+    }
+  }
+
   $runite = Cipher::runic(Cipher::base64((string) Forger::item(AETHER_FILE)), false, $runic);
   $format .= "\n\n" . Weaver::bind(Weaver::item(__DIR__ . '/format-runite.txt'), ['runite'=> $runite]);
 
@@ -175,6 +183,13 @@ function reliquary_relic_deploy( Object $relic ) {
     // only the folders: a shard without extension (e.g. `cast`) is still a file
     Forger::fix([['type'=> 'repo', 'target'=> dirname($target)]]);
     Forger::item($target, $shard['source']);
+  }
+
+  // the runtime the relic runs on (made in liberation mode): tell how to take it
+  $runtime = (string) ($relic->RELIC['runtime'] ?? '');
+  if ($runtime !== '' && !(defined('LIBERATION') && is_dir(LIBERATION . $runtime))) {
+    $how = defined('LIBERATION') ? '' : 'php ' . basename(AETHER_FILE) . ' sentinel --liberation, then ';
+    Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} This relic runs on $runtime: {$how}php " . basename(AETHER_FILE) . " sentinel --runtime-install=$runtime{{nl}}");
   }
 
   return true;
