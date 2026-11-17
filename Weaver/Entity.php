@@ -161,7 +161,10 @@ function weaver_bond_get( $key ) {
 #NOTE: Load and bind a template file with dynamic data replacements
 function weaver_item( $source, $datas = [] ) {
   $item = file_get_contents($source);
-  $item = weaver_bind($item, $datas);
+  // every key of $datas replaces its {{key}}
+  if (!empty($datas)) {
+    $item = weaver_bind_multiple($item, (array) $datas);
+  }
 
   aether_arcane('Weaver.entity.weaver_item');
   return $item;

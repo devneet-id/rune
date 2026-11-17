@@ -49,7 +49,7 @@ class Manifest extends \Rune\Manifest {
 
   #NOTE: Reads or writes a raw file inside the given repo depending on value.
   public static function echo( String $repo, String $name, $value = '' ) {
-    if (empty($value)) {
+    if ($value === '' || $value === null) {
       $return = keeper_echo_get($repo, $name);
     }else {
       $return = keeper_echo_set($repo, $name, $value);
