@@ -1,0 +1,176 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 05 — TODO
+ * A todo list (Keeper) with an HTML report woven by Weaver and written by Forger.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper.
+ *
+ *   php cast todo --add="Write docs"
+ *   php cast todo --done=<id> | --undo=<id> | --delete=<id>
+ *   php cast todos
+ *   php cast report --min
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+define('TODO_REPORT', AETHER_REPO . '/dist/report.html');
+
+function todo_load() {
+  $todos = Keeper::item('todos');
+  return $todos ? json_decode(json_encode($todos), true) : [];
+}
+function todo_save( Array $todos ) {
+  return Keeper::item('todos', (object) $todos);
+}
+function todo_find( Array $todos, String $id ) {
+  if (!isset($todos[$id])) {
+    Whisper::echo("{{color-danger}}{{icon-warning}} Todo $id not found{{nl}}");
+    return false;
+  }
+  return true;
+}
+
+
+Chanter::cast('todo --add --done --undo --delete', function() {
+  $todos = todo_load();
+
+  if ($text = Chanter::spell('add')) {
+    if ($text === '1') $text = Whisper::call('Todo: ');
+    $id = Cipher::id('t');
+    $todos[$id] = ['id' => $id, 'text' => $text, 'done' => false];
+    todo_save($todos);
+    Whisper::echo("{{color-success}}{{icon-success}} Added $id{{nl}}");
+    return;
+  }
+  foreach (['done' => true, 'undo' => false] as $spell => $state) {
+    if ($id = Chanter::spell($spell)) {
+      if (!todo_find($todos, $id)) return;
+      $todos[$id]['done'] = $state;
+      todo_save($todos);
+      Whisper::echo("{{color-success}}{{icon-success}} " . ($state ? 'Done' : 'Open') . " $id{{nl}}");
+      return;
+    }
+  }
+  if ($id = Chanter::spell('delete')) {
+    if (!todo_find($todos, $id)) return;
+    unset($todos[$id]);
+    todo_save($todos);
+    Whisper::echo("{{color-success}}{{icon-success}} Deleted $id{{nl}}");
+    return;
+  }
+
+  Chanter::cast('todos')();
+}, 'Add, finish, reopen or delete a todo. --add="text" --done=<id> --undo=<id> --delete=<id>');
+
+
+Chanter::cast('todos', function() {
+  $todos = todo_load();
+  if (!$todos) {
+    Whisper::echo("{{color-secondary}}Nothing to do{{nl}}");
+    return;
+  }
+  foreach ($todos as $todo) {
+    $mark = $todo['done'] ? '{{color-success}}[x]' : '{{color-warning}}[ ]';
+    Whisper::echo("$mark{{color-end}} {{color-info}}{$todo['id']}{{color-end}} {$todo['text']}{{nl}}");
+  }
+}, 'List todos.');
+
+
+Chanter::cast('report --min', function() {
+  $todos = todo_load();
+  $done = count(array_filter($todos, fn($t) => $t['done']));
+
+  $row = Weaver::item(__DIR__ . '/weaver/row.html');
+  $rows = '';
+  foreach ($todos as $todo) {
+    // bond=false: these values belong to one row only
+    $rows .= weaver_bind_multiple($row, ['state' => $todo['done'] ? 'done' : 'open', 'text' => htmlspecialchars($todo['text'])], false);
+  }
+
+  $html = Weaver::bind(Weaver::item(__DIR__ . '/weaver/report.html'), [
+    'title' => 'Todo Report',
+    'summary' => "$done of " . count($todos) . " done",
+    'rows' => rtrim($rows),
+  ]);
+  if (Chanter::spell('min')) {
+    $html = weaver_min($html, 'html');
+  }
+
+  Forger::fix(Forger::trace(TODO_REPORT));
+  Forger::item(TODO_REPORT, $html);
+  Whisper::echo("{{color-success}}{{icon-success}} Report written: dist/report.html (" . aether_formatFileSize(filesize(TODO_REPORT)) . "){{nl}}");
+}, 'Write dist/report.html from the todos. --min to minify.');
+
+
+// trial
+Chanter::cast('test', function() {
+  $backup = Keeper::item('todos');
+  todo_save([]);
+
+  trial_section('Todo CRUD');
+  trial('todo --add', str_contains(trial_cast('todo --add=Write%20docs'), 'Added t'));
+  trial_cast('todo --add=Ship%20%3Crelease%3E');
+  $todos = todo_load();
+  [$first, $second] = array_keys($todos);
+  trial('two todos stored', count($todos) === 2 && $todos[$second]['text'] === 'Ship <release>');
+  trial('todo --done', str_contains(trial_cast("todo --done=$first"), "Done $first") && todo_load()[$first]['done'] === true);
+  trial('todos marks done', str_contains(trial_cast('todos'), '[x] ' . $first));
+  trial('todo --undo', str_contains(trial_cast("todo --undo=$first"), "Open $first") && todo_load()[$first]['done'] === false);
+  trial('todo --done unknown', str_contains(trial_cast('todo --done=t-missing'), 'not found'));
+  trial_cast("todo --done=$first");
+
+  trial_section('Report (Weaver + Forger)');
+  trial('report written', str_contains(trial_cast('report'), 'Report written') && is_file(TODO_REPORT));
+  $html = Forger::item(TODO_REPORT);
+  trial('title and summary bound', str_contains($html, '<title>Todo Report</title>') && str_contains($html, '1 of 2 done'));
+  trial('rows bound, html escaped', str_contains($html, '<li class="done">Write docs</li>') && str_contains($html, 'Ship &lt;release&gt;'));
+  trial('no {{token}} left', Weaver::bind($html, []) === $html && !preg_match('/{{\w+}}/', $html));
+  trial('row values not kept in the bond', weaver_bond_get('text') === '' && weaver_bond_get('title') === 'Todo Report');
+  trial('template cached by Weaver::item', weaver_item_get(__DIR__ . '/weaver/row.html') !== '');
+  $size = strlen($html);
+  trial_cast('report --min');
+  $min = Forger::item(TODO_REPORT);
+  trial('report --min is smaller', strlen($min) < $size && !str_contains($min, '<!-- generated'));
+  trial('minified html keeps content', str_contains($min, 'Write docs') && str_contains($min, '1 of 2 done'));
+  $item = null;
+  trial('weaver_item binds an array', trial_safe(function() use (&$item) { $item = weaver_item(__DIR__ . '/weaver/row.html', ['state' => 'open', 'text' => 'x']); }) && str_contains((string) $item, '<li class="open">x</li>'));
+  trial('extract finds tokens', weaver_bind_extract('{{a}} and {{b}}') === ['a', 'b']);
+  trial('min css', weaver_min('body {  color : red ; }', 'css') === 'body{color:red}' || strlen(weaver_min('body {  color : red ; }', 'css')) < 24);
+
+  trial_section('Delete');
+  trial('todo --delete', str_contains(trial_cast("todo --delete=$second"), 'Deleted') && count(todo_load()) === 1);
+
+  // restore
+  todo_save($backup ? json_decode(json_encode($backup), true) : []);
+  if (is_dir(AETHER_REPO . '/dist')) Forger::clean(AETHER_REPO . '/dist', true);
+  trial_report();
+}, 'Run the trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

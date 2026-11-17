@@ -1,0 +1,125 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 07 — NESTED
+ * One runite outside, two runites inside realm/:
+ *
+ *   07-nested/
+ *   ├── cast            (this runite)
+ *   └── realm/
+ *       ├── cast
+ *       └── spire
+ *
+ * Goal: every runite keeps its .echoes next to itself (realm/.echoes/cast, realm/.echoes/spire),
+ * no matter from which folder it is cast.
+ *
+ *   php cast where                         where this runite keeps its .echoes
+ *   php cast visit --runite=realm/cast     cast an inner runite from here (outside) and from realm/ (inside)
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+define('NESTED_RUNITES', ['realm/cast', 'realm/spire']);
+
+// cast an inner runite, either from this folder (outside) or from its own folder (inside)
+function nested_cast( String $runite, String $from, Array $args ) {
+  $inside = $from === 'inside';
+  $cwd = $inside ? dirname(__DIR__ . '/' . $runite) : __DIR__;
+  $file = $inside ? basename($runite) : $runite;
+  $command = 'cd ' . escapeshellarg($cwd) . ' && ' . escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($file);
+  foreach ($args as $arg) $command .= ' ' . escapeshellarg($arg);
+  $out = preg_replace('/\x1b\[[0-9;]*[A-Za-z]/', '', (string) shell_exec($command . ' 2>&1'));
+  return preg_match('/=> (.*)/', $out, $m) ? trim($m[1]) : false;
+}
+
+// show a path relative to this scenario folder
+function nested_short( $path ) {
+  return $path ? ltrim(str_replace([realpath(__DIR__), '\\'], ['', '/'], $path), '/') : '(none)';
+}
+
+
+Chanter::cast('where', function() {
+  Whisper::echo("{{color-secondary}}FILE  {{color-end}} " . AETHER_FILE . "{{nl}}");
+  Whisper::echo("{{color-secondary}}REPO  {{color-end}} " . AETHER_REPO . "{{nl}}");
+  Whisper::echo("{{color-secondary}}ECHOES{{color-end}} " . nested_short(realpath(KEEPER_ECHOES)) . "{{nl}}");
+}, 'Show where this runite keeps its .echoes.');
+
+
+Chanter::cast('visit --runite', function() {
+  $runite = Chanter::spell('runite');
+  $list = ($runite && $runite !== '1') ? [$runite] : NESTED_RUNITES;
+  foreach ($list as $runite) {
+    if (!in_array($runite, NESTED_RUNITES)) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} Unknown runite. Use: " . implode(', ', NESTED_RUNITES) . "{{nl}}");
+      return;
+    }
+    $want = 'realm/.echoes/' . basename($runite);
+    foreach (['inside', 'outside'] as $from) {
+      $echoes = nested_short(nested_cast($runite, $from, ['where']));
+      $ok = $echoes === $want;
+      Whisper::echo(($ok ? '{{color-success}} ✓ ' : '{{color-danger}} ✗ ') . "{{color-end}}" . str_pad($runite, 12) . ' from ' . str_pad($from, 8) . " → $echoes" . ($ok ? '' : "  {{color-secondary}}(expected $want)") . "{{nl}}");
+    }
+  }
+}, 'Cast the inner runites from inside and outside, show where their .echoes land. --runite=realm/cast');
+
+
+// trial
+Chanter::cast('test', function() {
+  // start clean: no .echoes in realm/ or for realm/* here
+  foreach ([__DIR__ . '/realm/.echoes', __DIR__ . '/.echoes/realm'] as $old) {
+    if (is_dir($old)) Forger::clean($old, true);
+  }
+
+  trial_section('Outer runite');
+  trial('cast keeps .echoes/cast next to itself', nested_short(realpath(KEEPER_ECHOES)) === '.echoes/cast');
+
+  foreach (NESTED_RUNITES as $runite) {
+    $name = basename($runite);
+    $want = "realm/.echoes/$name";
+    trial_section("Inner runite $runite");
+
+    trial("cast from inside realm/ → $want", nested_short(nested_cast($runite, 'inside', ['where'])) === $want);
+    trial("cast from the parent folder → $want", nested_short(nested_cast($runite, 'outside', ['where'])) === $want);
+
+    nested_cast($runite, 'inside', ['remember', "--text=hello from $name"]);
+    trial('remembers when cast from inside', nested_cast($runite, 'inside', ['recall']) === "hello from $name");
+    trial('same memory when cast from outside', nested_cast($runite, 'outside', ['recall']) === "hello from $name");
+  }
+
+  trial_section('Separation');
+  nested_cast('realm/cast', 'inside', ['remember', '--text=one']);
+  nested_cast('realm/spire', 'inside', ['remember', '--text=two']);
+  trial('realm/cast and realm/spire keep separate memories', nested_cast('realm/cast', 'inside', ['recall']) === 'one' && nested_cast('realm/spire', 'inside', ['recall']) === 'two');
+  trial('no .echoes for realm/* in the parent folder', !is_dir(__DIR__ . '/.echoes/realm'));
+
+  trial_report();
+}, 'Run the trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

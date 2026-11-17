@@ -1,0 +1,167 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 04 — VAULT
+ * Keep small secrets sealed with Cipher (base64 + runic) inside Keeper.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper.
+ *
+ *   php cast secret --set=wifi --value="hunter2" --variant=elder_futhark
+ *   php cast secret --get=wifi
+ *   php cast secret --remove=wifi
+ *   php cast secrets
+ *   php cast seal --text="hello"            (show how a text is sealed)
+ *   php cast test
+ *
+ * Note: this is a lore toy, not real encryption.
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+function vault_seal( String $text, String $variant ) {
+  return Cipher::runic(Cipher::base64($text), false, $variant);
+}
+function vault_open( String $sealed, String $variant ) {
+  return Cipher::base64(Cipher::runic($sealed, true, $variant), 1);
+}
+function vault_load() {
+  $vault = Keeper::item('vault');
+  return $vault ? json_decode(json_encode($vault), true) : [];
+}
+function vault_save( Array $vault ) {
+  return Keeper::item('vault', (object) $vault);
+}
+
+
+Chanter::cast('secret --set --value --variant --get --remove', function() {
+  $vault = vault_load();
+
+  // CREATE / UPDATE
+  if ($key = Chanter::spell('set')) {
+    $value = Chanter::spell('value');
+    if (!$value || $value === '1') {
+      $value = Whisper::call("Value for $key: ");
+    }
+    $variant = Chanter::spell('variant') ?: CIPHER_RUNIC_LIST[array_rand(CIPHER_RUNIC_LIST)];
+    if (!in_array($variant, CIPHER_RUNIC_LIST)) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} Unknown variant. Use: " . implode(', ', CIPHER_RUNIC_LIST) . "{{nl}}");
+      return;
+    }
+    $state = isset($vault[$key]) ? 'Updated' : 'Sealed';
+    $vault[$key] = ['variant' => $variant, 'sealed' => vault_seal($value, $variant), 'hash' => cipher_hash($value)];
+    vault_save($vault);
+    Whisper::echo("{{color-success}}{{icon-success}} $state $key with $variant{{nl}}");
+    return;
+  }
+
+  // READ
+  if ($key = Chanter::spell('get')) {
+    if (!isset($vault[$key])) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} $key not found{{nl}}");
+      return;
+    }
+    $value = vault_open($vault[$key]['sealed'], $vault[$key]['variant']);
+    $ok = cipher_hash($value) === $vault[$key]['hash'];
+    Whisper::echo(($ok ? "{{color-success}}" : "{{color-danger}}") . "$key = $value" . ($ok ? '' : ' (hash mismatch)') . "{{nl}}");
+    return;
+  }
+
+  // DELETE
+  if ($key = Chanter::spell('remove')) {
+    if (!isset($vault[$key])) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} $key not found{{nl}}");
+      return;
+    }
+    unset($vault[$key]);
+    vault_save($vault);
+    Whisper::echo("{{color-success}}{{icon-success}} Removed $key{{nl}}");
+    return;
+  }
+
+  Chanter::cast('secrets')();
+}, 'Set, get or remove a secret. --set=<key> --value="..." --variant=<runic> --get=<key> --remove=<key>');
+
+
+Chanter::cast('secrets', function() {
+  $vault = vault_load();
+  if (!$vault) {
+    Whisper::echo("{{color-secondary}}The vault is empty{{nl}}");
+    return;
+  }
+  foreach ($vault as $key => $row) {
+    Whisper::echo("{{color-info}}" . str_pad($key, 12) . "{{color-end}} " . str_pad($row['variant'], 20) . " {{color-secondary}}" . mb_substr($row['sealed'], 0, 16) . "…{{nl}}");
+  }
+}, 'List sealed secrets (values stay sealed).');
+
+
+Chanter::cast('seal --text', function() {
+  $text = Chanter::spell('text');
+  if (!$text || $text === '1') $text = 'hello rune';
+  Whisper::echo("{{color-secondary}}base64{{color-end}}  " . Cipher::base64($text) . "{{nl}}");
+  foreach (CIPHER_RUNIC_LIST as $variant) {
+    Whisper::echo("{{color-secondary}}" . str_pad($variant, 20) . "{{color-end}} " . vault_seal($text, $variant) . "{{nl}}");
+  }
+}, 'Show a text sealed with every runic variant. --text="..."');
+
+
+// trial (backs up your vault first)
+Chanter::cast('test', function() {
+  $backup = Keeper::item('vault');
+  vault_save([]);
+
+  trial_section('Cipher');
+  foreach (CIPHER_RUNIC_LIST as $variant) {
+    $map = CIPHER_RUNIC[$variant];
+    trial("$variant: one rune per letter", count($map) === count(array_unique($map)));
+    $text = 'The quick brown fox jumps over the lazy dog 0123456789 +/=';
+    trial("$variant: round trip", vault_open(vault_seal($text, $variant), $variant) === $text);
+  }
+  $ids = [];
+  for ($i = 0; $i < 50; $i++) $ids[] = Cipher::id('v');
+  trial('50 ids are unique', count(array_unique($ids)) === 50);
+  trial('hash differs per text', cipher_hash('a') !== cipher_hash('b'));
+
+  trial_section('Vault CRUD');
+  trial('secret --set', str_contains(trial_cast('secret --set=wifi --value=hunter2 --variant=elder_futhark'), 'Sealed wifi with elder_futhark'));
+  trial('stored sealed, not plain', !str_contains((string) Keeper::echo(KEEPER_ECHOES, 'vault.json'), 'hunter2'));
+  trial('secret --get', str_contains(trial_cast('secret --get=wifi'), 'wifi = hunter2'));
+  trial('secret --set again updates', str_contains(trial_cast('secret --set=wifi --value=correct%20horse --variant=anglo_saxon_futhorc'), 'Updated wifi'));
+  trial('secret --get after update', str_contains(trial_cast('secret --get=wifi'), 'wifi = correct horse'));
+  trial('unknown variant refused', str_contains(trial_cast('secret --set=x --value=1x --variant=ogham'), 'Unknown variant'));
+  trial_cast('secret --set=pin --value=0000 --variant=default');
+  trial('secrets lists keys only', (function() { $o = trial_cast('secrets'); return str_contains($o, 'wifi') && str_contains($o, 'pin') && !str_contains($o, 'correct horse'); })());
+  trial('secret --remove', str_contains(trial_cast('secret --remove=wifi'), 'Removed wifi') && !isset(vault_load()['wifi']));
+  trial('secret --get removed', str_contains(trial_cast('secret --get=wifi'), 'not found'));
+  trial('seal shows every variant', substr_count(trial_cast('seal --text=hi'), "\n") >= 5);
+
+  // restore
+  vault_save($backup ? json_decode(json_encode($backup), true) : []);
+  trial_report();
+}, 'Run the trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

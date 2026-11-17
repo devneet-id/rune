@@ -1,0 +1,60 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 07 — NESTED · realm/spire
+ * A runite inside a sub folder. Where does its memory (.echoes) live?
+ *
+ *   php spire where                (from inside realm/)
+ *   php realm/spire where          (from the parent folder)
+ *   php spire remember --text="hi"
+ *   php spire recall
+ */
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+// where am I, and where is my memory?
+Chanter::cast('where', function() {
+  Whisper::echo("{{color-secondary}}runite{{color-end}} " . __FILE__ . "{{nl}}");
+  Whisper::echo("{{color-secondary}}FILE  {{color-end}} " . AETHER_FILE . "{{nl}}");
+  Whisper::echo("{{color-secondary}}REPO  {{color-end}} " . AETHER_REPO . "{{nl}}");
+  Whisper::echo("{{color-secondary}}ECHOES{{color-end}} " . realpath(KEEPER_ECHOES) . "{{nl}}");
+  Whisper::echo("=> " . realpath(KEEPER_ECHOES) . "{{nl}}");
+}, 'Show where this runite keeps its .echoes.');
+
+Chanter::cast('remember --text', function() {
+  $text = Chanter::spell('text');
+  Keeper::item('memory', ['text' => ($text && $text !== '1') ? $text : 'nothing']);
+  Whisper::echo("=> remembered{{nl}}");
+}, 'Remember a text in .echoes. --text="..."');
+
+Chanter::cast('recall', function() {
+  $memory = Keeper::item('memory');
+  Whisper::echo("=> " . ($memory->text ?? '(empty)') . "{{nl}}");
+}, 'Recall the remembered text.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

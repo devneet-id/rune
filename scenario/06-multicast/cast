@@ -1,0 +1,167 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 06 — MULTICAST
+ * Three runites in one folder: cast (the hub), ember and frost.
+ * Each runite is its own world: own casts, own AETHER_FILE, own memory in .echoes/<runite>/.
+ * The hub casts the other runites, and chains its own casts.
+ *
+ *   php cast relay --text="Rune"     cast → ember (upper) → frost (reverse)
+ *   php cast all                     count once in every runite
+ *   php cast chain --n=3             cast-in-cast inside one runite: double → square
+ *   php cast summon --runite=ember --spell="upper --text=hi"
+ *   php cast test
+ *
+ *   php ember upper --text="hi"      the other runites also work alone
+ *   php frost reverse --text="hi"
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+define('MULTICAST_RUNITES', ['ember', 'frost']);
+
+// cast another runite in this folder and return what it answered after "=>"
+function multicast( String $runite, Array $args ) {
+  if (!in_array($runite, MULTICAST_RUNITES) || !is_file(__DIR__ . '/' . $runite)) {
+    return false;
+  }
+  $command = 'cd ' . escapeshellarg(__DIR__) . ' && ' . escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($runite);
+  foreach ($args as $arg) {
+    $command .= ' ' . escapeshellarg($arg);
+  }
+  $out = preg_replace('/\x1b\[[0-9;]*[A-Za-z]/', '', (string) shell_exec($command . ' 2>&1'));
+  return preg_match('/=> (.*)/', $out, $m) ? trim($m[1]) : false;
+}
+
+
+// ACROSS RUNITES: the hub passes a text through ember, then frost
+Chanter::cast('relay --text', function() {
+  $text = Chanter::spell('text');
+  $text = ($text && $text !== '1') ? $text : 'Rune';
+
+  $fire = multicast('ember', ['upper', "--text=$text"]);
+  $ice = multicast('frost', ['reverse', "--text=$fire"]);
+
+  Whisper::echo("{{color-secondary}}cast {{color-end}} $text{{nl}}");
+  Whisper::echo("{{color-danger}}ember{{color-end}} $fire{{nl}}");
+  Whisper::echo("{{color-info}}frost{{color-end}} $ice{{nl}}");
+  Whisper::echo("=> $ice{{nl}}");
+  return $ice;
+}, 'Pass a text through ember then frost. --text="..."');
+
+
+// ACROSS RUNITES: every runite counts in its own memory
+Chanter::cast('count --reset', function() {
+  $count = Chanter::spell('reset') ? 0 : ((int) Keeper::item('count') + 1);
+  Keeper::item('count', $count);
+  Whisper::echo("{{color-success}}cast {{color-end}} => $count{{nl}}");
+  return $count;
+}, 'Count how many times the hub was cast. --reset');
+
+Chanter::cast('all --reset', function() {
+  $spell = Chanter::spell('reset') ? ['count', '--reset'] : ['count'];
+  $counts = [
+    'cast' => Chanter::cast('count' . (Chanter::spell('reset') ? ' --reset' : ''))(),
+    'ember' => multicast('ember', $spell),
+    'frost' => multicast('frost', $spell),
+  ];
+  foreach ($counts as $runite => $count) {
+    Whisper::echo(str_pad($runite, 6) . " {{color-secondary}}.echoes/$runite/count.json{{color-end}} = $count{{nl}}");
+  }
+  return $counts;
+}, 'Count once in every runite (each keeps its own memory). --reset');
+
+
+// ACROSS RUNITES: summon any cast of another runite
+Chanter::cast('summon --runite --spell', function() {
+  $runite = (string) Chanter::spell('runite');
+  $spell = (string) Chanter::spell('spell');
+  $answer = multicast($runite, preg_split('/\s+/', trim($spell)));
+  if ($answer === false) {
+    Whisper::echo("{{color-danger}}{{icon-warning}} Unknown runite or no answer. Runites: " . implode(', ', MULTICAST_RUNITES) . "{{nl}}");
+    return false;
+  }
+  Whisper::echo("$runite => $answer{{nl}}");
+  return $answer;
+}, 'Cast any spell of another runite. --runite=ember --spell="upper --text=hi"');
+
+
+// INSIDE ONE RUNITE: cast-in-cast, the return value flows from cast to cast
+Chanter::cast('double --n', function() {
+  return 2 * (int) Chanter::spell('n');
+}, 'Double a number. --n=3');
+
+Chanter::cast('square --n', function() {
+  $n = (int) Chanter::spell('n');
+  return $n * $n;
+}, 'Square a number. --n=6');
+
+Chanter::cast('chain --n', function() {
+  $n = (int) (Chanter::spell('n') ?: 3);
+  $doubled = Chanter::cast("double --n=$n")();
+  $squared = Chanter::cast("square --n=$doubled")();
+  Whisper::echo("$n {{color-secondary}}double{{color-end}} $doubled {{color-secondary}}square{{color-end}} $squared{{nl}}");
+  Whisper::echo("=> $squared{{nl}}");
+  return $squared;
+}, 'Chain two casts of this runite. --n=3');
+
+
+// trial
+Chanter::cast('test', function() {
+  trial_section('One folder, three runites');
+  trial('ember and frost exist', is_file(__DIR__ . '/ember') && is_file(__DIR__ . '/frost'));
+  trial('this runite is cast', AETHER_FILE === 'cast');
+
+  trial_section('Each runite keeps its own memory');
+  trial_cast('all --reset');
+  multicast('ember', ['count']);
+  multicast('ember', ['count']);
+  multicast('frost', ['count']);
+  $out = trial_cast('all');
+  trial('counts stay separate (cast 1, ember 3, frost 2)', str_contains($out, 'cast   .echoes/cast/count.json = 1') && str_contains($out, 'ember  .echoes/ember/count.json = 3') && str_contains($out, 'frost  .echoes/frost/count.json = 2'));
+  trial('three .echoes folders', is_dir(AETHER_REPO . '/.echoes/cast') && is_dir(AETHER_REPO . '/.echoes/ember') && is_dir(AETHER_REPO . '/.echoes/frost'));
+  trial_cast('all --reset');
+
+  trial_section('Across runites');
+  trial('ember answers alone', multicast('ember', ['upper', '--text=hi']) === 'HI');
+  trial('frost answers alone', multicast('frost', ['reverse', '--text=abc']) === 'cba');
+  trial('relay: cast → ember → frost', str_contains(trial_cast('relay --text=Rune'), '=> ENUR'));
+  trial('relay keeps spaces', str_contains(trial_cast('relay --text=two%20words'), '=> SDROW OWT'));
+  trial('summon a cast of ember', str_contains(trial_cast('summon --runite=ember --spell=upper%20--text=ok'), 'ember => OK'));
+  trial('summon an unknown runite', str_contains(trial_cast('summon --runite=storm --spell=x'), 'Unknown runite'));
+
+  trial_section('Inside one runite');
+  trial('cast returns its value', Chanter::cast('double --n=4')() === 8);
+  trial('chain: 3 → 6 → 36', str_contains(trial_cast('chain --n=3'), '=> 36'));
+  trial('a cast in a chain keeps its own spells', Chanter::cast('square --n=5')() === 25 && Chanter::cast('double --n=5')() === 10);
+
+  trial_report();
+}, 'Run the trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

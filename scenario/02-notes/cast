@@ -1,0 +1,193 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 02 — NOTES
+ * A small CRUD kept in .echoes by Keeper, with ids from Cipher.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper.
+ *
+ *   php cast note --add="Buy milk"
+ *   php cast notes
+ *   php cast note --show=<id>
+ *   php cast note --edit=<id> --text="Buy oat milk"
+ *   php cast note --delete=<id>
+ *   php cast note --export
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+// the notes live in .echoes/<runite>/notes.json as { id: { id, text, created, updated } }
+function notes_load() {
+  $notes = Keeper::item('notes');
+  return $notes ? json_decode(json_encode($notes), true) : [];
+}
+function notes_save( Array $notes ) {
+  Keeper::item('notes', (object) $notes);
+  return true;
+}
+
+
+Chanter::cast('note --add --show --edit --text --delete --export', function() {
+  $notes = notes_load();
+
+  // CREATE
+  if ($text = Chanter::spell('add')) {
+    if ($text === '1') {
+      $text = Whisper::call('Note: ');
+    }
+    $id = Cipher::id('n');
+    $notes[$id] = ['id' => $id, 'text' => $text, 'created' => date('Y-m-d H:i:s'), 'updated' => ''];
+    notes_save($notes);
+    Whisper::echo("{{color-success}}{{icon-success}} Added $id{{nl}}");
+    return;
+  }
+
+  // READ one
+  if ($id = Chanter::spell('show')) {
+    if (!isset($notes[$id])) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} Note $id not found{{nl}}");
+      return;
+    }
+    Whisper::echo(Weaver::bind("{{color-info}}{{nid}}{{color-end}} {{ntext}}{{nl}}{{color-secondary}}created {{ncreated}} {{nupdated}}{{nl}}", [
+      'nid' => $id,
+      'ntext' => $notes[$id]['text'],
+      'ncreated' => $notes[$id]['created'],
+      'nupdated' => $notes[$id]['updated'] ? 'updated ' . $notes[$id]['updated'] : '',
+    ]));
+    return;
+  }
+
+  // UPDATE
+  if ($id = Chanter::spell('edit')) {
+    if (!isset($notes[$id])) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} Note $id not found{{nl}}");
+      return;
+    }
+    $text = Chanter::spell('text');
+    if (!$text || $text === '1') {
+      $text = Whisper::call('New text: ');
+    }
+    $notes[$id]['text'] = $text;
+    $notes[$id]['updated'] = date('Y-m-d H:i:s');
+    notes_save($notes);
+    Whisper::echo("{{color-success}}{{icon-success}} Updated $id{{nl}}");
+    return;
+  }
+
+  // DELETE
+  if ($id = Chanter::spell('delete')) {
+    if (!isset($notes[$id])) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} Note $id not found{{nl}}");
+      return;
+    }
+    unset($notes[$id]);
+    notes_save($notes);
+    Whisper::echo("{{color-success}}{{icon-success}} Deleted $id{{nl}}");
+    return;
+  }
+
+  // EXPORT as a plain text file in .echoes/<runite>/export/notes.txt
+  if (Chanter::spell('export')) {
+    $lines = array_map(fn($n) => '- ' . $n['text'], $notes);
+    Keeper::echo(KEEPER_ECHOES . 'export', 'notes.txt', implode(PHP_EOL, $lines) . PHP_EOL);
+    Whisper::echo("{{color-success}}{{icon-success}} Exported " . count($lines) . " notes{{nl}}");
+    return;
+  }
+
+  Chanter::cast('notes')();
+}, 'Add, show, edit, delete or export a note. --add="text" --show=<id> --edit=<id> --text="text" --delete=<id> --export');
+
+
+// READ all
+Chanter::cast('notes', function() {
+  $notes = notes_load();
+  if (!$notes) {
+    Whisper::echo("{{color-secondary}}No notes yet. Try: php " . AETHER_FILE . " note --add=\"Buy milk\"{{nl}}");
+    return;
+  }
+  foreach ($notes as $note) {
+    Whisper::echo("{{color-info}}{$note['id']}{{color-end}} {$note['text']}{{nl}}");
+  }
+  Whisper::echo("{{color-secondary}}" . count($notes) . " notes{{nl}}");
+}, 'List all notes.');
+
+
+// trial (runs on a separate item, so your own notes stay untouched)
+Chanter::cast('test', function() {
+  $backup = Keeper::item('notes');
+  notes_save([]);
+
+  trial_section('Create');
+  $out = trial_cast('note --add=Buy%20milk');
+  trial('note --add', str_contains($out, 'Added n'));
+  $notes = notes_load();
+  $id = array_key_first($notes);
+  trial('stored in .echoes', file_exists(KEEPER_ECHOES . 'notes.json') && $notes[$id]['text'] === 'Buy milk');
+  trial('Cipher id has prefix', str_starts_with($id, 'n'));
+  trial_cast('note --add=Call%20mom');
+  trial('two notes', count(notes_load()) === 2);
+
+  trial_section('Read');
+  $out = trial_cast('notes');
+  trial('notes lists both', str_contains($out, 'Buy milk') && str_contains($out, 'Call mom') && str_contains($out, '2 notes'));
+  $out = trial_cast("note --show=$id");
+  trial('note --show', str_contains($out, 'Buy milk') && str_contains($out, 'created'));
+  $out = trial_cast('note --show=n-missing');
+  trial('note --show unknown id', str_contains($out, 'not found'));
+
+  trial_section('Update');
+  $out = trial_cast("note --edit=$id --text=Buy%20oat%20milk");
+  trial('note --edit', str_contains($out, "Updated $id") && notes_load()[$id]['text'] === 'Buy oat milk');
+  trial('updated time set', notes_load()[$id]['updated'] !== '');
+
+  trial_section('Export');
+  $out = trial_cast('note --export');
+  $export = Keeper::echo(KEEPER_ECHOES . 'export', 'notes.txt');
+  trial('note --export writes a file', str_contains($out, 'Exported 2') && str_contains((string) $export, '- Buy oat milk'));
+
+  trial_section('Delete');
+  $out = trial_cast("note --delete=$id");
+  trial('note --delete', str_contains($out, "Deleted $id") && count(notes_load()) === 1);
+  notes_save([]);
+  $out = trial_cast('notes');
+  trial('empty list shows a hint', str_contains($out, 'No notes yet'));
+
+  trial_section('Cipher & Forger');
+  trial('hash is stable', cipher_hash('rune') === cipher_hash('rune'));
+  trial('base64 round trip', Cipher::base64(Cipher::base64('rune', 0), 1) === 'rune');
+  trial('notes.json info', Forger::info(KEEPER_ECHOES . 'notes.json')->ext === 'json');
+
+  // restore
+  if ($backup) {
+    Keeper::item('notes', $backup);
+  }
+  trial_report();
+}, 'Run the trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

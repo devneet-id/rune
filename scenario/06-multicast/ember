@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 06 — MULTICAST · ember
+ * One of three runites living in the same folder. ember shouts.
+ *
+ *   php ember upper --text="hello"
+ *   php ember count
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+Chanter::cast('upper --text', function() {
+  $text = Chanter::spell('text');
+  Whisper::echo("{{color-danger}}ember{{color-end}} => " . strtoupper(($text && $text !== '1') ? $text : 'fire') . "{{nl}}");
+}, 'Shout a text. --text="..."');
+
+// every runite keeps its own memory in .echoes/<runite>/
+Chanter::cast('count --reset', function() {
+  $count = Chanter::spell('reset') ? 0 : ((int) Keeper::item('count') + 1);
+  Keeper::item('count', $count);
+  Whisper::echo("{{color-danger}}ember{{color-end}} => $count{{nl}}");
+}, 'Count how many times ember was cast. --reset');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

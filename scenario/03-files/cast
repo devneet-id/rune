@@ -1,0 +1,214 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 03 — FILES
+ * A tiny file manager inside box/, powered by Forger (checksums by Cipher).
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher.
+ *
+ *   php cast file --new=hello.txt --text="Hello Rune"
+ *   php cast file --read=hello.txt
+ *   php cast file --rename=hello.txt --to=hi.txt
+ *   php cast file --copy=hi.txt --to=docs/hi.txt
+ *   php cast file --delete=hi.txt
+ *   php cast files
+ *   php cast box --backup | --restore | --clean
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+define('BOX', AETHER_REPO . '/box');
+define('BOX_BACKUP', AETHER_REPO . '/box-backup');
+
+function box_path( String $name ) {
+  return BOX . '/' . ltrim(str_replace('..', '', $name), '/');
+}
+
+
+Chanter::cast('file --new --text --read --rename --copy --to --delete', function() {
+  Forger::repo(BOX);
+
+  // CREATE
+  if ($name = Chanter::spell('new')) {
+    $path = box_path($name);
+    if (file_exists($path)) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} $name already exists{{nl}}");
+      return;
+    }
+    Forger::fix(Forger::trace($path));
+    $text = Chanter::spell('text');
+    Forger::item($path, ($text && $text !== '1') ? $text : '');
+    Whisper::echo("{{color-success}}{{icon-success}} Created $name{{nl}}");
+    return;
+  }
+
+  // READ
+  if ($name = Chanter::spell('read')) {
+    $path = box_path($name);
+    if (!is_file($path)) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} $name not found{{nl}}");
+      return;
+    }
+    Whisper::echo(Forger::item($path) . "{{nl}}");
+    return;
+  }
+
+  // UPDATE: rename (Forger move = copy, then clean the source)
+  if ($name = Chanter::spell('rename')) {
+    $from = box_path($name);
+    $to = box_path((string) Chanter::spell('to'));
+    if (!is_file($from) || !Chanter::spell('to')) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} Use --rename=<file> --to=<new name>{{nl}}");
+      return;
+    }
+    Forger::move([['type' => 'item', 'from' => $from, 'target' => $to]]);
+    Forger::clean($from);
+    Whisper::echo("{{color-success}}{{icon-success}} Renamed $name → " . Chanter::spell('to') . "{{nl}}");
+    return;
+  }
+
+  // COPY
+  if ($name = Chanter::spell('copy')) {
+    $from = box_path($name);
+    if (!is_file($from) || !Chanter::spell('to')) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} Use --copy=<file> --to=<target>{{nl}}");
+      return;
+    }
+    Forger::move([['type' => 'item', 'from' => $from, 'target' => box_path(Chanter::spell('to'))]]);
+    Whisper::echo("{{color-success}}{{icon-success}} Copied $name → " . Chanter::spell('to') . "{{nl}}");
+    return;
+  }
+
+  // DELETE
+  if ($name = Chanter::spell('delete')) {
+    $path = box_path($name);
+    if (!file_exists($path)) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} $name not found{{nl}}");
+      return;
+    }
+    Forger::clean($path, is_dir($path));
+    Whisper::echo("{{color-success}}{{icon-success}} Deleted $name{{nl}}");
+    return;
+  }
+
+  Chanter::cast('files')();
+}, 'Create, read, rename, copy or delete a file in box/. --new=<file> --text="..." --read --rename --copy --to --delete');
+
+
+// READ all (recursive) with size and checksum
+Chanter::cast('files', function() {
+  if (!is_dir(BOX)) {
+    Whisper::echo("{{color-secondary}}box/ is empty{{nl}}");
+    return;
+  }
+  $rows = 0;
+  foreach (forger_trace_recursive(BOX) as $row) {
+    if ($row['type'] !== 'item') continue;
+    $info = Forger::info($row['target']);
+    $name = ltrim(str_replace(BOX, '', $row['target']), '/\\');
+    Whisper::echo(Weaver::bind("{{color-info}}{{fname}}{{color-end}} {{fsize}} {{color-secondary}}{{fhash}}{{nl}}", [
+      'fname' => str_pad($name, 20),
+      'fsize' => str_pad(aether_formatFileSize(filesize($row['target'])), 8),
+      'fhash' => cipher_hash(Forger::item($row['target'])),
+    ]));
+    $rows++;
+  }
+  Whisper::echo("{{color-secondary}}$rows files{{nl}}");
+}, 'List files in box/ with size and checksum.');
+
+
+Chanter::cast('box --backup --restore --clean', function() {
+  if (Chanter::spell('backup')) {
+    if (is_dir(BOX_BACKUP)) Forger::clean(BOX_BACKUP, true);
+    Forger::clone(BOX, BOX_BACKUP);
+    Whisper::echo("{{color-success}}{{icon-success}} box/ backed up{{nl}}");
+    return;
+  }
+  if (Chanter::spell('restore')) {
+    if (!is_dir(BOX_BACKUP)) {
+      Whisper::echo("{{color-danger}}{{icon-warning}} No backup{{nl}}");
+      return;
+    }
+    if (is_dir(BOX)) Forger::clean(BOX, true);
+    Forger::move([['type' => 'repo', 'from' => BOX_BACKUP, 'target' => BOX]]);
+    Whisper::echo("{{color-success}}{{icon-success}} box/ restored{{nl}}");
+    return;
+  }
+  if (Chanter::spell('clean')) {
+    if (is_dir(BOX)) Forger::clean(BOX, true);
+    Whisper::echo("{{color-success}}{{icon-success}} box/ cleaned{{nl}}");
+    return;
+  }
+  Whisper::echo("{{color-secondary}}Use --backup, --restore or --clean. Last change: " . (is_dir(BOX) ? date('Y-m-d H:i:s', Forger::observer(BOX)) : '-') . "{{nl}}");
+}, 'Backup, restore or clean box/. --backup --restore --clean');
+
+
+// trial (works on box/, keeps your own box/ by backing it up first)
+Chanter::cast('test', function() {
+  $had_box = is_dir(BOX);
+  if ($had_box) {
+    trial_cast('box --backup');
+  }
+  trial_cast('box --clean');
+
+  trial_section('Create & Read');
+  $out = trial_cast('file --new=hello.txt --text=Hello%20Rune');
+  trial('file --new', str_contains($out, 'Created hello.txt') && is_file(BOX . '/hello.txt'));
+  trial('file --new refuses a duplicate', str_contains(trial_cast('file --new=hello.txt'), 'already exists'));
+  trial('file --new in a sub folder', str_contains(trial_cast('file --new=docs/readme.md --text=%23%20Docs'), 'Created') && is_file(BOX . '/docs/readme.md'));
+  trial('file --read', trim(trial_cast('file --read=hello.txt')) === 'Hello Rune');
+  trial('file --read unknown', str_contains(trial_cast('file --read=nope.txt'), 'not found'));
+
+  trial_section('Update');
+  $out = trial_cast('file --rename=hello.txt --to=hi.txt');
+  trial('file --rename', str_contains($out, 'Renamed') && !is_file(BOX . '/hello.txt') && is_file(BOX . '/hi.txt'));
+  $out = trial_cast('file --copy=hi.txt --to=docs/hi-copy.txt');
+  trial('file --copy', is_file(BOX . '/hi.txt') && Forger::item(BOX . '/docs/hi-copy.txt') === 'Hello Rune');
+
+  trial_section('List');
+  $out = trial_cast('files');
+  trial('files lists 3 files with checksum', str_contains($out, '3 files') && str_contains($out, cipher_hash('Hello Rune')));
+  trial('scan finds hi.txt and docs/', count(Forger::scan(BOX)) === 2);
+  trial('trace marks file and folder', (function() { $t = Forger::trace(BOX . '/docs/readme.md'); return end($t)['type'] === 'item' && prev($t)['type'] === 'repo'; })());
+  trial('observer returns a time', Forger::observer(BOX) > 0);
+
+  trial_section('Backup & Delete');
+  trial('box --backup clones', str_contains(trial_cast('box --backup'), 'backed up') && is_file(BOX_BACKUP . '/docs/readme.md'));
+  trial('file --delete a file', str_contains(trial_cast('file --delete=hi.txt'), 'Deleted') && !is_file(BOX . '/hi.txt'));
+  trial('file --delete a folder', str_contains(trial_cast('file --delete=docs'), 'Deleted') && !is_dir(BOX . '/docs'));
+  trial('box --restore', str_contains(trial_cast('box --restore'), 'restored') && is_file(BOX . '/hi.txt') && is_file(BOX . '/docs/hi-copy.txt'));
+  trial('box --clean', str_contains(trial_cast('box --clean'), 'cleaned') && !is_dir(BOX));
+
+  // put your own box/ back
+  if ($had_box) {
+    trial_cast('box --restore');
+  }
+  if (is_dir(BOX_BACKUP)) {
+    Forger::clean(BOX_BACKUP, true);
+  }
+  trial_report();
+}, 'Run the trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

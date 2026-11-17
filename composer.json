@@ -1,0 +1,10 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Rune\\": "../rune/"
+    }
+  },
+  "require": {
+    "devneet/rune": "^1.21"
+  }
+}

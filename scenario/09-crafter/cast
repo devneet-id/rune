@@ -1,0 +1,129 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 09 — CRAFTER
+ * Bundle a folder with Crafter while Keeper is awake.
+ * The folder holds html, head, css, js, php, an image and a subfolder.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Crafter.
+ *
+ *   php cast build --lang=full|web|css     spark, then cast store
+ *   php cast store                         the shards the relic carries (set by you)
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Crafter\Manifest as Crafter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Crafter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+// the three recipes: languages, type and the file it writes
+define('FORGE_LANGUAGES', [
+  'full'=> [['html', 'css', 'js', 'php'], 'plain', 'dist/full.php'],
+  'web'=> [['html', 'css', 'js'], 'plain', 'dist/web.html'],
+  'css'=> [['css'], 'plain', 'dist/style.css'],
+]);
+
+// every item of src/site goes to Crafter, whatever it is (image and folder too)
+function forge_build( String $lang ) {
+  [$languages, $type, $dist] = FORGE_LANGUAGES[$lang];
+  Crafter::item("forge-$lang", function() use ($languages, $type, $dist) {
+    Crafter::seed('DIST', AETHER_REPO . '/' . $dist);
+    Crafter::seed('TYPE', $type);
+    Crafter::seed('LANGUAGE', $languages);
+    Forger::scan('src/site', function($item) {
+      Crafter::shard($item->target);
+      return $item;
+    });
+  });
+  Crafter::spark("forge-$lang");
+
+  // Forger keeps no shard on its own: after every spark, store says what travels with the relic
+  Chanter::cast('store')();
+  return AETHER_REPO . '/' . $dist;
+}
+
+function forge_shards() {
+  $map = json_decode((string) @file_get_contents(KEEPER_ECHOES_SHARD), true);
+  return is_array($map) ? $map : [];
+}
+
+Chanter::cast('build --lang', function() {
+  $lang = Chanter::spell('lang');
+  $lang = isset(FORGE_LANGUAGES[$lang]) ? $lang : 'full';
+  forge_build($lang);
+}, 'Bundle src/site with one recipe. --lang=full|web|css');
+
+// set by the user: the sources travel with the relic, the bundle in dist/ does not
+Chanter::cast('store', function() {
+  Keeper::shard(['src/site']);
+  Whisper::echo("Stored src/site as shards{{nl}}");
+}, 'Keep src/site as shards of the relic (Keeper::shard).');
+
+
+Chanter::cast('test', function() {
+  $backup = @file_get_contents(KEEPER_ECHOES_SHARD);
+  file_put_contents(KEEPER_ECHOES_SHARD, '{}');
+
+  trial_section('Forger::scan');
+  $items = [];
+  Forger::scan('src/site', function($item) use (&$items) { $items[] = $item; return $item; });
+  $targets = array_map(fn($item) => $item->target, $items);
+  trial('scan sees files and the subfolder', in_array('src/site/logo.jpg', $targets) && in_array('src/site/parts', $targets));
+  trial('scan targets use /', !array_filter($targets, fn($target) => str_contains($target, '\\')));
+
+  trial_section('Crafter reads only the LANGUAGE of the seed');
+  $full = AETHER_REPO . '/dist/full.php'; $web = AETHER_REPO . '/dist/web.html'; $css = AETHER_REPO . '/dist/style.css';
+  trial('full (html,css,js,php) builds with an image and a folder', trial_safe(function() { trial_capture(function() { forge_build('full'); }); }) && is_file($full));
+  $source = (string) Forger::item($full);
+  trial('full keeps html, head, css, js and php', str_contains($source, '<h1>Forge</h1>') && str_contains($source, '<title>Forge</title>') && str_contains($source, '#c0392b') && str_contains($source, '(bundled)') && str_contains($source, 'php-shard'));
+  trial('full carries no image bytes', !str_contains($source, 'JFIF'));
+  $said = trial_capture(function() { forge_build('full'); });
+  trial('spark tells the skipped shards', str_contains($said, 'Shard=5') && str_contains($said, 'Skipped=1'));
+  trial('web (html,css,js) builds', trial_safe(function() { trial_capture(function() { forge_build('web'); }); }) && is_file($web));
+  $source = (string) Forger::item($web);
+  trial('web leaves php out', str_contains($source, '<h1>Forge</h1>') && str_contains($source, '(bundled)') && !str_contains($source, 'php-shard'));
+  trial('css builds', trial_safe(function() { trial_capture(function() { forge_build('css'); }); }) && is_file($css));
+  $source = (string) Forger::item($css);
+  trial('css holds only css', str_contains($source, '#c0392b') && !str_contains($source, 'Forge') && !str_contains($source, '(bundled)'));
+
+  trial_section('Shards: only what store sets');
+  file_put_contents(KEEPER_ECHOES_SHARD, '{}');
+  Forger::item(AETHER_REPO . '/dist/touched.txt', 'x');
+  trial('Forger::item adds no shard', forge_shards() === []);
+  trial_capture(function() { forge_build('web'); });
+  $targets = array_map(fn($shard) => $shard['target'], forge_shards());
+  trial('build runs store after spark', in_array('src/site/index.html', $targets) && in_array('src/site/logo.jpg', $targets) && in_array('src/site/parts/note.txt', $targets));
+  trial('the bundle is not a shard', !array_filter($targets, fn($target) => str_starts_with($target, 'dist/')));
+  trial('store alone sets the same shards', (function() use ($targets) { file_put_contents(KEEPER_ECHOES_SHARD, '{}'); trial_cast('store'); return array_map(fn($shard) => $shard['target'], forge_shards()) == $targets; })());
+
+  file_put_contents(KEEPER_ECHOES_SHARD, $backup !== false ? $backup : '{}');
+  Forger::clean(AETHER_REPO . '/dist', true);
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

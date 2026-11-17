@@ -1,0 +1,127 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — COVERAGE
+ * Reads the Phantasm of every origin rune and checks which nodes the scenario runites use.
+ * A node counts as covered when a scenario calls it directly:
+ *   entity   name(            manifest   Rune::name(
+ *   ether    NAME             essence    $NAME / ['NAME']
+ *
+ *   php cast coverage                 per rune
+ *   php cast coverage --rune=Keeper   one rune, with the missing nodes
+ *   php cast coverage --missing       every missing node
+ *   php cast trials                   run the trial of every scenario
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+function coverage_source() {
+  $source = '';
+  foreach (Forger::scan(dirname(__DIR__)) as $item) {
+    if (is_dir($item['target']) && basename($item['target']) !== 'coverage' && is_file($item['target'] . '/cast')) {
+      $source .= Forger::item($item['target'] . '/cast') . "\n";
+    }
+  }
+  $source .= Forger::item(dirname(__DIR__) . '/trial.php');
+  // comments do not count
+  return preg_replace(['#/\*.*?\*/#s', '#^\s*(//|\#).*$#m'], '', $source);
+}
+
+function coverage_nodes( String $rune, String $source ) {
+  $class = "Rune\\$rune\\Phantasm";
+  $phantasm = new $class();
+  $rows = [];
+  foreach ($phantasm->node as $node) {
+    $name = preg_match('/^\s*\$?([A-Za-z_][A-Za-z0-9_]*)/', $node['call'], $m) ? $m[1] : $node['call'];
+    $q = preg_quote($name, '/');
+    $pattern = match ($node['type']) {
+      'entity' => "/\\b$q\\s*\\(/",
+      'manifest' => "/\\b$rune::$q\\s*\\(/",
+      'essence' => "/(\\\$$q\\b|\\['$q'\\])/",
+      default => "/\\b$q\\b/",
+    };
+    $rows[] = ['type' => $node['type'], 'name' => $name, 'covered' => (bool) preg_match($pattern, $source)];
+  }
+  return $rows;
+}
+
+
+Chanter::cast('coverage --rune --missing', function() {
+  $source = coverage_source();
+  $only = Chanter::spell('rune');
+  $only = ($only && $only !== '1') ? ucfirst(strtolower($only)) : false;
+  $total = [0, 0];
+
+  Whisper::echo("{{nl}}{{color-info}}S C E N A R I O   C O V E R A G E{{color-end}}{{nl}}{{nl}}");
+  foreach (aether_list_runes() as $rune) {
+    if ($only && $only !== $rune) continue;
+
+    $rows = coverage_nodes($rune, $source);
+    $covered = count(array_filter($rows, fn($r) => $r['covered']));
+    $total[0] += $covered;
+    $total[1] += count($rows);
+    $percent = count($rows) ? round($covered / count($rows) * 100) : 0;
+    $bar = str_repeat('█', (int) round($percent / 5)) . str_repeat('░', 20 - (int) round($percent / 5));
+    $color = $percent >= 80 ? 'success' : ($percent >= 40 ? 'warning' : 'danger');
+
+    $byType = [];
+    foreach ($rows as $r) {
+      $byType[$r['type']][0] = ($byType[$r['type']][0] ?? 0) + ($r['covered'] ? 1 : 0);
+      $byType[$r['type']][1] = ($byType[$r['type']][1] ?? 0) + 1;
+    }
+    $types = implode('  ', array_map(fn($t, $c) => "$t {$c[0]}/{$c[1]}", array_keys($byType), $byType));
+
+    Whisper::echo("{{color-default}}" . str_pad($rune, 9) . " {{color-$color}}$bar " . str_pad("$percent%", 4, ' ', STR_PAD_LEFT) . "{{color-secondary}}  $types{{nl}}");
+
+    if ($only || Chanter::spell('missing')) {
+      foreach ($rows as $r) {
+        if (!$r['covered']) Whisper::echo("{{color-secondary}}   · {$r['type']} {$r['name']}{{nl}}");
+      }
+    }
+  }
+  $percent = $total[1] ? round($total[0] / $total[1] * 100) : 0;
+  Whisper::echo("{{nl}}{{color-info}}Total {$total[0]}/{$total[1]} nodes ($percent%){{color-end}}{{nl}}");
+}, 'Show which Phantasm nodes the scenarios use. --rune=<Rune> --missing');
+
+
+Chanter::cast('trials', function() {
+  Whisper::echo("{{nl}}{{color-info}}S C E N A R I O   T R I A L S{{color-end}}{{nl}}{{nl}}");
+  $all = [0, 0];
+  foreach (Forger::scan(dirname(__DIR__)) as $item) {
+    $dir = $item['target'];
+    if (!is_dir($dir) || basename($dir) === 'coverage' || !is_file($dir . '/cast')) continue;
+
+    $out = preg_replace('/\x1b\[[0-9;]*[A-Za-z]/', '', (string) shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellarg(PHP_BINARY) . ' cast test 2>&1'));
+    if (preg_match('/TRIAL PASSED (\d+)\/(\d+)/', $out, $m)) {
+      $all[0] += $m[1]; $all[1] += $m[2];
+      Whisper::echo("{{color-success}} ✓ {{color-end}}" . str_pad(basename($dir), 14) . " {$m[1]}/{$m[2]}{{nl}}");
+    } elseif (preg_match('/TRIAL FAILED (\d+)\/(\d+): (.*)/', $out, $m)) {
+      $all[0] += $m[2] - $m[1]; $all[1] += $m[2];
+      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 14) . " " . ($m[2] - $m[1]) . "/{$m[2]}  {{color-secondary}}failed: {$m[3]}{{nl}}");
+    } else {
+      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 14) . " no trial result{{nl}}");
+    }
+  }
+  Whisper::echo("{{nl}}{{color-info}}Total {$all[0]}/{$all[1]} checks passed{{color-end}}{{nl}}");
+}, 'Run the trial of every scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

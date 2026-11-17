@@ -1,0 +1,129 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO 01 — GREETING
+ * The four foundation runes: Aether, Whisper, Weaver, Chanter.
+ *
+ *   php cast greet --name=Anwar --loud
+ *   php cast card --text="a long sentence ..."
+ *   php cast stats
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// greet someone, ask the name when it is not given
+Chanter::cast('greet --name --loud', function() {
+  $name = Chanter::spell('name');
+  if (!$name || $name === '1') {
+    $name = Whisper::call('Your name: ');
+  }
+
+  $text = Weaver::bind('Hello, {{who}}! Welcome to {{place}}.', ['who' => $name, 'place' => 'Rune']);
+  if (Chanter::spell('loud')) {
+    $text = strtoupper($text);
+  }
+
+  Whisper::echo("{{color-success}}{{icon-success}} $text{{nl}}");
+}, 'Greet someone. --name=<name> --loud');
+
+
+// a framed card, text wrapped by word
+Chanter::cast('card --text --width', function() {
+  $text = Chanter::spell('text');
+  if (!$text || $text === '1') {
+    $text = 'Rune is a lore-driven, modular concept beneath PHP.';
+  }
+  $width = (int) (Chanter::spell('width') ?: 24);
+
+  $lines = explode("\n", weaver_wrap_word($text, $width));
+  $card = '+' . str_repeat('-', $width + 2) . "+\n";
+  foreach ($lines as $line) {
+    $card .= '| ' . str_pad($line, $width) . " |\n";
+  }
+  $card .= '+' . str_repeat('-', $width + 2) . '+';
+
+  Whisper::echo("{{color-info}}$card{{nl}}");
+}, 'Wrap a text inside a card. --text="..." --width=24');
+
+
+// what is awake right now
+Chanter::cast('stats', function() {
+  [$usage, $peak] = aether_memoryusage();
+
+  Whisper::echo(Weaver::bind(
+    "{{color-secondary}}File{{color-end}}    {{file}} ({{size}}){{nl}}" .
+    "{{color-secondary}}Runes{{color-end}}   {{runes}}{{nl}}" .
+    "{{color-secondary}}Awake{{color-end}}   {{awake}}{{nl}}" .
+    "{{color-secondary}}Time{{color-end}}    {{time}}s{{nl}}" .
+    "{{color-secondary}}Memory{{color-end}}  {{usage}} / {{peak}}{{nl}}",
+    [
+      'file'  => AETHER_FILE,
+      'size'  => aether_formatFileSize(filesize(AETHER_FILE)),
+      'runes' => implode(', ', aether_list_runes()),
+      'awake' => implode(', ', aether_arised()),
+      'time'  => number_format(aether_stopwatch(), 4),
+      'usage' => aether_formatFileSize($usage),
+      'peak'  => aether_formatFileSize($peak),
+    ]
+  ));
+}, 'Show what is awake in this flow.');
+
+
+// trial
+Chanter::cast('test', function() {
+  trial_section('Chanter');
+  trial('cast registered: greet', isset($GLOBALS['CHANTER_CAST']['greet']));
+  trial('chanter_cast_has finds greet', chanter_cast_has('greet'));
+  trial('note kept for a cast with spells', Chanter::echo('greet')[2] === 'Greet someone. --name=<name> --loud');
+  $out = trial_cast('greet --name=Anwar');
+  trial('greet --name=Anwar', str_contains($out, 'Hello, Anwar! Welcome to Rune.'));
+  $out = trial_cast('greet --name=Anwar --loud');
+  trial('greet --loud', str_contains($out, 'HELLO, ANWAR! WELCOME TO RUNE.'));
+  trial('spell --x=0 keeps "0"', (function() { chanter_arg_extract('x --zero=0'); return Chanter::spell('zero') === '0'; })());
+  trial('spell keeps a literal +', (function() { chanter_arg_extract('x --file=How+to+Casting'); return Chanter::spell('file') === 'How+to+Casting'; })());
+  $out = trial_cast('nope');
+  trial('unknown cast warns', str_contains($out, "cast with 'nope' not found"));
+
+  trial_section('Weaver');
+  trial('bind one', Weaver::bind('Hi {{a}}', 'a', 'Rune') === 'Hi Rune');
+  trial('bind many', Weaver::bind('{{a}}-{{b}}', ['a' => '1', 'b' => '2']) === '1-2');
+  trial('bond keeps bound values', Weaver::bond('b', null) === '2');
+  $out = trial_cast('card --text=one%20two%20three%20four --width=9');
+  trial('card wraps by word', str_contains($out, '| one two   |') && str_contains($out, '| three     |'));
+
+  trial_section('Whisper');
+  trial('echo as string keeps text', str_contains(trial_plain(Whisper::echo('plain', true)), 'plain'));
+  trial('drain captures echo', trial_capture(fn() => Whisper::echo('caught')) === 'caught');
+
+  trial_section('Aether');
+  trial('formatFileSize', aether_formatFileSize(2048) === '2.00KB');
+  trial('stopwatch is running', aether_stopwatch() > 0);
+  trial('four runes awake', count(array_intersect(['Rune\\Aether\\Manifest', 'Rune\\Whisper\\Manifest', 'Rune\\Weaver\\Manifest', 'Rune\\Chanter\\Manifest'], aether_arised())) === 4);
+  trial('has entity / ether / essence', aether_has_entity('weaver_bind') && aether_has_ether('AETHER_FILE') && aether_has_essence('CHANTER_CAST'));
+  trial('ten origin runes listed', count(aether_list_runes()) === 10);
+  $out = trial_cast('stats');
+  trial('stats shows the runite', str_contains($out, 'File') && str_contains($out, AETHER_FILE));
+
+  trial_report();
+}, 'Run the trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();
