@@ -1,4 +1,5 @@
 vendor/
+.echoes/
 
 exploration/@evolution/
 exploration/@federation/
