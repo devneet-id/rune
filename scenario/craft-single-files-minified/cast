@@ -1,0 +1,141 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — CRAFT SINGLE FILES, MINIFIED
+ * Crafter builds one file of one language — a stylesheet like exuracss, a script like exurajs,
+ * a php library — from a folder that holds every language. The seed's LANGUAGE picks the file,
+ * MINIFIED picks which languages are minified.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Crafter.
+ *
+ *   php cast build --lang=css|js|php|html [--min]    write dist/<file>
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Crafter\Manifest as Crafter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Crafter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// one language, one file
+define('CRAFT_SINGLE', [
+  'css'=> 'dist/style.css',
+  'js'=> 'dist/app.js',
+  'php'=> 'dist/helpers.php',
+  'html'=> 'dist/page.html',
+]);
+
+// every file of src/ is a shard; LANGUAGE keeps one, MINIFIED (a list of languages) minifies
+function craft_single( String $lang, Array $minified = [] ) {
+  $dist = AETHER_REPO . '/' . CRAFT_SINGLE[$lang];
+  Crafter::item("single-$lang", function() use ($lang, $minified, $dist) {
+    Crafter::seed('DIST', $dist);
+    Crafter::seed('TYPE', 'plain');
+    Crafter::seed('LANGUAGE', [$lang]);
+    Crafter::seed('MINIFIED', $minified);
+    Forger::scan('src', function($item) {
+      Crafter::shard($item->target);
+      return $item;
+    });
+  });
+  Crafter::spark("single-$lang");
+  return $dist;
+}
+
+// the body of a bundle: everything after the copyright line of the template
+function craft_body( String $file ) {
+  $source = (string) Forger::item($file);
+  return trim(substr($source, strpos($source, '*/') + 2));
+}
+
+// runs php in a separate process (the bundle defines functions; this flow must stay clean)
+function craft_php( String $code ) {
+  return trim((string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($code) . ' 2>&1'));
+}
+
+function craft_lint( String $file ) {
+  return str_contains((string) shell_exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($file) . ' 2>&1'), 'No syntax errors');
+}
+
+Chanter::cast('build --lang --min', function() {
+  $lang = Chanter::spell('lang');
+  $lang = isset(CRAFT_SINGLE[$lang]) ? $lang : 'css';
+  craft_single($lang, Chanter::spell('min') ? [$lang] : []);
+}, 'Build one file of one language. --lang=css|js|php|html --min');
+
+
+Chanter::cast('test', function() {
+  $files = [];
+
+  trial_section('One language, one file (plain)');
+  $said = '';
+  trial('css builds', trial_safe(function() use (&$said, &$files) { $said = trial_capture(function() use (&$files) { $files['css'] = craft_single('css'); }); }) && is_file($files['css'] ?? ''));
+  trial('spark keeps 1 shard and skips the other 3', str_contains($said, 'Shard=1') && str_contains($said, 'Skipped=3'));
+  $css = (string) Forger::item($files['css']);
+  trial('css starts with the copyright of the bundle', str_starts_with($css, '/* RUNE'));
+  trial('css holds only css', str_contains($css, '--accent: #c0392b') && !str_contains($css, 'greet') && !str_contains($css, 'Single page'));
+
+  trial('js builds', trial_safe(function() use (&$files) { trial_capture(function() use (&$files) { $files['js'] = craft_single('js'); }); }) && is_file($files['js'] ?? ''));
+  $js = (string) Forger::item($files['js']);
+  trial('js holds only js', str_contains($js, 'function greet( name )') && !str_contains($js, '--accent') && !str_contains($js, 'craft_greet'));
+
+  trial('php builds', trial_safe(function() use (&$files) { trial_capture(function() use (&$files) { $files['php'] = craft_single('php'); }); }) && is_file($files['php'] ?? ''));
+  $php = (string) Forger::item($files['php']);
+  trial('php opens with one <?php', str_starts_with($php, '<?php') && substr_count($php, '<?php') === 1);
+  trial('php passes php -l', craft_lint($files['php']));
+  trial('php works when required', craft_php('require ' . var_export($files['php'], true) . '; echo craft_greet(" Rune "), "|", CRAFT_LIBRARY;') === 'Hello, Rune|helpers');
+
+  trial_section('MINIFIED: the listed languages are minified');
+  $sizes = array_map(fn($file) => filesize($file), $files);
+  clearstatcache();
+
+  trial('css --min builds', trial_safe(function() { trial_capture(function() { craft_single('css', ['css']); }); }));
+  $body = craft_body($files['css']);
+  trial('css --min is smaller', filesize($files['css']) < $sizes['css']);
+  trial('css --min drops comments and line breaks', !str_contains($body, 'exura-like') && !str_contains($body, "\n"));
+  trial('css --min shortens values (0px, #222222, border:none)', str_contains($body, 'margin:0') && str_contains($body, '#222;') && str_contains($body, 'border:0'));
+
+  trial('js --min builds', trial_safe(function() { trial_capture(function() { craft_single('js', ['js']); }); }));
+  $body = craft_body($files['js']);
+  trial('js --min is smaller', filesize($files['js']) < $sizes['js']);
+  trial('js --min drops comments, keeps the code', !str_contains($body, 'the message') && !str_contains($body, 'greets the page') && str_contains($body, "'Hello, '"));
+
+  trial('php --min builds', trial_safe(function() { trial_capture(function() { craft_single('php', ['php']); }); }));
+  trial('php --min is smaller', filesize($files['php']) < $sizes['php']);
+  $php = (string) Forger::item($files['php']);
+  trial('php --min drops comments', !str_contains($php, 'trim the name first') && !str_contains($php, 'returns a greeting'));
+  trial('php --min passes php -l', craft_lint($files['php']));
+  // weaver_min_php() strips spaces inside strings (devneet-id/rune#33)
+  trial('php --min still works when required', craft_php('require ' . var_export($files['php'], true) . '; echo craft_greet(" Rune ");') === 'Hello, Rune');
+
+  trial('MINIFIED only touches its languages (css listed, js built)', trial_safe(function() { trial_capture(function() { craft_single('js', ['css']); }); }) && str_contains((string) Forger::item($files['js']), '// the message'));
+
+  trial_section('html alone');
+  // Crafter/weaver/plain--html.txt exists, but CRAFTER_WEAVER has no ['html'] entry (devneet-id/rune#34)
+  trial('html alone builds (plain--html.txt is there)', trial_safe(function() { trial_capture(function() { craft_single('html'); }); }) && str_contains((string) @file_get_contents(AETHER_REPO . '/dist/page.html'), 'Single page'));
+
+  Forger::clean(AETHER_REPO . '/dist', true);
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();
