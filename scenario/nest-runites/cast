@@ -4,7 +4,7 @@
  * SCENARIO 07 — NESTED
  * One runite outside, two runites inside realm/:
  *
- *   07-nested/
+ *   nest-runites/
  *   ├── cast            (this runite)
  *   └── realm/
  *       ├── cast

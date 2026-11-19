@@ -110,12 +110,12 @@ Chanter::cast('trials', function() {
     $out = preg_replace('/\x1b\[[0-9;]*[A-Za-z]/', '', (string) shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellarg(PHP_BINARY) . ' cast test 2>&1'));
     if (preg_match('/TRIAL PASSED (\d+)\/(\d+)/', $out, $m)) {
       $all[0] += $m[1]; $all[1] += $m[2];
-      Whisper::echo("{{color-success}} ✓ {{color-end}}" . str_pad(basename($dir), 14) . " {$m[1]}/{$m[2]}{{nl}}");
+      Whisper::echo("{{color-success}} ✓ {{color-end}}" . str_pad(basename($dir), 26) . " {$m[1]}/{$m[2]}{{nl}}");
     } elseif (preg_match('/TRIAL FAILED (\d+)\/(\d+): (.*)/', $out, $m)) {
       $all[0] += $m[2] - $m[1]; $all[1] += $m[2];
-      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 14) . " " . ($m[2] - $m[1]) . "/{$m[2]}  {{color-secondary}}failed: {$m[3]}{{nl}}");
+      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 26) . " " . ($m[2] - $m[1]) . "/{$m[2]}  {{color-secondary}}failed: {$m[3]}{{nl}}");
     } else {
-      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 14) . " no trial result{{nl}}");
+      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 26) . " no trial result{{nl}}");
     }
   }
   Whisper::echo("{{nl}}{{color-info}}Total {$all[0]}/{$all[1]} checks passed{{color-end}}{{nl}}");
