@@ -1,0 +1,153 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — CRAFT A WEB PAGE BY TYPE
+ * Crafter bundles one web page (head, html, css, js, php) into a single php file.
+ * The seed's TYPE shapes that file:
+ *   plain     the page as it is: readable php + html
+ *   function  the page sealed (base64) inside functions named with the app hash
+ *   class     the page sealed (base64) inside a class named with the app hash
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Crafter.
+ *
+ *   php cast build --type=plain|function|class [--min]    write dist/page-<type>.php
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Crafter\Manifest as Crafter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Crafter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+define('CRAFT_TYPES', ['plain', 'function', 'class']);
+define('CRAFT_WEB', ['html', 'css', 'js', 'php']);
+
+// the whole page in one php file; $seed overrides the defaults (TYPE, LANGUAGE, MINIFIED, ENCRYPTION)
+function craft_page( String $type, Array $seed = [], String $name = '' ) {
+  $dist = AETHER_REPO . '/dist/page-' . ($name ?: $type) . '.php';
+  $seed = array_merge(['TYPE'=> $type, 'LANGUAGE'=> CRAFT_WEB, 'MINIFIED'=> [], 'ENCRYPTION'=> 'base64'], $seed);
+  Crafter::item("page-$type", function() use ($seed, $dist) {
+    Crafter::seed('DIST', $dist);
+    foreach ($seed as $key => $value) {
+      Crafter::seed($key, $value);
+    }
+    Forger::scan('src', function($item) {
+      Crafter::shard($item->target);
+      return $item;
+    });
+  });
+  Crafter::spark("page-$type");
+  return $dist;
+}
+
+// serves a bundle the way a web server would: run it, read what it prints
+function craft_serve( String ...$files ) {
+  $code = '';
+  foreach ($files as $file) {
+    $code .= 'require ' . var_export($file, true) . ';';
+  }
+  return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($code) . ' 2>&1');
+}
+
+function craft_lint( String $file ) {
+  return str_contains((string) shell_exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($file) . ' 2>&1'), 'No syntax errors');
+}
+
+// the page came out whole: head, html with the php value, css, js
+function craft_whole( String $page ) {
+  return str_contains($page, '<title>Craft</title>')
+    && str_contains($page, '<h1 id="title">Hello from PHP</h1>')
+    && str_contains($page, '#c0392b')
+    && str_contains($page, "dataset.ready")
+    && !str_contains($page, 'Warning') && !str_contains($page, 'Error');
+}
+
+Chanter::cast('build --type --min', function() {
+  $type = Chanter::spell('type');
+  $type = in_array($type, CRAFT_TYPES) ? $type : 'plain';
+  craft_page($type, Chanter::spell('min') ? ['MINIFIED'=> ['html', 'css', 'js']] : []);
+}, 'Bundle the page into one php file. --type=plain|function|class --min');
+
+
+Chanter::cast('test', function() {
+  $files = [];
+
+  foreach (CRAFT_TYPES as $type) {
+    trial_section("TYPE $type");
+    trial("$type builds", trial_safe(function() use ($type, &$files) { trial_capture(function() use ($type, &$files) { $files[$type] = craft_page($type); }); }) && is_file($files[$type] ?? ''));
+    trial("$type passes php -l", craft_lint($files[$type]));
+    trial("$type serves the whole page (head, html with php, css, js)", craft_whole(craft_serve($files[$type])));
+  }
+
+  trial_section('What each TYPE writes');
+  $plain = (string) Forger::item($files['plain']);
+  $function = (string) Forger::item($files['function']);
+  $class = (string) Forger::item($files['class']);
+  trial('plain is readable: the page is in the file as written', str_contains($plain, '<?= $craft_title ?>') && str_contains($plain, 'class="note"'));
+  trial('function seals the page: no page text in the file', !str_contains($function, 'Built by Crafter') && !str_contains($function, 'craft_title'));
+  trial('function names its functions with the app hash', (bool) preg_match('/function rune__[0-9a-zA-Z_]+\(\)/', $function));
+  trial('class seals the page: no page text in the file', !str_contains($class, 'Built by Crafter') && !str_contains($class, 'craft_title'));
+  trial('class names its class with the app hash', (bool) preg_match('/class RUNE_[0-9a-zA-Z_]+/', $class));
+
+  trial_section('Two sealed bundles in one process');
+  $second = '';
+  trial_capture(function() use (&$second) { $second = craft_page('function', [], 'function-second'); });
+  trial('every build gets its own app hash', $second !== '' && $function !== (string) Forger::item($second));
+  trial('two function bundles run side by side', substr_count(craft_serve($files['function'], $second), 'Built by Crafter') === 2);
+
+  trial_section('MINIFIED inside a sealed page');
+  $min = '';
+  trial('class with html, css and js minified builds', trial_safe(function() use (&$min) { trial_capture(function() use (&$min) { $min = craft_page('class', ['MINIFIED'=> ['html', 'css', 'js']], 'class-min'); }); }) && is_file($min));
+  $page = craft_serve($min);
+  trial('the minified page still serves whole', craft_whole($page));
+  trial('the minified page drops the css and js comments', !str_contains($page, '/* the page */') && !str_contains($page, '// mark the page'));
+
+  trial_section('ENCRYPTION');
+  // the templates decode base64 and gzip, but bundling calls <ENCRYPTION>_encode(): gzip_encode() does not exist (devneet-id/rune#35)
+  $gzip = AETHER_REPO . '/dist/page-class-gzip.php';
+  trial('class with ENCRYPTION gzip builds and serves', trial_safe(function() { trial_capture(function() { craft_page('class', ['ENCRYPTION'=> 'gzip'], 'class-gzip'); }); }) && is_file($gzip) && craft_whole(craft_serve($gzip)));
+  // a spark that glitches stops before crafter_reset(): clear the state so the next check starts clean (devneet-id/rune#36)
+  crafter_reset();
+
+  trial_section('A TYPE without a template');
+  // function and class exist only for html, css, js and php together (devneet-id/rune#34)
+  // run as a runite would (warnings do not stop the flow here), only silenced for the trial
+  trial('function with html, css, js (no php) is refused, not written empty', (function() {
+    $dist = AETHER_REPO . '/dist/page-function-web.php';
+    set_error_handler(fn() => true);
+    try {
+      $said = trial_plain((string) Whisper::drain(function() { craft_page('function', ['LANGUAGE'=> ['html', 'css', 'js']], 'function-web'); }, true));
+    } catch (\Throwable $glitch) {
+      whisper_drain_end();
+      $said = '';
+    } finally {
+      restore_error_handler();
+    }
+    return !(is_file($dist) && filesize($dist) === 0) && !str_contains($said, 'Sparked');
+  })());
+
+  Forger::clean(AETHER_REPO . '/dist', true);
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

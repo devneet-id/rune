@@ -14,6 +14,8 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run each comman
 | `relay-across-runites` | three runites in one folder (`cast`, `ember`, `frost`): relay a text across runites, separate `.echoes` per runite, cast-in-cast chains | Chanter, Keeper |
 | `nest-runites` | one runite outside, two inside `realm/`: where does each runite keep its `.echoes`, cast from inside vs from the parent folder | Keeper, Forger |
 | `bundle-a-site` | Crafter bundles a folder (html, head, css, js, php, an image, a subfolder) with three recipes while Keeper is awake: only the seed's `LANGUAGE` is read, Forger keeps no shard: every build runs `spark()` then the cast `store`, where the user sets `Keeper::shard()`, `Forger::scan` targets use `/` | Crafter, Forger, Keeper |
+| `craft-single-files-minified` | Crafter builds **one file of one language** from a folder of every language — a stylesheet (like exuracss), a script (like exurajs), a php library — with and without `MINIFIED`; the php library is linted and required | Crafter, Weaver, Forger |
+| `craft-web-page-by-type` | Crafter bundles **one web page** (head, html, css, js, php) into one php file with each `TYPE` — `plain` (readable), `function` and `class` (sealed in base64, named by the app hash) — then serves it; two sealed bundles side by side, minified inside a sealed page, `ENCRYPTION`, a TYPE without a template | Crafter, Weaver, Forger, Cipher |
 | `coverage` | node coverage of all scenarios + runs every trial | Forger, Weaver |
 
 ## Run

@@ -1,0 +1,16 @@
+/* exura-like tokens: a single stylesheet */
+:root {
+  --ink: #222222;
+  --accent: #c0392b;
+}
+
+body {
+  margin: 0px;
+  color: var(--ink);
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: var(--accent);
+}
