@@ -66,9 +66,12 @@ function craft_body( String $file ) {
   return trim(substr($source, strpos($source, '*/') + 2));
 }
 
-// runs php in a separate process (the bundle defines functions; this flow must stay clean)
+// runs php in a separate process (the bundle defines functions; this flow must stay clean).
+// The code goes through a file in .proof/, not `php -r`: on Windows escapeshellarg() turns " into a space.
 function craft_php( String $code ) {
-  return trim((string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($code) . ' 2>&1'));
+  $probe = trial_proof('probe.php');
+  file_put_contents($probe, "<?php\n" . $code . "\n");
+  return trim((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' 2>&1'));
 }
 
 function craft_lint( String $file ) {

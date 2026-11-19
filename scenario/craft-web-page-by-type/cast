@@ -58,12 +58,15 @@ function craft_page( String $type, Array $seed = [], String $name = '' ) {
 }
 
 // serves a bundle the way a web server would: run it, read what it prints
+// (through a file in .proof/, not `php -r`: on Windows escapeshellarg() turns " into a space)
 function craft_serve( String ...$files ) {
-  $code = '';
+  $code = "<?php\n";
   foreach ($files as $file) {
-    $code .= 'require ' . var_export($file, true) . ';';
+    $code .= 'require ' . var_export($file, true) . ";\n";
   }
-  return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($code) . ' 2>&1');
+  $probe = trial_proof('serve.php');
+  file_put_contents($probe, $code);
+  return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' 2>&1');
 }
 
 function craft_lint( String $file ) {
