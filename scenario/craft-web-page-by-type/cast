@@ -9,7 +9,7 @@
  *   class     the page sealed (base64) inside a class named with the app hash
  * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Crafter.
  *
- *   php cast build --type=plain|function|class [--min]    write dist/page-<type>.php
+ *   php cast build --type=plain|function|class [--min]    write .proof/dist/page-<type>.php
  *   php cast test
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -41,7 +41,7 @@ define('CRAFT_WEB', ['html', 'css', 'js', 'php']);
 
 // the whole page in one php file; $seed overrides the defaults (TYPE, LANGUAGE, MINIFIED, ENCRYPTION)
 function craft_page( String $type, Array $seed = [], String $name = '' ) {
-  $dist = AETHER_REPO . '/dist/page-' . ($name ?: $type) . '.php';
+  $dist = trial_proof('dist/page-' . ($name ?: $type) . '.php');
   $seed = array_merge(['TYPE'=> $type, 'LANGUAGE'=> CRAFT_WEB, 'MINIFIED'=> [], 'ENCRYPTION'=> 'base64'], $seed);
   Crafter::item("page-$type", function() use ($seed, $dist) {
     Crafter::seed('DIST', $dist);
@@ -88,6 +88,7 @@ Chanter::cast('build --type --min', function() {
 
 Chanter::cast('test', function() {
   $files = [];
+  trial_proof_clean('dist');
 
   foreach (CRAFT_TYPES as $type) {
     trial_section("TYPE $type");
@@ -121,7 +122,7 @@ Chanter::cast('test', function() {
 
   trial_section('ENCRYPTION');
   // the templates decode base64 and gzip, but bundling calls <ENCRYPTION>_encode(): gzip_encode() does not exist (devneet-id/rune#35)
-  $gzip = AETHER_REPO . '/dist/page-class-gzip.php';
+  $gzip = trial_proof('dist/page-class-gzip.php');
   trial('class with ENCRYPTION gzip builds and serves', trial_safe(function() { trial_capture(function() { craft_page('class', ['ENCRYPTION'=> 'gzip'], 'class-gzip'); }); }) && is_file($gzip) && craft_whole(craft_serve($gzip)));
   // a spark that glitches stops before crafter_reset(): clear the state so the next check starts clean (devneet-id/rune#36)
   crafter_reset();
@@ -130,7 +131,7 @@ Chanter::cast('test', function() {
   // function and class exist only for html, css, js and php together (devneet-id/rune#34)
   // run as a runite would (warnings do not stop the flow here), only silenced for the trial
   trial('function with html, css, js (no php) is refused, not written empty', (function() {
-    $dist = AETHER_REPO . '/dist/page-function-web.php';
+    $dist = trial_proof('dist/page-function-web.php');
     set_error_handler(fn() => true);
     try {
       $said = trial_plain((string) Whisper::drain(function() { craft_page('function', ['LANGUAGE'=> ['html', 'css', 'js']], 'function-web'); }, true));
@@ -143,7 +144,7 @@ Chanter::cast('test', function() {
     return !(is_file($dist) && filesize($dist) === 0) && !str_contains($said, 'Sparked');
   })());
 
-  Forger::clean(AETHER_REPO . '/dist', true);
+  // the pages stay in .proof/dist as the proof of this run
   trial_report();
 }, 'Trial of this scenario.');
 

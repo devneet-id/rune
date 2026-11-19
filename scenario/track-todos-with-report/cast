@@ -36,7 +36,7 @@ Chanter::begin();
 Keeper::begin();
 
 
-define('TODO_REPORT', AETHER_REPO . '/dist/report.html');
+define('TODO_REPORT', AETHER_REPO . '/.proof/dist/report.html');
 
 function todo_load() {
   $todos = Keeper::item('todos');
@@ -121,8 +121,8 @@ Chanter::cast('report --min', function() {
 
   Forger::fix(Forger::trace(TODO_REPORT));
   Forger::item(TODO_REPORT, $html);
-  Whisper::echo("{{color-success}}{{icon-success}} Report written: dist/report.html (" . aether_formatFileSize(filesize(TODO_REPORT)) . "){{nl}}");
-}, 'Write dist/report.html from the todos. --min to minify.');
+  Whisper::echo("{{color-success}}{{icon-success}} Report written: .proof/dist/report.html (" . aether_formatFileSize(filesize(TODO_REPORT)) . "){{nl}}");
+}, 'Write .proof/dist/report.html from the todos. --min to minify.');
 
 
 // trial
@@ -165,7 +165,7 @@ Chanter::cast('test', function() {
 
   // restore
   todo_save($backup ? json_decode(json_encode($backup), true) : []);
-  if (is_dir(AETHER_REPO . '/dist')) Forger::clean(AETHER_REPO . '/dist', true);
+  // the report stays in .proof/dist as the proof of this run
   trial_report();
 }, 'Run the trial of this scenario.');
 

@@ -10,7 +10,7 @@
  *   php cast coverage                 per rune
  *   php cast coverage --rune=Keeper   one rune, with the missing nodes
  *   php cast coverage --missing       every missing node
- *   php cast trials                   run the trial of every scenario
+ *   (every trial: `php cast scenario` at the root of rune-dev)
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -99,27 +99,8 @@ Chanter::cast('coverage --rune --missing', function() {
   Whisper::echo("{{nl}}{{color-info}}Total {$total[0]}/{$total[1]} nodes ($percent%){{color-end}}{{nl}}");
 }, 'Show which Phantasm nodes the scenarios use. --rune=<Rune> --missing');
 
+// every trial: `php cast scenario` at the root of rune-dev
 
-Chanter::cast('trials', function() {
-  Whisper::echo("{{nl}}{{color-info}}S C E N A R I O   T R I A L S{{color-end}}{{nl}}{{nl}}");
-  $all = [0, 0];
-  foreach (Forger::scan(dirname(__DIR__)) as $item) {
-    $dir = $item['target'];
-    if (!is_dir($dir) || basename($dir) === 'coverage' || !is_file($dir . '/cast')) continue;
-
-    $out = preg_replace('/\x1b\[[0-9;]*[A-Za-z]/', '', (string) shell_exec('cd ' . escapeshellarg($dir) . ' && ' . escapeshellarg(PHP_BINARY) . ' cast test 2>&1'));
-    if (preg_match('/TRIAL PASSED (\d+)\/(\d+)/', $out, $m)) {
-      $all[0] += $m[1]; $all[1] += $m[2];
-      Whisper::echo("{{color-success}} ✓ {{color-end}}" . str_pad(basename($dir), 30) . " {$m[1]}/{$m[2]}{{nl}}");
-    } elseif (preg_match('/TRIAL FAILED (\d+)\/(\d+): (.*)/', $out, $m)) {
-      $all[0] += $m[2] - $m[1]; $all[1] += $m[2];
-      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 30) . " " . ($m[2] - $m[1]) . "/{$m[2]}  {{color-secondary}}failed: {$m[3]}{{nl}}");
-    } else {
-      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad(basename($dir), 30) . " no trial result{{nl}}");
-    }
-  }
-  Whisper::echo("{{nl}}{{color-info}}Total {$all[0]}/{$all[1]} checks passed{{color-end}}{{nl}}");
-}, 'Run the trial of every scenario.');
 
 
 #sentinel-codex

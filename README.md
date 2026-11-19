@@ -21,7 +21,8 @@ your-folder/
 ├── rune/          clone of devneet-id/rune (the code under test)
 └── rune-dev/      this repo
     ├── composer.json   maps Rune\ → ../rune/
-    ├── scenario/       runites per scenario + their trials (the safety net)
+    ├── cast            the workshop runite: `php cast scenario` runs every trial
+    ├── scenario/       runites per scenario + their trials (the safety net); proof in <name>/.proof/
     └── exploration/    the beyond: evolution, federation, liberation
 ```
 
@@ -51,15 +52,15 @@ Run `composer dump-autoload` again only when `composer.json` changes.
 3. **rune** — raise the Phantasm version of every rune that changed (`php evolute sentinel --phantasm-repair=<Rune>` or `--phantasm-upgrade=<Rune>` from `exploration/`).
 4. **rune-dev** — run **every** trial until green, then check coverage:
    ```bash
-   cd scenario/coverage
-   php cast trials
-   php cast coverage
+   php cast scenario            # each scenario in a new terminal; --here for this terminal
+   cd scenario/coverage && php cast coverage
    ```
+   Each scenario leaves its proof in `scenario/<name>/.proof/` (report + what it made).
 5. **lore** — update the reference, [Known Issues](https://github.com/devneet-id/lore/blob/main/realms/rune/lore/acts/4-the-beyond/known-issues.md) and [Versioning](https://github.com/devneet-id/lore/blob/main/realms/rune/lore/acts/4-the-beyond/versioning.md), then add a [chronicle](https://github.com/devneet-id/lore/tree/main/chronicle) entry.
 
 ## Rules of the bench
 
 - Trials back up and restore the data they touch; a glitch fails one check instead of ending the run.
 - Every runite without `.php` starts with `#!/usr/bin/env php` on line 1 and `<?php` on line 2.
-- `.echoes/` is runtime memory and is never committed (see `.gitignore`).
+- `.echoes/` (runtime memory) and `.proof/` (the proof of the last trial) are never committed (see `.gitignore`).
 - Mode folders created by `exploration/` (`@evolution/`, `@federation/`, `@liberation/`, `relics/`) stay out of git.

@@ -7,14 +7,39 @@
  *   trial('label', $condition)          -> records a pass or a fail
  *   trial_capture(fn() => ...)           -> runs a callable and returns its Whisper output as plain text
  *   trial_cast('greet --name=Anwar')     -> casts a registered cast and returns its plain output
- *   trial_report()                       -> prints the summary
+ *   trial_report()                       -> prints the summary and writes the proof
+ *   trial_proof('dist')                  -> a path inside .proof/ (git-ignored): what the scenario made
+ *
+ * PROOF
+ *   Every scenario keeps what it made in .proof/ next to its runite (git-ignored):
+ *   report.txt (every check), report.json (the result, read by `php cast scenario` at the root),
+ *   and its own artifacts (a Crafter bundle, a report...).
  */
 
-$GLOBALS['TRIAL'] = ['pass' => 0, 'fail' => 0, 'failed' => []];
+$GLOBALS['TRIAL'] = ['pass' => 0, 'fail' => 0, 'failed' => [], 'lines' => []];
+
+// .proof/ next to the runite (AETHER_REPO), created on demand
+function trial_proof( String $path = '' ) {
+  $proof = AETHER_REPO . '/.proof';
+  if (!is_dir($proof)) {
+    mkdir($proof, 0777, true);
+  }
+  return $path === '' ? $proof : $proof . '/' . ltrim($path, '/');
+}
+
+// empties a folder inside .proof/ before a scenario writes it again
+function trial_proof_clean( String $path ) {
+  $target = trial_proof($path);
+  if (is_dir($target)) {
+    \Rune\Forger\Manifest::clean($target, true);
+  }
+  return $target;
+}
 
 function trial( String $label, $condition ) {
   global $TRIAL;
 
+  $TRIAL['lines'][] = ($condition ? ' ✓ ' : ' ✗ ') . $label;
   if ($condition) {
     $TRIAL['pass']++;
     whisper_echo("{{color-success}} ✓ {{color-end}}$label{{nl}}");
@@ -74,6 +99,7 @@ function trial_cast( String $arg ) {
 }
 
 function trial_section( String $title ) {
+  $GLOBALS['TRIAL']['lines'][] = PHP_EOL . "# $title";
   whisper_echo("{{nl}}{{color-info}}# $title{{color-end}}{{nl}}");
 }
 
@@ -86,5 +112,23 @@ function trial_report() {
   } else {
     whisper_echo("{{nl}}{{color-danger}}{{icon-warning}} TRIAL FAILED {$TRIAL['fail']}/$total: " . implode(', ', $TRIAL['failed']) . "{{color-end}}{{nl}}");
   }
+  trial_proof_write($total);
   return $TRIAL['fail'] === 0;
+}
+
+// the proof of this run: every check (report.txt) and the result (report.json)
+function trial_proof_write( Int $total ) {
+  global $TRIAL;
+
+  $summary = $TRIAL['fail'] === 0 ? "TRIAL PASSED {$TRIAL['pass']}/$total" : "TRIAL FAILED {$TRIAL['fail']}/$total";
+  file_put_contents(trial_proof('report.txt'), trim(implode(PHP_EOL, $TRIAL['lines'])) . PHP_EOL . PHP_EOL . $summary . PHP_EOL);
+  file_put_contents(trial_proof('report.json'), json_encode([
+    'scenario' => basename(AETHER_REPO),
+    'passed' => $TRIAL['pass'],
+    'total' => $total,
+    'failed' => $TRIAL['failed'],
+    'rune' => aether_version(),
+    'php' => PHP_VERSION,
+    'time' => date('c'),
+  ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL);
 }

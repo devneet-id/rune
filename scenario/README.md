@@ -2,7 +2,7 @@
 
 Runites that use Rune the way a user would, from easy to complex. Every scenario has its own `test` cast (the **trial**), and together they aim to touch every Phantasm node of the origin runes.
 
-Rune comes from the local `../rune` (through `rune-dev/vendor`). Run each command **inside the scenario folder**. Every runite starts with the `#!/usr/bin/env php` shebang (format rule for `cast` files without `.php`).
+Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario's own casts **inside its folder**; run them all with `php cast scenario` at the root of rune-dev. Every runite starts with the `#!/usr/bin/env php` shebang (format rule for `cast` files without `.php`).
 
 | Scenario | What it is | Runes |
 |---|---|---|
@@ -16,22 +16,39 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run each comman
 | `bundle-a-site` | Crafter bundles a folder (html, head, css, js, php, an image, a subfolder) with three recipes while Keeper is awake: only the seed's `LANGUAGE` is read, Forger keeps no shard: every build runs `spark()` then the cast `store`, where the user sets `Keeper::shard()`, `Forger::scan` targets use `/` | Crafter, Forger, Keeper |
 | `craft-single-files-minified` | Crafter builds **one file of one language** from a folder of every language — a stylesheet (like exuracss), a script (like exurajs), a php library — with and without `MINIFIED`; the php library is linted and required | Crafter, Weaver, Forger |
 | `craft-web-page-by-type` | Crafter bundles **one web page** (head, html, css, js, php) into one php file with each `TYPE` — `plain` (readable), `function` and `class` (sealed in base64, named by the app hash) — then serves it; two sealed bundles side by side, minified inside a sealed page, `ENCRYPTION`, a TYPE without a template | Crafter, Weaver, Forger, Cipher |
-| `coverage` | node coverage of all scenarios + runs every trial | Forger, Weaver |
+| `coverage` | node coverage of all scenarios (a tool, not a scenario) | Forger, Weaver |
 
 ## Run
 ```bash
+# every scenario, one by one (from the root of rune-dev)
+php cast scenario                     # each in a new terminal (Specter), then read its proof
+php cast scenario --here              # all in this terminal (headless, agents)
+php cast scenario --only=keep-notes   # one scenario
+
+# one scenario by hand
 cd scenario/greet-and-show-flow
 php cast                 # main screen with every cast
 php cast greet --name=Anwar --loud
 php cast test            # trial of this scenario
 
-cd ../coverage
-php cast trials          # every trial at once
+# coverage
+cd scenario/coverage
 php cast coverage        # Phantasm nodes used by the scenarios
 php cast coverage --rune=Keeper
 ```
 
 Trials back up and restore their own data (notes, vault, todos, `box/`), so your data stays.
+
+## Proof — `.proof/`
+Every scenario keeps the proof of its last trial in `scenario/<name>/.proof/` (git-ignored, like `.echoes/`):
+
+| File | What |
+|---|---|
+| `report.txt` | every check of the last `php cast test` and the summary |
+| `report.json` | the result — `scenario`, `passed`, `total`, `failed`, `rune`, `php`, `time` — read by `php cast scenario` |
+| `dist/` … | what the scenario made: Crafter bundles (`bundle-a-site`, `craft-*`), the todo report |
+
+A scenario that makes files writes them with `trial_proof('dist/…')` and empties them with `trial_proof_clean('dist')` at the start of its trial; they stay after the run so they can be opened.
 
 ## Trial helper — `trial.php`
 | Function | Use |
@@ -40,7 +57,8 @@ Trials back up and restore their own data (notes, vault, todos, `box/`), so your
 | `trial_cast('greet --name=Anwar')` | run a cast, get its plain output (spaces as `%20`) |
 | `trial_capture(fn() => ...)` | run a callable, get its plain Whisper output |
 | `trial_safe(fn() => ...)` | true when it ran without a glitch |
-| `trial_section('Title')` / `trial_report()` | headings and the summary |
+| `trial_section('Title')` / `trial_report()` | headings and the summary; `trial_report()` also writes `.proof/report.*` |
+| `trial_proof('dist/x')` / `trial_proof_clean('dist')` | a path inside `.proof/` / empty a folder there |
 
 A glitch (exception or PHP warning) fails one check instead of ending the run.
 
