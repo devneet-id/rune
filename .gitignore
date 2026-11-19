@@ -1,5 +1,6 @@
 vendor/
 .echoes/
+.proof/
 
 exploration/@evolution/
 exploration/@federation/

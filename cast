@@ -1,0 +1,127 @@
+#!/usr/bin/env php
+<?php
+/*
+ * RUNE DEV — THE WORKSHOP
+ * The main runite of rune-dev.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Specter.
+ *
+ *   php cast scenario                     every scenario, one by one, each in a new terminal (Specter)
+ *   php cast scenario --here              every scenario in this terminal (no window: headless, agents)
+ *   php cast scenario --only=keep-notes   one scenario
+ *   php cast scenario --timeout=180       seconds to wait for one scenario (default 120)
+ *
+ * Each scenario writes its proof in scenario/<name>/.proof/ (git-ignored):
+ * report.txt, report.json and what it made. This cast reads report.json.
+ */
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Specter\Manifest as Specter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Specter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+// every folder of scenario/ with a cast is a scenario (coverage is a tool, not a scenario)
+function workshop_scenarios( String $only = '' ) {
+  $scenarios = [];
+  foreach (glob(AETHER_REPO . '/scenario/*/cast') as $cast) {
+    $name = basename(dirname($cast));
+    if ($name === 'coverage' || ($only !== '' && $name !== $only)) {
+      continue;
+    }
+    $scenarios[$name] = dirname($cast);
+  }
+  ksort($scenarios);
+  return $scenarios;
+}
+
+// the command that runs the trial of one scenario from inside its folder
+function workshop_command( String $folder ) {
+  if (PHP_OS_FAMILY === 'Windows') {
+    $folder = str_contains($folder, ' ') ? '"' . $folder . '"' : $folder;
+    $php = str_contains(PHP_BINARY, ' ') ? '"' . PHP_BINARY . '"' : PHP_BINARY;
+    return "cd /d $folder && $php cast test";
+  }
+  return 'cd ' . escapeshellarg($folder) . ' && ' . escapeshellarg(PHP_BINARY) . ' cast test';
+}
+
+// waits for the proof of one scenario (a new window returns at once; its report comes later)
+function workshop_wait( String $report, Int $timeout, String $name ) {
+  $deadline = time() + $timeout;
+  Specter::seer(function($frame) use ($report, $deadline, $name) {
+    print("\r  $frame $name ");
+    return is_file($report) || time() >= $deadline;
+  });
+  print("\r" . str_repeat(' ', strlen($name) + 6) . "\r");
+  return is_file($report) ? json_decode((string) file_get_contents($report), true) : null;
+}
+
+Chanter::cast('scenario --here --only --timeout', function() {
+  $here = (bool) Chanter::spell('here');
+  $only = (string) (Chanter::spell('only') ?: '');
+  $timeout = (int) (Chanter::spell('timeout') ?: 120);
+  $scenarios = workshop_scenarios($only);
+
+  Whisper::echo("{{nl}}{{color-info}}S C E N A R I O{{color-end}}  {{color-secondary}}" . count($scenarios) . " runites, " . ($here ? 'in this terminal' : 'each in a new terminal') . "{{color-end}}{{nl}}{{nl}}");
+  if (!$scenarios) {
+    Whisper::echo("{{color-warning}}No scenario" . ($only ? " named '$only'" : '') . " in scenario/{{color-end}}{{nl}}");
+    return;
+  }
+
+  $all = [0, 0];
+  $width = max(array_map('strlen', array_keys($scenarios))) + 2;
+  foreach ($scenarios as $name => $folder) {
+    // a fresh report for this run
+    $report = $folder . '/.proof/report.json';
+    if (is_file($report)) {
+      unlink($report);
+    }
+
+    // one by one: Specter blocks until the cast returns (a new window may return earlier: we wait for the proof)
+    Specter::cast(workshop_command($folder) . ($here ? ' > ' . (PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null') . ' 2>&1' : ''), [
+      'blocking'=> true,
+      'visible'=> !$here,
+      'exit'=> true,
+      'title'=> "RUNE:: scenario $name",
+    ]);
+    $result = workshop_wait($report, $timeout, $name);
+
+    if (!$result) {
+      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad($name, $width) . "{{color-warning}}no proof after {$timeout}s{{color-end}}" . ($here ? '' : "  {{color-secondary}}(no terminal window opened? try --here){{color-end}}") . "{{nl}}");
+      continue;
+    }
+    $all[0] += $result['passed'];
+    $all[1] += $result['total'];
+    if (!$result['failed']) {
+      Whisper::echo("{{color-success}} ✓ {{color-end}}" . str_pad($name, $width) . "{$result['passed']}/{$result['total']}{{nl}}");
+    } else {
+      Whisper::echo("{{color-danger}} ✗ {{color-end}}" . str_pad($name, $width) . "{$result['passed']}/{$result['total']}  {{color-secondary}}failed: " . implode(', ', $result['failed']) . "{{color-end}}{{nl}}");
+    }
+  }
+
+  Whisper::echo("{{nl}}{{color-info}}Total {$all[0]}/{$all[1]} checks passed{{color-end}}  {{color-secondary}}proof: scenario/<name>/.proof/{{color-end}}{{nl}}");
+}, 'Run every scenario one by one (Specter) and read its proof. --here --only=<name> --timeout=<s>');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

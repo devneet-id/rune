@@ -6,7 +6,7 @@
  * The folder holds html, head, css, js, php, an image and a subfolder.
  * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Crafter.
  *
- *   php cast build --lang=full|web|css     spark, then cast store
+ *   php cast build --lang=full|web|css     spark into .proof/dist, then cast store
  *   php cast store                         the shards the relic carries (set by you)
  *   php cast test
  */
@@ -48,7 +48,7 @@ define('FORGE_LANGUAGES', [
 function forge_build( String $lang ) {
   [$languages, $type, $dist] = FORGE_LANGUAGES[$lang];
   Crafter::item("forge-$lang", function() use ($languages, $type, $dist) {
-    Crafter::seed('DIST', AETHER_REPO . '/' . $dist);
+    Crafter::seed('DIST', trial_proof($dist));
     Crafter::seed('TYPE', $type);
     Crafter::seed('LANGUAGE', $languages);
     Forger::scan('src/site', function($item) {
@@ -60,7 +60,7 @@ function forge_build( String $lang ) {
 
   // Forger keeps no shard on its own: after every spark, store says what travels with the relic
   Chanter::cast('store')();
-  return AETHER_REPO . '/' . $dist;
+  return trial_proof($dist);
 }
 
 function forge_shards() {
@@ -74,7 +74,7 @@ Chanter::cast('build --lang', function() {
   forge_build($lang);
 }, 'Bundle src/site with one recipe. --lang=full|web|css');
 
-// set by the user: the sources travel with the relic, the bundle in dist/ does not
+// set by the user: the sources travel with the relic, the bundle in .proof/dist/ does not
 Chanter::cast('store', function() {
   Keeper::shard(['src/site']);
   Whisper::echo("Stored src/site as shards{{nl}}");
@@ -82,6 +82,7 @@ Chanter::cast('store', function() {
 
 
 Chanter::cast('test', function() {
+  trial_proof_clean('dist');
   $backup = @file_get_contents(KEEPER_ECHOES_SHARD);
   file_put_contents(KEEPER_ECHOES_SHARD, '{}');
 
@@ -93,7 +94,7 @@ Chanter::cast('test', function() {
   trial('scan targets use /', !array_filter($targets, fn($target) => str_contains($target, '\\')));
 
   trial_section('Crafter reads only the LANGUAGE of the seed');
-  $full = AETHER_REPO . '/dist/full.php'; $web = AETHER_REPO . '/dist/web.html'; $css = AETHER_REPO . '/dist/style.css';
+  $full = trial_proof('dist/full.php'); $web = trial_proof('dist/web.html'); $css = trial_proof('dist/style.css');
   trial('full (html,css,js,php) builds with an image and a folder', trial_safe(function() { trial_capture(function() { forge_build('full'); }); }) && is_file($full));
   $source = (string) Forger::item($full);
   trial('full keeps html, head, css, js and php', str_contains($source, '<h1>Forge</h1>') && str_contains($source, '<title>Forge</title>') && str_contains($source, '#c0392b') && str_contains($source, '(bundled)') && str_contains($source, 'php-shard'));
@@ -109,16 +110,16 @@ Chanter::cast('test', function() {
 
   trial_section('Shards: only what store sets');
   file_put_contents(KEEPER_ECHOES_SHARD, '{}');
-  Forger::item(AETHER_REPO . '/dist/touched.txt', 'x');
+  Forger::item(trial_proof('dist/touched.txt'), 'x');
   trial('Forger::item adds no shard', forge_shards() === []);
   trial_capture(function() { forge_build('web'); });
   $targets = array_map(fn($shard) => $shard['target'], forge_shards());
   trial('build runs store after spark', in_array('src/site/index.html', $targets) && in_array('src/site/logo.jpg', $targets) && in_array('src/site/parts/note.txt', $targets));
-  trial('the bundle is not a shard', !array_filter($targets, fn($target) => str_starts_with($target, 'dist/')));
+  trial('the bundle is not a shard', !array_filter($targets, fn($target) => str_starts_with($target, '.proof/')));
   trial('store alone sets the same shards', (function() use ($targets) { file_put_contents(KEEPER_ECHOES_SHARD, '{}'); trial_cast('store'); return array_map(fn($shard) => $shard['target'], forge_shards()) == $targets; })());
 
   file_put_contents(KEEPER_ECHOES_SHARD, $backup !== false ? $backup : '{}');
-  Forger::clean(AETHER_REPO . '/dist', true);
+  // the bundles stay in .proof/dist as the proof of this run
   trial_report();
 }, 'Trial of this scenario.');
 

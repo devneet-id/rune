@@ -7,7 +7,7 @@
  * MINIFIED picks which languages are minified.
  * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Crafter.
  *
- *   php cast build --lang=css|js|php|html [--min]    write dist/<file>
+ *   php cast build --lang=css|js|php|html [--min]    write .proof/dist/<file>
  *   php cast test
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -41,10 +41,11 @@ define('CRAFT_SINGLE', [
   'php'=> 'dist/helpers.php',
   'html'=> 'dist/page.html',
 ]);
+// the files are written in .proof/ (git-ignored): they are the proof of this scenario
 
 // every file of src/ is a shard; LANGUAGE keeps one, MINIFIED (a list of languages) minifies
 function craft_single( String $lang, Array $minified = [] ) {
-  $dist = AETHER_REPO . '/' . CRAFT_SINGLE[$lang];
+  $dist = trial_proof(CRAFT_SINGLE[$lang]);
   Crafter::item("single-$lang", function() use ($lang, $minified, $dist) {
     Crafter::seed('DIST', $dist);
     Crafter::seed('TYPE', 'plain');
@@ -83,6 +84,7 @@ Chanter::cast('build --lang --min', function() {
 
 Chanter::cast('test', function() {
   $files = [];
+  trial_proof_clean('dist');
 
   trial_section('One language, one file (plain)');
   $said = '';
@@ -129,9 +131,9 @@ Chanter::cast('test', function() {
 
   trial_section('html alone');
   // Crafter/weaver/plain--html.txt exists, but CRAFTER_WEAVER has no ['html'] entry (devneet-id/rune#34)
-  trial('html alone builds (plain--html.txt is there)', trial_safe(function() { trial_capture(function() { craft_single('html'); }); }) && str_contains((string) @file_get_contents(AETHER_REPO . '/dist/page.html'), 'Single page'));
+  trial('html alone builds (plain--html.txt is there)', trial_safe(function() { trial_capture(function() { craft_single('html'); }); }) && str_contains((string) @file_get_contents(trial_proof('dist/page.html')), 'Single page'));
 
-  Forger::clean(AETHER_REPO . '/dist', true);
+  // the files stay in .proof/dist as the proof of this run
   trial_report();
 }, 'Trial of this scenario.');
 
