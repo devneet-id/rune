@@ -131,7 +131,8 @@ function specter_cast_set( string $arg, array $options = [] ) {
       if ($opt['visible']) {
         shell_exec("gnome-terminal --title=\"{$opt['title']}\" -- bash -c \"$cmd\" > /dev/null 2>&1 &");
       } else {
-        shell_exec("$cmd > /dev/null 2>&1 &");
+        // the whole command goes to the background (`a; exit &` would only background `exit`)
+        shell_exec('nohup sh -c ' . escapeshellarg($cmd) . ' > /dev/null 2>&1 &');
       }
     }
   }

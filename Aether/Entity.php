@@ -39,8 +39,8 @@ function aether_zero_trust( Mixed $state = '' ) {
   }
   return $AETHER_ZERO_TRUST;
 }
-#NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper)
-function aether_exit( $force = false ) {
+#NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper); $code is the exit code for the shell (0 = success)
+function aether_exit( $force = false, Int $code = 0 ) {
   $memory = aether_memoryusage();
   $stopwatch = aether_stopwatch();
   
@@ -72,7 +72,7 @@ function aether_exit( $force = false ) {
 
   if ($force) {
     aether_arcane_reset();
-    exit; die;
+    exit($code);
   }
 }
 
