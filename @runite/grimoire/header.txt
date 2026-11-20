@@ -4,7 +4,7 @@
 ██ █▀▀██ ▀▀▄██ ███ █ █ ██ ███ ██ ███ ▀▀▄██ ▄▄▄██
 ██ ▀▀▄██ ██ █▀ ▀██ ███ ██ ▀▀▀ █▀ ▀██ ██ ██ ▀▀▀██
 ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-{{bg-info}} Carefull use rune BETA/DEPRECATED. {{bg-end}}
+{{bg-info}} Careful: a rune marked VOID or BETA is not finished. {{bg-end}}
 {{text-secondary}}
 Grimoire is your gateway to understanding
 system structure and flow. It lets you read

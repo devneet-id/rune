@@ -54,7 +54,7 @@ class Ethereal {
     define('EVOLUTION', self::$origin);
   }
 
-  #NOTE: Liberation mode: runtimes kept in @liberation/, first of all PHP (The Liberation of Forte).
+  #NOTE: Liberation mode: portable runtimes kept in @liberation/ — PHP, Node, Python… (The Liberation of Forte).
   public static function liberation() {
     if (defined('LIBERATION')) {
       return;

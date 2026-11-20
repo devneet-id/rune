@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.6';
+  public $version = '1.7';
   
   public $main = 'Cipher';
 
@@ -20,7 +20,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Keeps secrets and identities of the system—unique ids, fast hashes, base64 and runic cipher that turns text into runes and back, used to seal artefacts.';
 
   public $link = [
-    ['Aether', 'entity', '1.18'],
+    ['Aether', 'entity', '1.21'],
   ];
 
   public $node = [
@@ -78,11 +78,6 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'entity',
       'call' => 'cipher_runic_decode( String $text, String $variant = "default")',
       'note' => 'Decodes runic characters back into plain text by flipping the selected variant mapping from CIPHER_RUNIC.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => 'Post-initialization hook after parent::arise(), for child setup.',
     ],
     [
       'type' => 'manifest',

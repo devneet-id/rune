@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '0.3';
+  public $version = '0.4';
   
   public $main = 'Minister';
 
@@ -19,12 +19,12 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Speaks with a familiar (an AI spirit) on behalf of the runite—asks questions, gathers the answers, and brings them back into the flow.';
 
-  public $mark = 'DEVELOPMENT';
+  public $mark = 'VOID';
 
   public $link = [
-    ['Aether', 'entity', '1.18'],
-    ['Keeper', 'ether:entity', '1.13'],
-    ['Whisper', 'entity', '1.13'],
+    ['Aether', 'entity', '1.21'],
+    ['Keeper', 'ether:entity', '1.17'],
+    ['Whisper', 'entity', '1.14'],
   ];
 
   public $node = [

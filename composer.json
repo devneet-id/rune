@@ -19,8 +19,8 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/devneet/rune/issues",
-    "source": "https://github.com/devneet/rune"
+    "issues": "https://github.com/devneet-id/rune/issues",
+    "source": "https://github.com/devneet-id/rune"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
