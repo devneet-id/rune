@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
   
-  public $version = '1.8';
+  public $version = '1.9';
 
   public $main = 'Weaver';
 
@@ -15,7 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for advanced string manipulation, data binding, and template weaving—transforming raw data into structured text with flexible, context-aware logic.';
 
   public $link = [
-    ['Aether', 'entity', '1.18'],
+    ['Aether', 'entity', '1.20'],
   ];
 
   public $node = [
@@ -121,8 +121,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'weaver_min_php($input)',
-      'note' => 'Minify PHP code by trimming extra whitespace and cleaning up the syntax',
+      'call' => 'weaver_min_php( $input )',
+      'note' => 'Minify PHP code with the PHP tokenizer: comments and extra whitespace go, strings (also heredoc/nowdoc) stay byte for byte',
     ],
     [
       'type' => 'manifest',

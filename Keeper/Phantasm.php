@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.14';
+  public $version = '1.15';
   
   public $main = 'Keeper';
 
@@ -20,10 +20,10 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
   public $link = [
-    ['Aether', 'ether', '1.18'],
-    ['Chanter', 'entity', '1.14'],
+    ['Aether', 'ether', '1.20'],
+    ['Chanter', 'entity', '1.16'],
     ['Cipher', 'entity', '1.6'],
-    ['Forger', 'entity', '1.14'],
+    ['Forger', 'entity', '1.16'],
     ['Specter', 'entity', '1.9'],
     ['Whisper', 'entity', '1.13'],
   ];
