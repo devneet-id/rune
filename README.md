@@ -36,14 +36,20 @@ For the advanced modes, which unlock folders next to the runite and do not fit a
 
 ## Setup
 
+`rune/` and `rune-dev/` sit side by side. rune-dev takes Rune from the folder next to it — **never from Packagist** — so every trial tests the code you are changing.
+
 ```bash
 git clone https://github.com/devneet-id/rune
 git clone https://github.com/devneet-id/rune-dev
 cd rune-dev
-composer install
+composer dump-autoload
+php cast scenario --here
 ```
 
-Run `composer dump-autoload` again only when `composer.json` changes.
+- **Use `composer dump-autoload`, not `composer install` or `composer update`.** It only writes `vendor/autoload.php`, mapping `Rune\` to `../rune/` (see `composer.json`). There is nothing to download.
+- `composer.json` has **no `require`** and the repo has **no `composer.lock`** on purpose. A `require "devneet/rune"` would install the Packagist release into `vendor/` as a second source for `Rune\`: a class missing from `../rune` would then load silently from the old release, and a trial could pass on code you are not testing.
+- Run `composer dump-autoload` again only when `composer.json` changes. If `php cast` fails after a pull, delete `vendor/` and run it again.
+- To test **the released package** (what users get), use another folder with its own `composer.json` and `composer require devneet/rune` — see [The Workshop](https://github.com/devneet-id/lore/blob/main/realms/rune/lore/acts/4-the-beyond/the-workshop.md).
 
 ## The cycle of a change
 
