@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.20';
+  public $version = '1.21';
   
   public $main = 'Aether';
 
@@ -20,7 +20,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
   public $link = [
-    ['Chanter', 'entity', '1.15'],
+    ['Chanter', 'entity', '1.16'],
     ['Whisper', 'entity', '1.13'],
   ];
 
@@ -182,8 +182,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'aether_exit( $force = false )',
-      'note' => 'Exit the program with execution time and memory usage summary (supports pretty output with whisper)',
+      'call' => 'aether_exit( $force = false, Int $code = 0 )',
+      'note' => 'Exit the program with execution time and memory usage summary (supports pretty output with whisper); $code is the exit code for the shell (0 = success)',
     ],
     [
       'type' => 'entity',

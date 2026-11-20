@@ -295,11 +295,16 @@ function keeper_glitch_boot() {
       specter_exit('php '.chanter_arg());
     }
 
-    aether_exit(true);
+    // a glitch tells the shell it failed
+    aether_exit(true, 1);
   };
 
   // Tangkap error
   set_error_handler(function($errno, $errstr, $errfile, $errline) use ($handler) {
+    // silenced with @ (or left out of error_reporting()): not a glitch, PHP goes on
+    if (!(error_reporting() & $errno)) {
+      return false;
+    }
     $handler('error', $errstr, $errfile, $errline, debug_backtrace());
     return true;
   });
