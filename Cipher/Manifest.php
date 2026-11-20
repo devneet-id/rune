@@ -11,9 +11,6 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  #NOTE: Post-initialization hook after parent::arise(), for child setup.
-  public static function _arise() {}
-
   #NOTE: Generates unique cipher ID with optional prefix and entropy.
   public static function id( String $prefix = '', $entropy = false ) {
     $return = cipher_id($prefix, $entropy);

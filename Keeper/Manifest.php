@@ -11,7 +11,7 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  #NOTE: Special hook for aether-based awakening phase, executed at the start of the crafter process.
+  #NOTE: Begins Keeper: makes the .echoes folder of the runite (arcane, shards) and starts the glitch handler.
   public static function begin( $flags = 0 ) {
     forger_fix([
       [
@@ -39,7 +39,7 @@ class Manifest extends \Rune\Manifest {
     keeper_glitch_boot();
   }
   
-  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
+  #NOTE: Ends Keeper: writes the arcane of this flow into .echoes.
   public static function end() {
     aether_arcane('Keeper.manifest.end');
 

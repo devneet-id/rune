@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.10';
+  public $version = '1.11';
   
   public $main = 'Specter';
 
@@ -22,9 +22,9 @@ class Phantasm extends \Rune\Phantasm {
   public $link = [
     ['Keeper', 'ether', '1.16'],
     ['Aether', 'ether', '1.21'],
-    ['Weaver', 'entity', '1.9'],
-    ['Forger', 'entity', '1.16'],
-    ['Whisper', 'entity', '1.13'],
+    ['Weaver', 'entity', '1.10'],
+    ['Forger', 'entity', '1.17'],
+    ['Whisper', 'entity', '1.14'],
   ];
 
   public $node = [
@@ -135,18 +135,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => 'Optional lifecycle method for internal post-arise logic.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_end()',
-      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
-    ],
-    [
-      'type' => 'manifest',
       'call' => 'end()',
-      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
+      'note' => 'Ends Specter"s part of the flow (nothing to close yet).',
     ],
     [
       'type' => 'manifest',

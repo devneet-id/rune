@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.16';
+  public $version = '1.17';
   
   public $main = 'Forger';
 
@@ -20,7 +20,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for structured file and directory operations such as tracing, scanning, fixing, moving, and cloning. Enables content analysis and automated organization through dynamic, logic-driven routines.';
 
   public $link = [
-    ['Aether', 'entity', '1.19'],
+    ['Aether', 'entity', '1.21'],
   ];
 
   public $node = [
@@ -101,18 +101,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => 'Optional lifecycle method for internal post-arise logic.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_end()',
-      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
-    ],
-    [
-      'type' => 'manifest',
       'call' => 'end()',
-      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
+      'note' => 'Ends Forger"s part of the flow (nothing to close yet).',
     ],
     [
       'type' => 'manifest',

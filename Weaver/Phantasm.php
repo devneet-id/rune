@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
   
-  public $version = '1.9';
+  public $version = '1.10';
 
   public $main = 'Weaver';
 
@@ -15,7 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Built for advanced string manipulation, data binding, and template weaving—transforming raw data into structured text with flexible, context-aware logic.';
 
   public $link = [
-    ['Aether', 'entity', '1.20'],
+    ['Aether', 'entity', '1.21'],
   ];
 
   public $node = [
@@ -126,18 +126,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => 'Optional lifecycle method for internal post-arise logic.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_end()',
-      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
-    ],
-    [
-      'type' => 'manifest',
       'call' => 'end()',
-      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
+      'note' => 'Ends Weaver"s part of the flow (nothing to close yet).',
     ],
     [
       'type' => 'manifest',

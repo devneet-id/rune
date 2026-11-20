@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.16';
+  public $version = '1.17';
   
   public $main = 'Keeper';
 
@@ -22,10 +22,10 @@ class Phantasm extends \Rune\Phantasm {
   public $link = [
     ['Aether', 'ether', '1.21'],
     ['Chanter', 'entity', '1.16'],
-    ['Cipher', 'entity', '1.6'],
-    ['Forger', 'entity', '1.16'],
-    ['Specter', 'entity', '1.9'],
-    ['Whisper', 'entity', '1.13'],
+    ['Cipher', 'entity', '1.7'],
+    ['Forger', 'entity', '1.17'],
+    ['Specter', 'entity', '1.11'],
+    ['Whisper', 'entity', '1.14'],
   ];
 
   public $node = [
@@ -187,12 +187,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'begin( $flags = 0 )',
-      'note' => 'Special hook for aether-based awakening phase, executed at the start of the crafter process.',
+      'note' => 'Begins Keeper: makes the .echoes folder of the runite (arcane, shards) and starts the glitch handler.',
     ],
     [
       'type' => 'manifest',
       'call' => 'end()',
-      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
+      'note' => 'Ends Keeper: writes the arcane of this flow into .echoes.',
     ],
     [
       'type' => 'manifest',

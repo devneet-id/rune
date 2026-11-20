@@ -283,6 +283,11 @@ Chanter::cast(
           $arise = 'all';
         }
 
+        // only remove runes that exist (origin runes, plus @evolution/ runes in evolution mode)
+        if (!in_array($manifest, aether_list_runes())) {
+          return false;
+        }
+
         $rune = Forger::item(AETHER_REPO . '/' . basename(AETHER_FILE));
         $eol = (strpos($rune, "\r\n") !== false) ? "\r\n" : "\n"; // keep the runite's own line ending
         $prefix_manifest = '#sentinel-manifest';
@@ -298,6 +303,11 @@ Chanter::cast(
         $pattern = '/' . preg_quote($manifest) . '::(?:ether\(\)::|essence\(\)::|entity\(\)::)*(ether|essence|entity)\(\);/';
         preg_match($pattern, $rune, $matches);
         $chain_line = $matches[0] ?? null;
+
+        // a rune that is not in the runite cannot be removed from it
+        if (!$chain_line && strpos($rune, $codex_manifest) === false) {
+          return false;
+        }
 
         if ($arise === 'all') {
           if ($chain_line) {
@@ -344,7 +354,8 @@ Chanter::cast(
         if ($processing_revoke($input)) {
           Whisper::echo("{{color-success}}{{icon-success}} Removed '$input' from " . AETHER_FILE . " {{nl}}");
         }else {
-          Whisper::echo("{{color-danger}}{{icon-warning}} Failed to remove '$input' {{nl}}");
+          Whisper::echo("{{color-danger}}{{icon-warning}} Failed to remove '$input': not a rune, or not in " . AETHER_FILE . " {{nl}}");
+          Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Available rune: " . implode(', ', aether_list_runes()) . "{{nl}}");
         }
       }
     }
