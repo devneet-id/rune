@@ -1,0 +1,75 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — KEEP THE CONTRACT
+ * Reads the origin runes as files and Phantasms and checks the Laws that tools and readers rely on:
+ * marks are VOID, BETA or EXIST; no legacy hooks are left in a Manifest; the texts a user meets
+ * say what Rune is today. It changes nothing.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger.
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// a file of the rune package (AETHER_RUNE_LOCATION is the folder of the origin runes)
+function contract_file( String $path ) {
+  return (string) @file_get_contents(AETHER_RUNE_LOCATION . '/' . $path);
+}
+
+Chanter::cast('test', function() {
+  trial_section('Marks (Law 11)');
+  $wrong = [];
+  foreach (AETHER_RUNES as $rune) {
+    $phantasm = 'Rune\\' . $rune . '\\Phantasm';
+    $mark = (new $phantasm())->mark;
+    if (!in_array($mark, ['VOID', 'BETA', 'EXIST'])) {
+      $wrong[] = "$rune=$mark";
+    }
+  }
+  trial('every origin rune is marked VOID, BETA or EXIST' . ($wrong ? ' (' . implode(', ', $wrong) . ')' : ''), !$wrong);
+
+  trial_section('No legacy hooks (devneet-id/rune#28)');
+  $legacy = [];
+  foreach (AETHER_RUNES as $rune) {
+    if (preg_match('/function\s+(_arise|_aether_end)\s*\(/', contract_file("$rune/Manifest.php"), $m)) {
+      $legacy[] = "$rune::$m[1]";
+    }
+  }
+  trial('no Manifest keeps _arise() or _aether_end()' . ($legacy ? ' (' . implode(', ', $legacy) . ')' : ''), !$legacy);
+
+  trial_section('The texts a user meets');
+  $header = contract_file('@runite/grimoire/header.txt');
+  trial('the Grimoire header names no DEPRECATED mark', $header !== '' && !str_contains($header, 'DEPRECATED'));
+  $composer = json_decode(contract_file('composer.json'), true);
+  $support = implode(' ', (array) ($composer['support'] ?? []));
+  trial('composer.json points support to devneet-id/rune', str_contains($support, 'github.com/devneet-id/rune') && !str_contains($support, 'github.com/devneet/rune'));
+  // Liberation keeps portable runtimes of any kind, PHP is only the first (devneet-id/rune#41)
+  $greeting = contract_file('@runite/sentinel/liberation.md');
+  trial('the Liberation greeting speaks of portable runtimes, not PHP alone', str_contains(strtolower($greeting), 'portable') && !str_contains($greeting, 'first of all PHP'));
+  trial('Ethereal::liberation() says the same in its #NOTE', !str_contains(contract_file('Ethereal.php'), 'first of all PHP'));
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();
