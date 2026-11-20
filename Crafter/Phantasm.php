@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.15';
+  public $version = '1.16';
   
   public $main = 'Crafter';
 
@@ -20,10 +20,10 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Focused on dynamic creation and composition—designed to build, shape, and assemble various data structures or logic units through modular, seed-based, and spark-driven processes.';
 
   public $link = [
-    ['Aether', 'ether', '1.19'],
+    ['Aether', 'ether', '1.20'],
     ['Cipher', 'entity', '1.6'],
     ['Forger', 'entity', '1.16'],
-    ['Weaver', 'entity', '1.7'],
+    ['Weaver', 'entity', '1.9'],
     ['Whisper', 'entity', '1.13'],
   ];
 
@@ -177,6 +177,11 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'entity',
       'call' => 'crafter_spark_cleaning()',
       'note' => 'Clean each cluster by removing unwanted patterns using language-specific cleaning rules.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'crafter_spark_encoding( String $encryption )',
+      'note' => 'The encoder of a sealed bundle (TYPE function/class): base64, or gzip kept as base64 text so it fits a quoted PHP string.',
     ],
     [
       'type' => 'entity',

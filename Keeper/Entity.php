@@ -143,7 +143,8 @@ function keeper_shard_set( String $source_path ) {
     $absolute = realpath($source_path);
     $repo = AETHER_REPO . DIRECTORY_SEPARATOR;
     if ($absolute && is_file($absolute) && str_starts_with($absolute, $repo)) {
-      $relative = substr($absolute, strlen($repo));
+      // stored with / on every OS, so a relic sealed on Windows opens on Linux
+      $relative = str_replace('\\', '/', substr($absolute, strlen($repo)));
       $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true) ?: [];
       $source = forger_info($absolute);
       $source->target = $relative;
@@ -167,9 +168,9 @@ function keeper_shard_set_all( Array $file_maps ) {
       if ($row['ready'] == true) {
         if (!str_contains($row['target'], '.echoes')) {
           $file = forger_info($row['target']);
-          // stored relative to the runite folder, so the artefact opens anywhere
+          // stored relative to the runite folder with / on every OS, so the relic opens anywhere
           if (str_starts_with($file->target, $repo)) {
-            $file->target = substr($file->target, strlen($repo));
+            $file->target = str_replace('\\', '/', substr($file->target, strlen($repo)));
             $file->path = dirname($file->target);
           }
           $shard[cipher_hash($file->target)] = $file;

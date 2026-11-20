@@ -178,7 +178,8 @@ function reliquary_relic_deploy( Object $relic ) {
   foreach (($relic->SHARDS ?? []) as $shard) {
     $target = (string) $shard['info']['target'];
     if (!preg_match('#^([A-Za-z]:[\\\\/]|/)#', $target)) {
-      $target = AETHER_REPO . DIRECTORY_SEPARATOR . $target;
+      // an older relic sealed on Windows may carry `\` (src/site\index.html): read it as `/`
+      $target = AETHER_REPO . DIRECTORY_SEPARATOR . str_replace('\\', '/', $target);
     }
     // only the folders: a shard without extension (e.g. `cast`) is still a file
     Forger::fix([['type'=> 'repo', 'target'=> dirname($target)]]);

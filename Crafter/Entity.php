@@ -147,26 +147,30 @@ function crafter_spark(String $name, ?Callable $injection = NULL) {
     crafter_item_get($name);
   }
 
-  // Core crafting steps
-  crafter_spark_clustering();
-  crafter_spark_cleaning();
-  crafter_spark_bundling();
-  
-  // Optional user-defined injection
-  if (!empty($injection)) {
-    $injection();
-  }
+  // the state is reset whether the spark succeeds or fails, so a failed build never leaks into the next one
+  try {
+    // Core crafting steps
+    crafter_spark_clustering();
+    crafter_spark_cleaning();
+    crafter_spark_bundling();
 
-  crafter_spark_distributing();
+    // Optional user-defined injection
+    if (!empty($injection)) {
+      $injection();
+    }
+
+    crafter_spark_distributing();
+
+    // Show result message
+    crafter_spark_message();
+  } finally {
+    crafter_reset();
+  }
 
 
   // Optional keeper logic (currently disabled)
   // keeper_shard_clean();
   // keeper_shard_set($CRAFTER_SHARD_LIST);
-
-  // Show result message and reset
-  crafter_spark_message();
-  crafter_reset();
 
   aether_arcane("Crafter.entity.crafter_spark");
   return true;
@@ -257,6 +261,17 @@ function crafter_spark_cleaning() {
   return true;
 }
 
+#NOTE: The encoder of a sealed bundle (TYPE function/class): base64, or gzip kept as base64 text so it fits a quoted PHP string.
+function crafter_spark_encoding( String $encryption ) {
+  if ($encryption === 'base64') {
+    return fn($data) => base64_encode($data);
+  }
+  if ($encryption === 'gzip') {
+    return fn($data) => base64_encode(gzencode($data));
+  }
+  throw new \RuntimeException("Crafter has no ENCRYPTION '{$encryption}' (base64, gzip)");
+}
+
 #NOTE: Bundle cleaned shard clusters and metadata into a final distributable template.
 function crafter_spark_bundling() {
   global $CRAFTER_SPARK;
@@ -267,15 +282,25 @@ function crafter_spark_bundling() {
   $seed_type       = $CRAFTER_SPARK['seed']['TYPE'];
   $seed_encryption = $CRAFTER_SPARK['seed']['ENCRYPTION'];
 
-  $encoding = $seed_encryption . '_encode';
-  $weaver_selected = 0;
+  $encoding = crafter_spark_encoding($seed_encryption);
+  $weaver_selected = null;
 
-  // Select the appropriate weaver based on language and type
+  // Select the weaver of the seed: the same languages (in any order) and the same type
+  $languages = is_array($seed_language) ? $seed_language : array_map('trim', explode(',', (string) $seed_language));
+  $languages = array_map('strtolower', $languages);
+  sort($languages);
   foreach (CRAFTER_WEAVER as $CWID => $weaver) {
-    if ($weaver[0] == $seed_language && $weaver[1] == $seed_type) {
+    $weaver_languages = $weaver[0];
+    sort($weaver_languages);
+    if ($weaver_languages === $languages && $weaver[1] === $seed_type) {
       $templates = weaver_item($weaver[3]);
       $weaver_selected = $CWID;
     }
+  }
+
+  // no template for this seed: stop before anything is written
+  if ($weaver_selected === null) {
+    throw new \RuntimeException("Crafter has no template for TYPE={$seed_type}, LANGUAGE=" . implode(',', $languages) . ' (see CRAFTER_WEAVER)');
   }
 
   // Inject copyright
