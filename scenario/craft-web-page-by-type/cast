@@ -58,12 +58,15 @@ function craft_page( String $type, Array $seed = [], String $name = '' ) {
 }
 
 // serves a bundle the way a web server would: run it, read what it prints
+// (through a file in .proof/, not `php -r`: on Windows escapeshellarg() turns " into a space)
 function craft_serve( String ...$files ) {
-  $code = '';
+  $code = "<?php\n";
   foreach ($files as $file) {
-    $code .= 'require ' . var_export($file, true) . ';';
+    $code .= 'require ' . var_export($file, true) . ";\n";
   }
-  return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($code) . ' 2>&1');
+  $probe = trial_proof('serve.php');
+  file_put_contents($probe, $code);
+  return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' 2>&1');
 }
 
 function craft_lint( String $file ) {
@@ -124,8 +127,15 @@ Chanter::cast('test', function() {
   // the templates decode base64 and gzip, but bundling calls <ENCRYPTION>_encode(): gzip_encode() does not exist (devneet-id/rune#35)
   $gzip = trial_proof('dist/page-class-gzip.php');
   trial('class with ENCRYPTION gzip builds and serves', trial_safe(function() { trial_capture(function() { craft_page('class', ['ENCRYPTION'=> 'gzip'], 'class-gzip'); }); }) && is_file($gzip) && craft_whole(craft_serve($gzip)));
-  // a spark that glitches stops before crafter_reset(): clear the state so the next check starts clean (devneet-id/rune#36)
-  crafter_reset();
+
+  trial_section('A spark that fails');
+  // an unknown ENCRYPTION throws inside the spark; Crafter must still reset (devneet-id/rune#36)
+  $bad = trial_proof('dist/page-class-rot13.php');
+  $said = trial_capture(function() { craft_page('class', ['ENCRYPTION'=> 'rot13'], 'class-rot13'); });
+  trial('an unknown ENCRYPTION is refused and nothing is written', str_contains($said, "no ENCRYPTION 'rot13'") && !is_file($bad));
+  $next = '';
+  trial_capture(function() use (&$next) { $next = craft_page('plain', [], 'plain-after-failure'); });
+  trial('the next build after a failed spark builds its own item', is_file($next) && craft_whole(craft_serve($next)));
 
   trial_section('A TYPE without a template');
   // function and class exist only for html, css, js and php together (devneet-id/rune#34)

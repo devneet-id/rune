@@ -115,6 +115,8 @@ Chanter::cast('test', function() {
   trial_capture(function() { forge_build('web'); });
   $targets = array_map(fn($shard) => $shard['target'], forge_shards());
   trial('build runs store after spark', in_array('src/site/index.html', $targets) && in_array('src/site/logo.jpg', $targets) && in_array('src/site/parts/note.txt', $targets));
+  // keeper_shard_set_all() joins with DIRECTORY_SEPARATOR: on Windows a target reads src/site\index.html (devneet-id/rune#37)
+  trial('shard targets use / (a relic made here opens on any OS)', $targets && !array_filter($targets, fn($target) => str_contains($target, '\\')));
   trial('the bundle is not a shard', !array_filter($targets, fn($target) => str_starts_with($target, '.proof/')));
   trial('store alone sets the same shards', (function() use ($targets) { file_put_contents(KEEPER_ECHOES_SHARD, '{}'); trial_cast('store'); return array_map(fn($shard) => $shard['target'], forge_shards()) == $targets; })());
 

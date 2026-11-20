@@ -1,0 +1,87 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — CAST BEYOND THE PROCESS
+ * Specter runs a command in another process. Hidden and non-blocking, the runite must go on at once
+ * while the command works on its own; hidden and blocking, the runite waits for it.
+ * The command is a small php job written in .proof/: it sleeps, then writes a file.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Specter.
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Specter\Manifest as Specter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Specter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+// a job that sleeps $seconds, then writes $name.done in .proof/jobs/
+function beyond_job( String $name, Int $seconds ) {
+  $job = trial_proof("jobs/$name.php");
+  if (!is_dir(dirname($job))) {
+    mkdir(dirname($job), 0777, true);
+  }
+  $done = var_export(trial_proof("jobs/$name.done"), true);
+  file_put_contents($job, "<?php\nsleep($seconds);\nfile_put_contents($done, 'done');\n");
+  $quote = fn($path) => PHP_OS_FAMILY === 'Windows' ? '"' . $path . '"' : escapeshellarg($path);
+  return $quote(PHP_BINARY) . ' ' . $quote($job);
+}
+
+// waits up to $seconds for a file
+function beyond_wait( String $file, Int $seconds ) {
+  $deadline = microtime(true) + $seconds;
+  while (!is_file($file) && microtime(true) < $deadline) {
+    usleep(100000);
+  }
+  return is_file($file);
+}
+
+Chanter::cast('test', function() {
+  trial_proof_clean('jobs');
+
+  trial_section('Hidden, non-blocking (devneet-id/rune#18)');
+  $start = microtime(true);
+  trial_capture(function() { Specter::cast(beyond_job('detached', 2), ['visible'=> false, 'blocking'=> false, 'exit'=> true]); });
+  $took = microtime(true) - $start;
+  trial('the runite goes on at once (the 2 s job runs on its own)', $took < 1);
+  trial('the job still finishes in its own process', beyond_wait(trial_proof('jobs/detached.done'), 6));
+
+  trial_section('Hidden, blocking');
+  $start = microtime(true);
+  trial_capture(function() { Specter::cast(beyond_job('waited', 1), ['visible'=> false, 'blocking'=> true, 'exit'=> true]); });
+  $took = microtime(true) - $start;
+  trial('the runite waits for the job', $took >= 1 && is_file(trial_proof('jobs/waited.done')));
+
+  trial_section('Specter remembers its casts');
+  $casts = Keeper::item('cast');
+  trial('every cast is kept in .echoes (cast.json)', is_object($casts) && count((array) $casts) >= 2);
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();

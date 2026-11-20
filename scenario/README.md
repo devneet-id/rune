@@ -16,6 +16,8 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario'
 | `bundle-a-site` | Crafter bundles a folder (html, head, css, js, php, an image, a subfolder) with three recipes while Keeper is awake: only the seed's `LANGUAGE` is read, Forger keeps no shard: every build runs `spark()` then the cast `store`, where the user sets `Keeper::shard()`, `Forger::scan` targets use `/` | Crafter, Forger, Keeper |
 | `craft-single-files-minified` | Crafter builds **one file of one language** from a folder of every language — a stylesheet (like exuracss), a script (like exurajs), a php library — with and without `MINIFIED`; the php library is linted and required | Crafter, Weaver, Forger |
 | `craft-web-page-by-type` | Crafter bundles **one web page** (head, html, css, js, php) into one php file with each `TYPE` — `plain` (readable), `function` and `class` (sealed in base64, named by the app hash) — then serves it; two sealed bundles side by side, minified inside a sealed page, `ENCRYPTION`, a TYPE without a template | Crafter, Weaver, Forger, Cipher |
+| `survive-glitches-and-exit` | how a runite with Keeper awake meets a PHP warning and what it tells the shell: probe runites in `.proof/`, each cast in its own process — a normal end exits 0, `@mkdir` survives without a glitch, an unsilenced warning glitches and exits non-zero | Keeper, Aether |
+| `cast-beyond-the-process` | Specter runs a small php job in another process: hidden and non-blocking the runite goes on at once while the job finishes on its own; hidden and blocking it waits; casts are kept in `cast.json` | Specter, Keeper |
 | `coverage` | node coverage of all scenarios (a tool, not a scenario) | Forger, Weaver |
 
 ## Run
