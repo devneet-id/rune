@@ -1,0 +1,81 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — ENGRAVE WITH SENTINEL
+ * Sentinel writes runes into a runite and takes them out (--runite-insert / --runite-remove).
+ * It edits the runite that casts it, so the trial works on a probe runite in .proof/:
+ * a copy of the blank runite of Awakening, with Forger (which Sentinel needs).
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger.
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// a fresh probe runite: the blank runite of Awakening, with Forger awakened and the autoload of rune-dev
+function engrave_probe() {
+  $blank = (string) file_get_contents(\Rune\Ethereal::$runite . 'awakening/blank.txt');
+  $runite = str_replace("require_once __DIR__ . '/vendor/autoload.php';", 'require_once ' . var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true) . ';', $blank);
+  $runite = str_replace("#sentinel-manifest", "use Rune\\Forger\\Manifest as Forger;\n#sentinel-manifest", $runite);
+  $runite = str_replace("#sentinel-awaken", "Forger::ether()::essence()::entity();\n#sentinel-awaken", $runite);
+  $probe = trial_proof('probe/cast');
+  if (!is_dir(dirname($probe))) {
+    mkdir(dirname($probe), 0777, true);
+  }
+  file_put_contents($probe, $runite);
+  return $probe;
+}
+
+// casts the probe in its own process and returns its plain output
+function engrave_cast( String $probe, String $spells ) {
+  return trial_plain((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' sentinel ' . $spells . ' 2>&1'));
+}
+
+Chanter::cast('test', function() {
+  trial_proof_clean('probe');
+  $probe = engrave_probe();
+  $source = fn() => (string) file_get_contents($probe);
+
+  trial_section('Insert');
+  $said = engrave_cast($probe, '--runite-insert=Cipher');
+  trial('Sentinel says it inserted Cipher', str_contains($said, "Inserted 'Cipher'"));
+  trial('the runite now uses and awakens Cipher', str_contains($source(), 'use Rune\Cipher\Manifest as Cipher;') && str_contains($source(), 'Cipher::ether()::essence()::entity();'));
+  trial('the probe still runs', str_contains(trial_plain((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' 2>&1')), 'Version='));
+  $before = $source();
+  $said = engrave_cast($probe, '--runite-insert=Nothing');
+  trial('an unknown rune is refused on insert', str_contains($said, 'Failed') && $source() === $before);
+
+  trial_section('Remove (devneet-id/rune#21)');
+  $before = $source();
+  $said = engrave_cast($probe, '--runite-remove=Nothing');
+  trial('an unknown rune is refused on remove, the runite unchanged', !str_contains($said, "Removed 'Nothing'") && $source() === $before);
+  $said = engrave_cast($probe, '--runite-remove=Crafter');
+  trial('a rune that is not in the runite is refused on remove', !str_contains($said, "Removed 'Crafter'") && $source() === $before);
+  $said = engrave_cast($probe, '--runite-remove=Cipher');
+  trial('Sentinel says it removed Cipher', str_contains($said, "Removed 'Cipher'"));
+  trial('the runite no longer uses or awakens Cipher', !str_contains($source(), 'Rune\Cipher') && !str_contains($source(), 'Cipher::'));
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

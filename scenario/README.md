@@ -18,6 +18,8 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario'
 | `craft-web-page-by-type` | Crafter bundles **one web page** (head, html, css, js, php) into one php file with each `TYPE` — `plain` (readable), `function` and `class` (sealed in base64, named by the app hash) — then serves it; two sealed bundles side by side, minified inside a sealed page, `ENCRYPTION`, a TYPE without a template | Crafter, Weaver, Forger, Cipher |
 | `survive-glitches-and-exit` | how a runite with Keeper awake meets a PHP warning and what it tells the shell: probe runites in `.proof/`, each cast in its own process — a normal end exits 0, `@mkdir` survives without a glitch, an unsilenced warning glitches and exits non-zero | Keeper, Aether |
 | `cast-beyond-the-process` | Specter runs a small php job in another process: hidden and non-blocking the runite goes on at once while the job finishes on its own; hidden and blocking it waits; casts are kept in `cast.json` | Specter, Keeper |
+| `engrave-with-sentinel` | Sentinel writes runes into a probe runite in `.proof/` and takes them out: insert a rune, refuse an unknown one; remove refuses an unknown rune or one not in the runite, and removes one that is | Sentinel (runite), Forger |
+| `keep-the-contract` | reads the origin runes as files and Phantasms and checks the Laws readers rely on: marks VOID/BETA/EXIST, no legacy hooks, the Grimoire header, composer links, the Liberation words — changes nothing | Aether, Forger |
 | `coverage` | node coverage of all scenarios (a tool, not a scenario) | Forger, Weaver |
 
 ## Run
