@@ -1,0 +1,102 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — SPEAK TO MACHINES
+ * A runite whose output is read by a machine (JSON, an MCP stdio server) needs pure stdout:
+ * no colours, no footer. A feature is switched off in the runite itself, with an essence:
+ *   $AETHER_FOOTER = false;    no "Version=… Execute=… Memory=…" footer
+ *   $WHISPER_COLOR = false;    Whisper writes plain text (also when NO_COLOR is set)
+ * Each case is a probe runite in .proof/, cast in its own process.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger (the trial cleans .proof/).
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// a probe runite: $settings go right after the awaken lines; its cast `run` says hello and prints JSON
+function machine_probe( String $name, String $settings ) {
+  $probe = trial_proof("$name/cast");
+  if (!is_dir(dirname($probe))) {
+    mkdir(dirname($probe), 0777, true);
+  }
+  $autoload = var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true);
+  file_put_contents($probe, <<<PHP
+<?php
+require_once $autoload;
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+$settings
+Aether::begin();
+Chanter::begin();
+Chanter::cast('hello', function() {
+  Whisper::echo('{{color-success}}{{icon-success}} hello{{nl}}');
+});
+Chanter::cast('json', function() {
+  print(json_encode(['ok'=> true, 'rune'=> 'speaks']));
+});
+Chanter::end();
+Aether::end();
+
+PHP);
+  return $probe;
+}
+
+function machine_cast( String $probe, String $cast, String $env = '' ) {
+  return (string) shell_exec(($env !== '' ? $env . ' ' : '') . escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' ' . $cast . ' 2>&1');
+}
+
+Chanter::cast('test', function() {
+  foreach (['default', 'nofooter', 'plain', 'machine'] as $name) {
+    trial_proof_clean($name);
+  }
+
+  trial_section('By default: for people');
+  $out = machine_cast(machine_probe('default', ''), 'hello');
+  trial('Whisper speaks in colour', str_contains($out, "\033[") && str_contains($out, 'hello'));
+  trial('the footer is printed', str_contains($out, 'Version='));
+
+  trial_section('Switched off in the runite (devneet-id/rune#25)');
+  $out = machine_cast(machine_probe('nofooter', '$AETHER_FOOTER = false;'), 'hello');
+  trial('$AETHER_FOOTER = false: no footer', !str_contains($out, 'Version=') && str_contains($out, 'hello'));
+  $out = machine_cast(machine_probe('plain', '$WHISPER_COLOR = false;'), 'hello');
+  trial('$WHISPER_COLOR = false: plain text, no ANSI', !str_contains($out, "\033[") && str_contains($out, 'hello'));
+  if (PHP_OS_FAMILY !== 'Windows') {
+    $out = machine_cast(machine_probe('default', ''), 'hello', 'NO_COLOR=1');
+    trial('NO_COLOR=1 in the environment: plain text', !str_contains($out, "\033[") && str_contains($out, 'hello'));
+  }
+
+  trial_section('Pure stdout for a machine');
+  $out = machine_cast(machine_probe('machine', "\$AETHER_FOOTER = false;\n\$WHISPER_COLOR = false;"), 'json');
+  trial('the output is exactly the JSON', json_decode(trim($out), true) === ['ok'=> true, 'rune'=> 'speaks']);
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

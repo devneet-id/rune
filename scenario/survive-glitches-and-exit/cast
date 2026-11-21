@@ -84,6 +84,9 @@ Chanter::cast('test', function() {
   trial_proof_clean('normal');
   trial_proof_clean('silenced');
   trial_proof_clean('loud');
+  foreach (['tolerated', 'notice', 'thrown', 'uncaught'] as $probe) {
+    trial_proof_clean($probe);
+  }
 
   trial_section('A runite that ends well');
   [$out, $code] = survive_cast(survive_probe('normal', '  print("ALL GOOD\n");'));
@@ -101,6 +104,20 @@ Chanter::cast('test', function() {
   trial('mkdir on an existing folder is a glitch and ends the flow', !str_contains($out, 'SURVIVED') && str_contains((string) @file_get_contents(trial_proof('loud/.echoes/cast/glitch.txt')), 'mkdir'));
   // a glitch must tell the shell it failed (devneet-id/rune#19)
   trial('a glitch exits with a code other than 0', $code !== 0);
+
+  trial_section('Keeper::tolerate() (devneet-id/rune#24)');
+  [$out, $code] = survive_cast(survive_probe('tolerated', '  Keeper::tolerate([\'warning\']);' . "\n" . '  mkdir(__DIR__);' . "\n" . '  print("SURVIVED\n");'));
+  trial('a tolerated warning does not end the flow', str_contains($out, 'SURVIVED') && $code === 0);
+  trial('it is not a glitch (glitch.txt stays empty)', trim((string) @file_get_contents(trial_proof('tolerated/.echoes/cast/glitch.txt'))) === '');
+  trial('it is kept in the arcane', str_contains((string) @file_get_contents(trial_proof('tolerated/.echoes/cast/arcane.txt')), 'Keeper.glitch.tolerated'));
+  [$out, $code] = survive_cast(survive_probe('notice', '  Keeper::tolerate([\'warning\']);' . "\n" . '  trigger_error("a notice", E_USER_NOTICE);' . "\n" . '  print("SURVIVED\n");'));
+  trial('a level not tolerated is still a glitch', !str_contains($out, 'SURVIVED') && $code !== 0);
+
+  trial_section('Keeper::tolerate(\'throw\')');
+  [$out, $code] = survive_cast(survive_probe('thrown', '  Keeper::tolerate(\'throw\');' . "\n" . '  try { mkdir(__DIR__); } catch (\\ErrorException $glitch) { print("CAUGHT\n"); }' . "\n" . '  print("SURVIVED\n");'));
+  trial('a warning becomes an ErrorException the cast can catch', str_contains($out, 'CAUGHT') && str_contains($out, 'SURVIVED') && $code === 0);
+  [$out, $code] = survive_cast(survive_probe('uncaught', '  Keeper::tolerate(\'throw\');' . "\n" . '  mkdir(__DIR__);' . "\n" . '  print("SURVIVED\n");'));
+  trial('uncaught, it is a glitch and exits non-zero', !str_contains($out, 'SURVIVED') && $code !== 0);
 
   trial_report();
 }, 'Trial of this scenario.');

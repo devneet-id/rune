@@ -9,6 +9,7 @@
  *   trial_cast('greet --name=Anwar')     -> casts a registered cast and returns its plain output
  *   trial_report()                       -> prints the summary and writes the proof
  *   trial_proof('dist')                  -> a path inside .proof/ (git-ignored): what the scenario made
+ *   trial_proof_clean('dist')            -> empties it (needs Forger awakened)
  *
  * PROOF
  *   Every scenario keeps what it made in .proof/ next to its runite (git-ignored):
