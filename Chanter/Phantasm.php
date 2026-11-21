@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.16';
+  public $version = '1.17';
   
   public $main = 'Chanter';
 
@@ -17,9 +17,9 @@ class Phantasm extends \Rune\Phantasm {
   public $flow = true;
 
   public $link = [
-    ['Aether', 'entity', '1.18'],
-    ['Whisper', 'entity', '1.13'],
-    ['Specter', 'entity', '1.9'],
+    ['Aether', 'entity', '1.22'],
+    ['Whisper', 'entity', '1.14'],
+    ['Specter', 'entity', '1.11'],
   ];
 
   public $node = [
@@ -131,7 +131,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_spell_get( String $name )',
-      'note' => 'Retrieves the value of a spell argument if it exists',
+      'note' => 'Retrieves a spell: true for a bare flag (--x), the value as a string (--x=1 gives "1"), false when not given',
     ],
     [
       'type' => 'entity',

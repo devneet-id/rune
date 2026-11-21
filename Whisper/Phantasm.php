@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.14';
+  public $version = '1.15';
   
   public $main = 'Whisper';
 
@@ -15,7 +15,7 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles user-facing output through styled messages, prompts, and echoes—focused on delivering clear, customizable system feedback and visual communication.';
 
   public $link = [
-    ['Aether', 'entity', '1.21'],
+    ['Aether', 'entity', '1.22'],
     ['Weaver', 'entity', '1.10'],
   ];
 
@@ -59,6 +59,11 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'essence',
       'call' => 'WHISPER_LABELS',
       'note' => 'Default label prefixes for whisper messages',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'WHISPER_COLOR',
+      'note' => 'Whether Whisper speaks in colour; a runite sets $WHISPER_COLOR = false; for plain text (NO_COLOR in the environment does the same).',
     ],
     [
       'type' => 'essence',
@@ -107,8 +112,13 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
+      'call' => 'whisper_color()',
+      'note' => 'Whether Whisper speaks in colour: $WHISPER_COLOR is not false and NO_COLOR is not set in the environment.',
+    ],
+    [
+      'type' => 'entity',
       'call' => 'whisper_echo_imbue( String $text )',
-      'note' => 'Apply all whisper formatting to the text (colors, icons, labels)',
+      'note' => 'Apply all whisper formatting to the text (colors, icons, labels); without colour the ANSI codes are left out',
     ],
     [
       'type' => 'entity',
