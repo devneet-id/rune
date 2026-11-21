@@ -273,6 +273,22 @@ function keeper_shard_clean() {
 /* GLITCH
  * todo hidden error end report to keeper
  *  */
+#NOTE: Sets the warnings this flow tolerates — a list of levels (warning, notice, deprecated) or 'throw' — and returns what is tolerated.
+function keeper_tolerate( Array|String $levels ) {
+  global $KEEPER_TOLERATE;
+
+  $KEEPER_TOLERATE = array_values(array_map('strtolower', (array) $levels));
+
+  aether_arcane('Keeper.entity.keeper_tolerate', implode(',', $KEEPER_TOLERATE));
+  return $KEEPER_TOLERATE;
+}
+#NOTE: The level of a PHP error number: warning, notice, deprecated, or error.
+function keeper_glitch_level( Int $errno ) {
+  if (in_array($errno, [E_WARNING, E_USER_WARNING, E_CORE_WARNING, E_COMPILE_WARNING])) return 'warning';
+  if (in_array($errno, [E_NOTICE, E_USER_NOTICE])) return 'notice';
+  if (in_array($errno, [E_DEPRECATED, E_USER_DEPRECATED])) return 'deprecated';
+  return 'error';
+}
 #NOTE: Initializes custom error, exception, and shutdown handlers to capture and log all glitches into a file.
 function keeper_glitch_boot() {  
   forger_item(KEEPER_ECHOES_GLITCH, '');
@@ -304,6 +320,16 @@ function keeper_glitch_boot() {
     // silenced with @ (or left out of error_reporting()): not a glitch, PHP goes on
     if (!(error_reporting() & $errno)) {
       return false;
+    }
+    // tolerated by the runite (Keeper::tolerate): thrown for the cast to catch, or kept in the arcane and passed
+    global $KEEPER_TOLERATE;
+    $level = keeper_glitch_level($errno);
+    if ($level !== 'error' && in_array('throw', $KEEPER_TOLERATE)) {
+      throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+    }
+    if (in_array($level, $KEEPER_TOLERATE)) {
+      aether_arcane('Keeper.glitch.tolerated', strtoupper($level) . ': ' . $errstr . ' (' . basename($errfile) . ':' . $errline . ')');
+      return true;
     }
     $handler('error', $errstr, $errfile, $errline, debug_backtrace());
     return true;

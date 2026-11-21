@@ -20,3 +20,6 @@ $GLOBALS['KEEPER_ARCANE'] = [
 
 #NOTE: Whether Keeper is saving echoes in this flow.
 $GLOBALS['KEEPER_SAVING_ACTIVE'] = false;
+
+#NOTE: The warnings tolerated in this flow (levels: warning, notice, deprecated), or 'throw' to turn them into an ErrorException.
+$GLOBALS['KEEPER_TOLERATE'] = [];
