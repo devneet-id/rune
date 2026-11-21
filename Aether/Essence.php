@@ -44,6 +44,9 @@ $GLOBALS['AETHER_RUNE_PHANTASM'] = [];
 #NOTE: Zero-trust state (output drained, arcane disabled).
 $GLOBALS['AETHER_ZERO_TRUST'] = false;
 
+#NOTE: Whether the flow ends with the footer (Version, Execute, Memory); a runite sets $AETHER_FOOTER = false; for output read by a machine.
+$GLOBALS['AETHER_FOOTER'] = true;
+
 
 
 

@@ -41,6 +41,7 @@ function aether_zero_trust( Mixed $state = '' ) {
 }
 #NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper); $code is the exit code for the shell (0 = success)
 function aether_exit( $force = false, Int $code = 0 ) {
+  global $AETHER_FOOTER;
   $memory = aether_memoryusage();
   $stopwatch = aether_stopwatch();
   
@@ -49,7 +50,9 @@ function aether_exit( $force = false, Int $code = 0 ) {
   $peak = aether_formatFileSize($memory[1]);
 
   
-  if (aether_has_entity('whisper')) {
+  if ($AETHER_FOOTER === false) {
+    // no footer: the runite asked for it ($AETHER_FOOTER = false;), e.g. its output is read by a machine
+  }else if (aether_has_entity('whisper')) {
     $icon_execute = "{{color-danger}}ϟ{{color-secondary}}";
     $icon_memory = "{{color-primary}}Ξ{{color-secondary}}";
     $icon_version = '{{color-default}}◇{{color-secondary}}';

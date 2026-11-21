@@ -9,6 +9,7 @@ function whisper() {
  *  */
 #NOTE: Clear terminal screen using ANSI escape codes
 function whisper_clear() {
+  if (!whisper_color()) return;
   echo "\033[2J\033[0;0H";
 }
 #NOTE: Force clear terminal using system commands (Linux & Windows)
@@ -65,7 +66,13 @@ function whisper_echo_set( String $message ) {
   aether_arcane('Whisper.entity.whisper_echo_set');
   return true;
 }
-#NOTE: Apply all whisper formatting to the text (colors, icons, labels)
+#NOTE: Whether Whisper speaks in colour: $WHISPER_COLOR is not false and NO_COLOR is not set in the environment.
+function whisper_color() {
+  global $WHISPER_COLOR;
+  $no_color = getenv('NO_COLOR');
+  return $WHISPER_COLOR !== false && ($no_color === false || $no_color === '');
+}
+#NOTE: Apply all whisper formatting to the text (colors, icons, labels); without colour the ANSI codes are left out
 function whisper_echo_imbue( String $text ) {
   global $WHISPER_VARS;
   global $WHISPER_COLORS;
@@ -85,6 +92,14 @@ function whisper_echo_imbue( String $text ) {
   foreach ($maps_threedimension as $key=>$row) {
     foreach ($row as $key2 => $value) {
       $maps[ $key.'-'.$key2 ] = $value;
+    }
+  }
+  // plain text: every colour, background, bold and reset becomes nothing; words, icons and labels stay
+  if (!whisper_color()) {
+    foreach ($maps as $key => $value) {
+      if (is_string($value) && str_contains($value, "\033[")) {
+        $maps[$key] = '';
+      }
     }
   }
   // style variables are applied to this text only; they must not leak into Weaver's global bond
