@@ -1,0 +1,80 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — READ SPELLS AND FLAGS
+ * How Chanter reads a spell: a bare flag (--loud), a value (--times=1), zero (--times=0),
+ * and how a cast hands its spells on to another cast (cast-in-cast).
+ * A flag is true; a value is a string — "1" is a value, not a flag.
+ * Runes: Aether, Whisper, Weaver, Chanter.
+ *
+ *   php cast probe --loud --times=1 --zero=0 --word=a+b
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// what Chanter gives for each spell: [Chanter::spell(), chanter_spell_has()]
+function spells_read( Array $names ) {
+  $read = [];
+  foreach ($names as $name) {
+    $read[$name] = [Chanter::spell($name), chanter_spell_has($name)];
+  }
+  return $read;
+}
+
+$GLOBALS['SPELLS_SEEN'] = [];
+Chanter::cast('probe --loud --times --zero --word --missing', function() {
+  $GLOBALS['SPELLS_SEEN'] = spells_read(['loud', 'times', 'zero', 'word', 'missing']);
+  Whisper::echo(json_encode($GLOBALS['SPELLS_SEEN']) . '{{nl}}');
+}, 'Show how each spell is read.');
+
+// hands its own spells on to probe, the way a cast-in-cast does
+Chanter::cast('relay --loud --times', function() {
+  Chanter::cast('probe ' . chanter_spell_chain())();
+}, 'Hand the spells on to probe.');
+
+
+Chanter::cast('test', function() {
+  trial_section('A flag and a value (devneet-id/rune#17)');
+  trial_cast('probe --loud --times=1 --zero=0 --word=a+b');
+  $seen = $GLOBALS['SPELLS_SEEN'];
+  trial('a bare flag is true (bool)', ($seen['loud'][0] ?? null) === true);
+  trial('--times=1 is the value "1", not a flag', ($seen['times'][0] ?? null) === '1');
+  trial('--zero=0 is the value "0"', ($seen['zero'][0] ?? null) === '0');
+  trial('a + stays a + (a+b)', ($seen['word'][0] ?? null) === 'a+b');
+  trial('a spell not given is false', ($seen['missing'][0] ?? null) === false);
+
+  trial_section('chanter_spell_has: given with a value');
+  trial('a bare flag has no value', ($seen['loud'][1] ?? null) === false);
+  trial('--times=1 has a value', ($seen['times'][1] ?? null) === true);
+  trial('--zero=0 has a value', ($seen['zero'][1] ?? null) === true);
+
+  trial_section('Cast in cast');
+  $GLOBALS['SPELLS_SEEN'] = [];
+  trial_cast('relay --loud --times=1');
+  $seen = $GLOBALS['SPELLS_SEEN'];
+  trial('a flag handed on stays a flag', ($seen['loud'][0] ?? null) === true);
+  trial('a value handed on stays the value', ($seen['times'][0] ?? null) === '1');
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

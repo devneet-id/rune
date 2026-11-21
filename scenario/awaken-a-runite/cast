@@ -1,0 +1,72 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — AWAKEN A RUNITE
+ * Awakening writes the first runite from the void (the blank template) into a fresh folder in .proof/,
+ * answering "n" to "use a relic?". The new runite must be ready: it runs, it carries the Sentinel
+ * markers, and its memory is hidden from git (sentinel --gitignore, cast through Specter).
+ * The fresh folder has a vendor/autoload.php that points at rune-dev's, as composer would.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger.
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// a fresh project folder: vendor/autoload.php (pointing at rune-dev's) and a runite that calls Awakening
+function awaken_folder() {
+  $folder = trial_proof_clean('project');
+  if (!is_dir($folder . '/vendor')) {
+    mkdir($folder . '/vendor', 0777, true);
+  }
+  file_put_contents($folder . '/vendor/autoload.php', "<?php\nreturn require " . var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true) . ";\n");
+  file_put_contents($folder . '/cast', "<?php\nrequire_once __DIR__ . '/vendor/autoload.php';\nRune\\Ethereal::awakening();\n");
+  return $folder;
+}
+
+// runs a command inside the folder, with an answer on stdin
+function awaken_run( String $folder, String $command, String $answer = '' ) {
+  $line = 'cd ' . escapeshellarg($folder) . ' && ' . ($answer !== '' ? 'echo ' . escapeshellarg($answer) . ' | ' : '') . escapeshellarg(PHP_BINARY) . ' ' . $command . ' 2>&1';
+  return trial_plain((string) shell_exec($line));
+}
+
+Chanter::cast('test', function() {
+  $folder = awaken_folder();
+
+  trial_section('From the void');
+  $said = awaken_run($folder, 'cast', 'n');
+  $runite = (string) @file_get_contents($folder . '/cast');
+  trial('Awakening says the runite is awakened', str_contains($said, 'Awakening successfully'));
+  trial('the blank runite is written over the cast', str_contains($runite, 'Aether::begin();') && !str_contains($runite, 'Ethereal::awakening'));
+  trial('it carries the flow markers (devneet-id/rune#20)', str_contains($runite, '#sentinel-flow-begin') && str_contains($runite, '#sentinel-flow-end'));
+  trial('the new runite runs', str_contains(awaken_run($folder, 'cast'), 'Version='));
+
+  trial_section('Its memory is hidden from git (devneet-id/rune#30)');
+  $ignore = (string) @file_get_contents($folder . '/.gitignore');
+  trial('Awakening wrote a .gitignore next to the runite', $ignore !== '');
+  trial('it hides .echoes/ and vendor/', str_contains($ignore, '.echoes') && str_contains($ignore, 'vendor'));
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

@@ -43,6 +43,23 @@ function engrave_probe() {
   return $probe;
 }
 
+// an older runite: the same probe without the #sentinel-flow-* markers
+function engrave_probe_old() {
+  $probe = engrave_probe();
+  file_put_contents($probe, preg_replace('/^#sentinel-flow-(begin|end)\R/m', '', (string) file_get_contents($probe)));
+  return $probe;
+}
+
+// the line number of the first line that starts with $text (0 when missing)
+function engrave_line( String $source, String $text ) {
+  foreach (preg_split('/\R/', $source) as $index => $line) {
+    if (str_starts_with(trim($line), $text)) {
+      return $index + 1;
+    }
+  }
+  return 0;
+}
+
 // casts the probe in its own process and returns its plain output
 function engrave_cast( String $probe, String $spells ) {
   return trial_plain((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' sentinel ' . $spells . ' 2>&1'));
@@ -71,6 +88,30 @@ Chanter::cast('test', function() {
   $said = engrave_cast($probe, '--runite-remove=Cipher');
   trial('Sentinel says it removed Cipher', str_contains($said, "Removed 'Cipher'"));
   trial('the runite no longer uses or awakens Cipher', !str_contains($source(), 'Rune\Cipher') && !str_contains($source(), 'Cipher::'));
+
+  trial_section('A rune with a flow: Keeper (devneet-id/rune#20)');
+  $probe = engrave_probe();
+  $said = engrave_cast($probe, '--runite-insert=Keeper');
+  $code = $source();
+  $at = fn($text) => engrave_line($code, $text);
+  trial('the runite has the flow markers', $at('#sentinel-flow-begin') > 0 && $at('#sentinel-flow-end') > 0);
+  trial('Keeper::begin() is written after Chanter::begin(), above #sentinel-flow-begin', $at('Keeper::begin();') > $at('Chanter::begin();') && $at('Keeper::begin();') < $at('#sentinel-flow-begin'));
+  trial('Keeper::end() is written after Chanter::end(), before Aether::end()', $at('Keeper::end();') > $at('Chanter::end();') && $at('Keeper::end();') < $at('Aether::end();'));
+  trial('Aether and Chanter are not written twice', substr_count($code, 'Aether::begin();') === 1 && substr_count($code, 'Chanter::end();') === 1);
+  trial_safe(function() use ($probe) { shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' 2>&1'); });
+  trial('the probe now keeps its memory (Keeper writes .echoes)', is_file(dirname($probe) . '/.echoes/cast/arcane.txt'));
+  engrave_cast($probe, '--runite-remove=Keeper');
+  trial('removing Keeper takes begin() and end() out too', !str_contains($source(), 'Keeper::'));
+
+  trial_section('A rune without a flow');
+  engrave_cast($probe, '--runite-insert=Cipher');
+  trial('Cipher gets no begin() / end()', !str_contains($source(), 'Cipher::begin') && !str_contains($source(), 'Cipher::end'));
+
+  trial_section('An older runite without the markers');
+  $probe = engrave_probe_old();
+  $said = engrave_cast($probe, '--runite-insert=Keeper');
+  trial('Sentinel warns that begin() / end() must be added by hand', str_contains($said, '#sentinel-flow-begin') && str_contains($said, 'Keeper::begin();'));
+  trial('nothing is guessed: no Keeper::begin() written', !str_contains($source(), 'Keeper::begin();'));
 
   trial_report();
 }, 'Trial of this scenario.');
