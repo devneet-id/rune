@@ -26,7 +26,7 @@ Chanter::cast(
     // a spell with a value ('' when given without one)
     $value = function( String $spell ) {
       $value = Chanter::spell($spell);
-      return ($value === false || $value === '1') ? '' : trim((string) $value);
+      return ($value === false || $value === true) ? '' : trim((string) $value);
     };
 
     // the rune name as it is written (Ledger, MyAether), whatever case is given

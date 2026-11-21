@@ -142,7 +142,7 @@ Chanter::cast(
       return $phantasm;
     };
     if (Chanter::spell('runic') !== false) {
-      if (Chanter::spell('runic') !== '1') {
+      if (Chanter::spell('runic') !== true) {
         $input = Chanter::spell('runic');
       }else {
         $input = Whisper::call('Give us the rune name: ');

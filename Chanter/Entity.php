@@ -49,10 +49,13 @@ function chanter_arg_extract( String $newArg = '' ) {
     if (strpos($arg, '--')!==false) {
       if (preg_match('/^--([a-zA-Z0-9_-]+)(?:=(.*))?$/', $arg, $match)) {
         $key = str_replace('--', '', $match[1]);
-        // `--x` (no value) is a flag -> true; `--x=0` keeps "0"
-        $value = (isset($match[2]) && $match[2] !== '') ? rawurldecode($match[2]) : true;
-        // raw* keeps a literal '+' (e.g. How+to+Casting.rune) instead of turning it into a space
-        $CHANTER_ARG_SPELL[$key] = rawurlencode($value);
+        // `--x` (no value) is a flag: true (bool); `--x=1` is the value "1", `--x=0` the value "0"
+        if (isset($match[2]) && $match[2] !== '') {
+          // raw* keeps a literal '+' (e.g. How+to+Casting.rune) instead of turning it into a space
+          $CHANTER_ARG_SPELL[$key] = rawurlencode(rawurldecode($match[2]));
+        }else {
+          $CHANTER_ARG_SPELL[$key] = true;
+        }
       }
     }else {
       $CHANTER_ARG_CAST[] = $arg;
@@ -73,7 +76,8 @@ function chanter_arg_rebase() {
   $arg .= $CHANTER_ARG_CAST;
   foreach ($CHANTER_ARG_SPELL as $spell_name=>$spell_value) {
     $arg .= ' --'.$spell_name;
-    if ($spell_value) {
+    // a flag (true) is written bare
+    if ($spell_value !== true) {
       $arg .= "='".$spell_value."'";
     }
   }
@@ -201,12 +205,13 @@ function chanter_spell_set( String $name, String $value ) {
   return true;
 }
 
-#NOTE: Retrieves the value of a spell argument if it exists
+#NOTE: Retrieves a spell: true for a bare flag (--x), the value as a string (--x=1 gives "1"), false when not given
 function chanter_spell_get( String $name ) {
   global $CHANTER_ARG_SPELL;
 
   if (isset($CHANTER_ARG_SPELL[$name])) {
-    $return = rawurldecode($CHANTER_ARG_SPELL[$name]);
+    // a flag is true (bool); a value is a string
+    $return = ($CHANTER_ARG_SPELL[$name] === true) ? true : rawurldecode($CHANTER_ARG_SPELL[$name]);
   }else {
     $return = false;
   };
@@ -221,7 +226,8 @@ function chanter_spell_chain() {
 
   $spell = '';
   foreach ($CHANTER_ARG_SPELL as $key=>$value) {
-    $spell .= '--'.$key.'='.$value.' ';
+    // a flag is handed on bare, so it stays a flag
+    $spell .= ($value === true) ? '--'.$key.' ' : '--'.$key.'='.$value.' ';
   }
   
   $spell = trim($spell);
@@ -233,7 +239,7 @@ function chanter_spell_chain() {
 function chanter_spell_has( String $name ) {
   global $CHANTER_ARG_SPELL;
 
-  if (isset($CHANTER_ARG_SPELL[$name]) && $CHANTER_ARG_SPELL[$name] !== '1') {
+  if (isset($CHANTER_ARG_SPELL[$name]) && $CHANTER_ARG_SPELL[$name] !== true) {
     $return = true;
   }else {
     $return = false;
