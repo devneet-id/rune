@@ -23,7 +23,7 @@ Chanter::cast(
     // a spell with a value ('' when given without one)
     $value = function( String $spell ) {
       $value = Chanter::spell($spell);
-      return ($value === false || $value === '1') ? '' : trim((string) $value);
+      return ($value === false || $value === true) ? '' : trim((string) $value);
     };
 
     // old spells (artefact) answer with the new one

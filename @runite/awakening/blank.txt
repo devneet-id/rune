@@ -47,9 +47,11 @@ Chanter::ether()::essence()::entity();
  */
 Aether::begin();
 Chanter::begin();
+#sentinel-flow-begin
 
 // ✦ Main logic lives here
 
 #sentinel-codex
 Chanter::end();
+#sentinel-flow-end
 Aether::end();

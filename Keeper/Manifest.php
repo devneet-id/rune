@@ -71,6 +71,14 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
 
+  #NOTE: Tolerates warnings in this flow: levels kept in the arcane and passed (['warning', 'notice', 'deprecated']), or 'throw' to make them an ErrorException.
+  public static function tolerate( Array|String $levels ) {
+    $return = keeper_tolerate($levels);
+
+    aether_arcane('Keeper.manifest.tolerate');
+    return $return;
+  }
+
   #NOTE: Saves rune shard(s) from string or array source.
   public static function shard(Array|String $source): Bool
   {

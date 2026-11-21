@@ -26,7 +26,7 @@ Chanter::cast(
     // a spell with a value ('' when given without one)
     $value = function( String $spell ) {
       $value = Chanter::spell($spell);
-      return ($value === false || $value === '1') ? '' : trim((string) $value);
+      return ($value === false || $value === true) ? '' : trim((string) $value);
     };
 
     // the rune name as it is written (Ledger, MyAether), whatever case is given
@@ -202,10 +202,19 @@ Chanter::cast(
     }
 
 
+    // a rune with a flow (Phantasm $flow = true) has begin() and end() the runite must call
+    $rune_flows = function( String $manifest ) {
+      $phantasm = 'Rune\\' . $manifest . '\\Phantasm';
+      return class_exists($phantasm) && (new $phantasm())->flow === true;
+    };
+    $flow_markers = ['begin'=> '#sentinel-flow-begin', 'end'=> '#sentinel-flow-end'];
+    $flow_missing = [];
+
     /* RUNITE: INSERT
     * insert the manifest & awaken of a rune to the runite
+    * (and its begin() / end() above #sentinel-flow-begin / #sentinel-flow-end when it has a flow)
     *  */
-    $processing_invoke = function($target) use ($runic_name) {
+    $processing_invoke = function($target) use ($runic_name, $rune_flows, $flow_markers, &$flow_missing) {
       (aether_has_entity('forger')) ?: die(PHP_EOL.'[!]WARNING: Required Forger:entity'.PHP_EOL);
 
       $target = trim((string) $target);
@@ -244,7 +253,22 @@ Chanter::cast(
         );
 
         $rune = str_replace($prefix_arise, $codex_arise . $eol . $prefix_arise, $rune);
-        
+
+        // the flow: X::begin(); above #sentinel-flow-begin, X::end(); above #sentinel-flow-end — never twice, never guessed
+        if ($rune_flows($manifest)) {
+          foreach ($flow_markers as $method => $marker) {
+            $line = $manifest . '::' . $method . '();';
+            if (preg_match('/^\s*' . preg_quote($line, '/') . '\s*$/m', $rune)) {
+              continue;
+            }
+            if (strpos($rune, $marker) === false) {
+              $flow_missing[] = $line;
+              continue;
+            }
+            $rune = str_replace($marker, $line . $eol . $marker, $rune);
+          }
+        }
+
         Forger::item(AETHER_REPO . '/' . basename(AETHER_FILE), $rune);
         return true;
       }else {
@@ -259,6 +283,9 @@ Chanter::cast(
         Whisper::echo("{{color-danger}}::{{color-end}}S E N T I N E L {{nl}}");
         if ($processing_invoke($input)) {
           Whisper::echo("{{color-success}}{{icon-success}} Inserted '$input' to " . AETHER_FILE . " {{nl}}");
+          if ($flow_missing) {
+            Whisper::echo("{{COLOR-WARNING}}{{ICON-WARNING}} No #sentinel-flow-begin / #sentinel-flow-end in " . AETHER_FILE . ": add " . implode(' / ', $flow_missing) . " by hand, or add the markers {{nl}}");
+          }
         }else {
           Whisper::echo("{{color-danger}}{{icon-warning}} Failed to insert '$input' {{nl}}");
           Whisper::echo("{{COLOR-SECONDARY}}{{ICON-INFO}} Available rune: " . implode(', ', aether_list_runes()) . "{{nl}}");
@@ -313,6 +340,8 @@ Chanter::cast(
           if ($chain_line) {
             $rune = str_replace($chain_line . $eol, '', $rune);
           }
+          // its flow goes with it
+          $rune = preg_replace('/^[ \t]*' . preg_quote($manifest, '/') . '::(begin|end)\(\);\R/m', '', $rune);
           if (strpos($rune, $codex_manifest) !== false) {
             $rune = str_replace($codex_manifest . $eol, '', $rune);
           }

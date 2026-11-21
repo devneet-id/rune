@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.21';
+  public $version = '1.22';
   
   public $main = 'Aether';
 
@@ -19,9 +19,11 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
+  public $flow = true;
+
   public $link = [
     ['Chanter', 'entity', '1.16'],
-    ['Whisper', 'entity', '1.13'],
+    ['Whisper', 'entity', '1.14'],
   ];
 
   public $node = [
@@ -149,6 +151,11 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'essence',
       'call' => 'AETHER_ZERO_TRUST',
       'note' => 'Zero-trust state (output drained, arcane disabled).',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'AETHER_FOOTER',
+      'note' => 'Whether the flow ends with the footer (Version, Execute, Memory); a runite sets $AETHER_FOOTER = false; for output read by a machine.',
     ],
     [
       'type' => 'essence',

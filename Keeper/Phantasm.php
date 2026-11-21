@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.17';
+  public $version = '1.18';
   
   public $main = 'Keeper';
 
@@ -19,9 +19,11 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
+  public $flow = true;
+
   public $link = [
-    ['Aether', 'ether', '1.21'],
-    ['Chanter', 'entity', '1.16'],
+    ['Aether', 'ether', '1.22'],
+    ['Chanter', 'entity', '1.17'],
     ['Cipher', 'entity', '1.7'],
     ['Forger', 'entity', '1.17'],
     ['Specter', 'entity', '1.11'],
@@ -100,6 +102,11 @@ class Phantasm extends \Rune\Phantasm {
       'note' => 'Whether Keeper is saving echoes in this flow.',
     ],
     [
+      'type' => 'essence',
+      'call' => 'KEEPER_TOLERATE',
+      'note' => 'The warnings tolerated in this flow (levels: warning, notice, deprecated), or "throw" to turn them into an ErrorException.',
+    ],
+    [
       'type' => 'entity',
       'call' => 'keeper()',
       'note' => 'Main entity',
@@ -166,6 +173,16 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
+      'call' => 'keeper_tolerate( Array|String $levels )',
+      'note' => 'Sets the warnings this flow tolerates — a list of levels (warning, notice, deprecated) or "throw" — and returns what is tolerated.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_glitch_level( Int $errno )',
+      'note' => 'The level of a PHP error number: warning, notice, deprecated, or error.',
+    ],
+    [
+      'type' => 'entity',
       'call' => 'keeper_glitch_boot()',
       'note' => 'Initializes custom error, exception, and shutdown handlers to capture and log all glitches into a file.',
     ],
@@ -203,6 +220,11 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'manifest',
       'call' => 'item( String $name, $value = false )',
       'note' => 'Gets or sets a structured keeper item in JSON format.',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'tolerate( Array|String $levels )',
+      'note' => 'Tolerates warnings in this flow: levels kept in the arcane and passed (["warning", "notice", "deprecated"]), or "throw" to make them an ErrorException.',
     ],
     [
       'type' => 'manifest',
