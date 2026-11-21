@@ -7,6 +7,8 @@ use Rune\Weaver\Manifest as Weaver;
 use Rune\Whisper\Manifest as Whisper;
 use Rune\Forger\Manifest as Forger;
 use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Specter\Manifest as Specter;
 
 // RUNE:INSTANCE
 Aether::ether()::essence()::entity();
@@ -15,6 +17,8 @@ Weaver::ether()::essence()::entity();
 Whisper::ether()::essence()::entity();
 Forger::ether()::essence()::entity();
 Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Specter::ether()::essence()::entity();
 
 // relics are read and opened by the reliquary
 require_once __DIR__ . '/../reliquary/relic.php';
@@ -23,6 +27,7 @@ require_once __DIR__ . '/../reliquary/relic.php';
 // RUNE:AWAKENING
 Aether::begin();
 Chanter::begin();
+Keeper::begin();
 
 // awakening: the first runite, a blank template or a relic of devneet-id/reliquary
 Chanter::cast('awakening', function() {
@@ -40,6 +45,13 @@ Chanter::cast('awakening', function() {
   // the end of the awakening
   $awakened = function() {
     $selfFile = AETHER_FILE;
+
+    // the new runite hides its memory from git: sentinel --gitignore, cast through Specter (it waits for it)
+    Specter::cast('{{self}} sentinel --gitignore', ['visible'=> false, 'blocking'=> true, 'exit'=> true]);
+    if (str_contains((string) @file_get_contents(AETHER_REPO . '/.gitignore'), '.echoes')) {
+      Whisper::echo("{{text-success}}{{icon-success}} .echoes/ and vendor/ are hidden from git (.gitignore). \n");
+    }
+
     Whisper::echo("{{text-success}}{{icon-success}} Awakening successfully. \n");
     Whisper::echo("{{text-info}}{{icon-info}}{{end}}{{text-secondary}} Checkout your runite with '{{text-danger}}php $selfFile{{end}}'. \n");
     Aether::exit(true);
