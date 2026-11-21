@@ -17,6 +17,8 @@ class Phantasm extends \Rune\Phantasm {
 
   public $mark = 'BETA';
 
+  public $flow = false;
+
   public $link = [];
 
   public $node = [

@@ -19,6 +19,8 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Represents the foundational flow that permeates all components—serves as the invisible layer connecting, powering, and synchronizing every part of the system.';
 
+  public $flow = true;
+
   public $link = [
     ['Chanter', 'entity', '1.16'],
     ['Whisper', 'entity', '1.13'],

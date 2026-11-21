@@ -19,6 +19,8 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
+  public $flow = true;
+
   public $link = [
     ['Aether', 'ether', '1.21'],
     ['Chanter', 'entity', '1.16'],

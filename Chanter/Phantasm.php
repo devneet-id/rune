@@ -14,6 +14,8 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Encapsulates processes and CLI-style operations to maintain immutability—structures input, spell logic, and execution flow into controlled, traceable, and reusable command definitions.';
 
+  public $flow = true;
+
   public $link = [
     ['Aether', 'entity', '1.18'],
     ['Whisper', 'entity', '1.13'],
