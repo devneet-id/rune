@@ -26,6 +26,7 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario'
 | `evolve-a-rune` | The Evolution of Eidos in a probe runite: `sentinel --runic-create` shapes a rune in `@evolution/` (no legacy `_arise()`), refuses a taken or origin name; insert it, `--phantasm-repair` it, read it in the Grimoire; `--runic-delete` removes the folder and takes it out of the runite | Sentinel (runite), Forger |
 | `seal-and-open-a-relic` | a relic round trip between two probe runites: seal one with its shard (`reliquary --runite-relic`, `--runite-inspect`), open it in another folder (`--relic-runite`, asks first, `--yes`); the shard travels, the memory does not; a broken file is refused | Reliquary (runite), Keeper, Forger |
 | `read-the-arcane` | the arcane of a run: `arcane.txt`, one copy per run in `arcanes/`, the states of each step, `grimoire --arcane`, and `--zero-trust` writing no step | Keeper, Aether |
+| `speak-without-weaver` | Weaver is a complement to Whisper (soft bond): a probe runite without Weaver still speaks in colour with icons and labels (lower and upper case), returns text, prints the footer, and plain text works; a user's own bond (`{{name}}`) needs Weaver | Whisper, Weaver |
 | `coverage` | node coverage of all scenarios (a tool, not a scenario) | Forger, Weaver |
 
 ## Run
@@ -73,7 +74,7 @@ A scenario that makes files writes them with `trial_proof('dist/…')` and empti
 A glitch (exception or PHP warning) fails one check instead of ending the run.
 
 ## Status
-On Rune 1.21.138 (devneet-id/rune#31): **21 scenarios, 278/278 checks** (`php cast scenario --here`, Linux). Node coverage **73/299 (24%)** (`php cast coverage` in `scenario/coverage`).
+On Rune 1.21.139 (devneet-id/rune#31, #29): **22 scenarios, 287/287 checks** (`php cast scenario --here`, Linux). Node coverage **73/299 (24%)** (`php cast coverage` in `scenario/coverage`).
 
 Not covered yet: Minister (needs a familiar: URL + token), The Federation of Fides and The Liberation of Forte (they reach the network: a reliquary on GitHub, a PHP runtime download) — explored by hand in `exploration/`.
 

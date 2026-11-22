@@ -1,0 +1,100 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — SPEAK WITHOUT WEAVER
+ * Weaver is a complement to Whisper, not a must (a soft bond, devneet-id/rune#29):
+ * a runite that awakens Whisper without Weaver still speaks in colour, with icons and labels —
+ * Whisper replaces its own tokens itself. Only the user's own bonds ({{name}} set with Weaver::bond)
+ * need Weaver. Each case is a probe runite in .proof/, cast in its own process.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger (the trial cleans .proof/).
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// a probe runite; $weaver: whether it awakens Weaver; $settings go after the awaken lines
+function weaverless_probe( String $name, Bool $weaver, String $settings = '' ) {
+  $probe = trial_proof("$name/cast");
+  if (!is_dir(dirname($probe))) {
+    mkdir(dirname($probe), 0777, true);
+  }
+  $autoload = var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true);
+  $use = $weaver ? "use Rune\\Weaver\\Manifest as Weaver;\n" : '';
+  $awaken = $weaver ? "Weaver::ether()::essence()::entity();\n" : '';
+  $bond = $weaver ? "  Weaver::bond('name', 'Anwar');\n" : '';
+  file_put_contents($probe, <<<PHP
+<?php
+require_once $autoload;
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Chanter\Manifest as Chanter;
+{$use}Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+{$awaken}$settings
+Aether::begin();
+Chanter::begin();
+Chanter::cast('speak', function() {
+$bond  Whisper::echo('{{color-success}}{{icon-success}}{{label-success}}hello{{nl}}');
+  Whisper::echo('{{COLOR-DANGER}}{{ICON-DANGER}}loud{{nl}}');
+  Whisper::echo('hi {{name}}{{nl}}');
+  print('GOT=' . Whisper::echo('{{icon-info}}kept', true) . "\\n");
+});
+Chanter::end();
+Aether::end();
+
+PHP);
+  return $probe;
+}
+
+function weaverless_cast( String $probe, String $cast ) {
+  return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' ' . $cast . ' 2>&1');
+}
+
+Chanter::cast('test', function() {
+  foreach (['alone', 'plain', 'woven'] as $name) {
+    trial_proof_clean($name);
+  }
+
+  trial_section('Whisper without Weaver (devneet-id/rune#29)');
+  $out = weaverless_cast(weaverless_probe('alone', false), 'speak');
+  $plain = trial_plain($out);
+  trial('no fatal error: Whisper speaks', !str_contains($out, 'Fatal error') && str_contains($plain, 'hello'));
+  trial('its own tokens are replaced: colour, icon, label', str_contains($out, "\033[") && str_contains($plain, '[√]') && str_contains($plain, 'SUCCESS:') && !preg_match('/\{\{(color|icon|label|nl)/i', $plain));
+  trial('upper-case tokens too', str_contains($plain, '[x]') && str_contains($plain, 'loud') && !str_contains($plain, 'COLOR-DANGER'));
+  trial('Whisper::echo(…, true) returns the text, replaced', str_contains($plain, 'GOT=[i]kept'));
+  trial('the footer is printed', str_contains($plain, 'Version='));
+  trial("a user's own bond is not Whisper's: {{name}} stays as written", str_contains($plain, 'hi {{name}}'));
+  $out = weaverless_cast(weaverless_probe('plain', false, '$WHISPER_COLOR = false;'), 'speak');
+  trial('plain text works without Weaver too', !str_contains($out, "\033[") && str_contains($out, '[√]') && str_contains($out, 'hello'));
+
+  trial_section('Whisper with Weaver');
+  $plain = trial_plain(weaverless_cast(weaverless_probe('woven', true), 'speak'));
+  trial('its own tokens are replaced', str_contains($plain, '[√]') && str_contains($plain, 'hello') && !str_contains($plain, '{{color'));
+  trial("the user's own bond is woven in: hi Anwar", str_contains($plain, 'hi Anwar'));
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();
