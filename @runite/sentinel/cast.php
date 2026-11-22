@@ -485,9 +485,11 @@ Chanter::cast(
       $name = $runic_name($name);
       $repo = EVOLUTION . $name . '/';
 
-      if ($name !== '' && $processing__remove_rune($name, $repo)) {
-        // also remove it from the runite, so no `use`/awaken line points to a deleted rune
+      // take it out of the runite first, while it is still listed, so no `use`/awaken line points to a deleted rune
+      if ($name !== '' && file_exists($repo)) {
         $processing_revoke($name);
+      }
+      if ($name !== '' && $processing__remove_rune($name, $repo)) {
         Whisper::echo("{{COLOR-SUCCESS}}{{ICON-SUCCESS}} Rune deleted: @evolution/$name {{nl}}");
       }else {
         Whisper::echo("{{COLOR-DANGER}}{{ICON-WARNING}} Rune not found: @evolution/$name {{nl}}");
