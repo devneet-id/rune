@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.17';
+  public $version = '1.18';
   
   public $main = 'Chanter';
 
@@ -18,7 +18,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $link = [
     ['Aether', 'entity', '1.22'],
-    ['Whisper', 'entity', '1.14'],
+    ['Whisper', 'entity', '1.15'],
     ['Specter', 'entity', '1.11'],
   ];
 
