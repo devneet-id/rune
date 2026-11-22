@@ -38,7 +38,10 @@ function chanter_arg_extract( String $newArg = '' ) {
   $CHANTER_ARG_CAST = [];
   $CHANTER_ARG_SPELL = $CHANTER_SPELL;
   
-  if (!empty($newArg)) {
+  // a cast written in code is split on spaces, so a space in its values is written %20 and decoded here;
+  // the command line already gives each value whole, so it is kept as typed (a %2F stays %2F)
+  $fromCode = !empty($newArg);
+  if ($fromCode) {
     $args = explode(' ', $newArg);
   }else {
     $args = $CHANTER_ARGS;
@@ -51,8 +54,8 @@ function chanter_arg_extract( String $newArg = '' ) {
         $key = str_replace('--', '', $match[1]);
         // `--x` (no value) is a flag: true (bool); `--x=1` is the value "1", `--x=0` the value "0"
         if (isset($match[2]) && $match[2] !== '') {
-          // raw* keeps a literal '+' (e.g. How+to+Casting.rune) instead of turning it into a space
-          $CHANTER_ARG_SPELL[$key] = rawurlencode(rawurldecode($match[2]));
+          // a value is kept encoded and decoded once on read; raw* keeps a literal '+' (e.g. How+to+Casting.rune)
+          $CHANTER_ARG_SPELL[$key] = rawurlencode($fromCode ? rawurldecode($match[2]) : $match[2]);
         }else {
           $CHANTER_ARG_SPELL[$key] = true;
         }
@@ -199,7 +202,8 @@ function chanter_spell( String $name, $values = NULL ) {
 function chanter_spell_set( String $name, String $value ) {
   global $CHANTER_SPELL;
 
-  $CHANTER_SPELL[$name] = $value;
+  // kept encoded, like a parsed spell, so it is read back as given
+  $CHANTER_SPELL[$name] = rawurlencode($value);
   
   aether_arcane("Chanter.entity.chanter_spell_set");
   return true;
