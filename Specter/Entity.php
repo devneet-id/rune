@@ -237,7 +237,8 @@ function specter_detach( String $arg, Array $options = [] ) {
     // Start-Process gives the PID back; the window is minimized or hidden
     $style = !empty($options['minimized']) ? 'Minimized' : 'Hidden';
     $line = $arg . ($log !== '' ? ' >> "' . $log . '" 2>&1' : '');
-    $script = "(Start-Process -FilePath cmd.exe -ArgumentList '/C " . str_replace("'", "''", $line) . "' -WindowStyle $style -PassThru).Id";
+    // /S /C "…": cmd takes off only the outer quotes, so a quoted program with quoted arguments stays whole
+    $script = "(Start-Process -FilePath cmd.exe -ArgumentList '/S /C \"" . str_replace("'", "''", $line) . "\"' -WindowStyle $style -PassThru).Id";
     $pid = (int) trim((string) shell_exec('powershell -NoProfile -Command "' . str_replace('"', '\\"', $script) . '"'));
   }else {
     // its own session (setsid, where there is one), so kill() ends the whole group
@@ -382,10 +383,12 @@ function specter_loop( Callable $tick, Int $sleep = 100, ?Callable $stop = null,
 function specter_run( String $arg, Float $timeout = 900, String $log = '', ?Callable $onBeat = null, Float $beat = 5 ) {
   $arg = weaver_bind($arg, 'self', PHP_BINARY. ' ' . AETHER_FILE);
   $windows = PHP_OS_FAMILY === 'Windows';
-  $target = ($log !== '') ? $log : ($windows ? 'NUL' : '/dev/null');
+  // one handle for stdout and stderr: they share one position in the log (two handles overwrite each other on Windows)
+  $output = fopen(($log !== '') ? $log : ($windows ? 'NUL' : '/dev/null'), 'ab');
   // exec: the command takes the place of the shell, so a timeout stops the command itself
-  $process = proc_open($windows ? $arg : 'exec ' . $arg, [0=> ['pipe', 'r'], 1=> ['file', $target, 'a'], 2=> ['file', $target, 'a']], $pipes);
+  $process = proc_open($windows ? $arg : 'exec ' . $arg, [0=> ['pipe', 'r'], 1=> $output, 2=> $output], $pipes);
   if (!is_resource($process)) {
+    fclose($output);
     return ['code'=> null, 'timeout'=> false, 'time'=> 0.0];
   }
   fclose($pipes[0]);
@@ -420,6 +423,7 @@ function specter_run( String $arg, Float $timeout = 900, String $log = '', ?Call
     usleep(50000);
   }
   proc_close($process);
+  fclose($output);
 
   aether_arcane('Specter.entity.specter_run');
   return ['code'=> $timedout ? null : $code, 'timeout'=> $timedout, 'time'=> microtime(true) - $start];
