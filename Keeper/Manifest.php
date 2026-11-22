@@ -59,10 +59,12 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
-  #NOTE: Gets or sets a structured keeper item in JSON format.
+  #NOTE: Gets or sets a structured keeper item in JSON format; given a closure, reads, changes and writes it under one lock.
   public static function item( String $name, $value = false ) {
     if ($value === false) {
       $return = keeper_item_get($name);
+    }else if ($value instanceof \Closure) {
+      $return = keeper_item_update($name, $value);
     }else {
       $return = keeper_item_set($name, $value);
     }
