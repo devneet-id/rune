@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.15';
+  public $version = '1.16';
   
   public $main = 'Whisper';
 
@@ -119,6 +119,11 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'entity',
       'call' => 'whisper_echo_imbue( String $text )',
       'note' => 'Apply all whisper formatting to the text (colors, icons, labels); without colour the ANSI codes are left out',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'whisper_echo_tokens( String $text, Array $maps )',
+      'note' => 'Replace the own tokens of Whisper ({{nl}}, {{color-x}}, {{icon-x}}…, lower or upper case) without Weaver',
     ],
     [
       'type' => 'entity',

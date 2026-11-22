@@ -35,7 +35,7 @@ function specter_soul_get( String $name ) {
   
   return $return;
 }
-#NOTE: Loads and syncs soul data from keeper, optionally updates a value.
+#NOTE: Loads and syncs soul data from keeper; with a value (any, 0 and false too) it also writes it.
 function specter_soul_save( $name, $value = null ) {
   global $SPECTER_SOUL;
   
@@ -50,7 +50,8 @@ function specter_soul_save( $name, $value = null ) {
 
   $SPECTER_SOUL = $soul_keeper;
 
-  if (!empty($value)) {
+  // only a call with a value writes (a value may be 0, '' or false)
+  if (func_num_args() > 1) {
     $SPECTER_SOUL->$name = $value;
   }
 

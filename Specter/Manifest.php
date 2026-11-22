@@ -81,13 +81,16 @@ class Manifest extends \Rune\Manifest {
     shell_exec($command);
   }
 
-  #NOTE: Store or retrieve a named soul value (persistent memory)
-  public static function soul( String $name, Mixed $value = NULL ) {
-    if ($value) {
-      specter_soul_set($name, $value);
-      $return = $value;
-    }else {
+  #NOTE: Store or retrieve a named soul value (persistent memory): one argument reads; a second one writes any value (0, '' and false too); null removes it
+  public static function soul( String $name, Mixed ...$value ) {
+    if (count($value) === 0) {
       $return = specter_soul_get($name);
+    }else if ($value[0] === null) {
+      specter_soul_remove($name);
+      $return = null;
+    }else {
+      specter_soul_set($name, $value[0]);
+      $return = $value[0];
     }
 
     aether_arcane("Specter.manifest.soul");

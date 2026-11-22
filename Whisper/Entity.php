@@ -102,9 +102,28 @@ function whisper_echo_imbue( String $text ) {
       }
     }
   }
-  // style variables are applied to this text only; they must not leak into Weaver's global bond
-  $text = weaver_bind_multiple($text, $maps, false);
+  if (aether_has_entity('weaver_bind_multiple')) {
+    // Weaver awake: Whisper's tokens and the user's own bonds; style variables must not leak into Weaver's global bond
+    $text = weaver_bind_multiple($text, $maps, false);
+  }else {
+    // Weaver is a complement (soft bond): Whisper replaces its own tokens itself
+    $text = whisper_echo_tokens($text, $maps);
+  }
   aether_arcane('Whisper.entity.whisper_echo_imbue');
+  return $text;
+}
+#NOTE: Replace the own tokens of Whisper ({{nl}}, {{color-x}}, {{icon-x}}…, lower or upper case) without Weaver
+function whisper_echo_tokens( String $text, Array $maps ) {
+  $pairs = [];
+  foreach ($maps as $key => $value) {
+    if (is_string($value)) {
+      $pairs['{{' . strtolower($key) . '}}'] = $value;
+      $pairs['{{' . strtoupper($key) . '}}'] = $value;
+    }
+  }
+  $text = strtr($text, $pairs);
+
+  aether_arcane('Whisper.entity.whisper_echo_tokens');
   return $text;
 }
 

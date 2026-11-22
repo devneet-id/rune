@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.11';
+  public $version = '1.12';
   
   public $main = 'Specter';
 
@@ -20,11 +20,11 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Enables out-of-process operations through soul-like abstractions—designed for managing complex, asynchronous, or decoupled executions by temporarily separating logic from the main flow while maintaining active control.';
 
   public $link = [
-    ['Keeper', 'ether', '1.16'],
-    ['Aether', 'ether', '1.21'],
+    ['Keeper', 'ether', '1.18'],
+    ['Aether', 'ether', '1.22'],
     ['Weaver', 'entity', '1.10'],
     ['Forger', 'entity', '1.17'],
-    ['Whisper', 'entity', '1.14'],
+    ['Whisper', 'entity', '1.16'],
   ];
 
   public $node = [
@@ -101,7 +101,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'specter_soul_save( $name, $value = null )',
-      'note' => 'Loads and syncs soul data from keeper, optionally updates a value.',
+      'note' => 'Loads and syncs soul data from keeper; with a value (any, 0 and false too) it also writes it.',
     ],
     [
       'type' => 'entity',
@@ -150,8 +150,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'soul( String $name, Mixed $value = NULL )',
-      'note' => 'Store or retrieve a named soul value (persistent memory)',
+      'call' => 'soul( String $name, Mixed ...$value )',
+      'note' => 'Store or retrieve a named soul value (persistent memory): one argument reads; a second one writes any value (0, "" and false too); null removes it',
     ],
     [
       'type' => 'manifest',
