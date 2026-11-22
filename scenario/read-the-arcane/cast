@@ -1,0 +1,82 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — READ THE ARCANE
+ * Every step of a run is written in the arcane: Keeper keeps the last run and one copy per run,
+ * the Grimoire reads it back, and --zero-trust runs a cast with the arcane off.
+ * Specter's souls (memory shared across processes) live in the same echoes.
+ * Each case is a probe runite in .proof/, cast in its own process.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Specter (in the probes).
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+// a probe runite with Forger, Cipher and Keeper awake; $casts are its own casts
+function probe_write( String $path, String $casts ) {
+  $probe = trial_proof($path);
+  if (!is_dir(dirname($probe))) {
+    mkdir(dirname($probe), 0777, true);
+  }
+  $autoload = var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true);
+  file_put_contents($probe, "<?php\nrequire_once $autoload;\nuse Rune\\Aether\\Manifest as Aether;\nuse Rune\\Whisper\\Manifest as Whisper;\nuse Rune\\Weaver\\Manifest as Weaver;\nuse Rune\\Chanter\\Manifest as Chanter;\nuse Rune\\Forger\\Manifest as Forger;\nuse Rune\\Cipher\\Manifest as Cipher;\nuse Rune\\Keeper\\Manifest as Keeper;\n#sentinel-manifest\nAether::ether()::essence()::entity();\nWhisper::ether()::essence()::entity();\nWeaver::ether()::essence()::entity();\nChanter::ether()::essence()::entity();\nForger::ether()::essence()::entity();\nCipher::ether()::essence()::entity();\nKeeper::ether()::essence()::entity();\n#sentinel-awaken\nAether::begin();\nChanter::begin();\nKeeper::begin();\n#sentinel-flow-begin\n$casts\n#sentinel-codex\nChanter::end();\nKeeper::end();\n#sentinel-flow-end\nAether::end();\n");
+  return $probe;
+}
+
+// casts a probe in its own process: its plain output
+function probe_cast( String $probe, String $spells = '' ) {
+  return trial_plain((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' ' . $spells . ' 2>&1'));
+}
+
+Chanter::cast('test', function() {
+  trial_proof_clean('arcane');
+  $casts = <<<'PHP'
+Chanter::cast('work', function() {
+  Keeper::item('count', ['n' => 1]);
+  print("WORKED\n");
+});
+PHP;
+  $probe = probe_write('arcane/cast', $casts);
+  $echoes = dirname($probe) . '/.echoes/cast/';
+
+  trial_section('The arcane of a run');
+  trial('the probe runs its cast', str_contains(probe_cast($probe, 'work'), 'WORKED'));
+  $arcane = (string) @file_get_contents($echoes . 'arcane.txt');
+  trial('arcane.txt holds the steps of the last run', str_contains($arcane, 'Keeper.manifest.item') && str_contains($arcane, 'Keeper.manifest.end'));
+  $copies = glob($echoes . 'arcanes/*.txt') ?: [];
+  trial('arcanes/ keeps a copy of the run, named by date', count($copies) >= 1 && preg_match('/\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2}/', basename($copies[0])));
+  trial('every step has a state (BURST, FLASH, FLOW…)', (bool) preg_match('/(BURST|FLASH|FLOW|FALL|BREAK|COLLAPSE|OVERCLOCK)/', $arcane));
+
+  trial_section('The Grimoire reads it');
+  $said = probe_cast($probe, 'grimoire --arcane');
+  trial('grimoire --arcane shows the stats of the last run', str_contains($said, 'CURRENT ARCANE STATS') && str_contains($said, 'Manifest ='));
+
+  trial_section('--zero-trust');
+  $said = probe_cast($probe, 'work --zero-trust');
+  trial('the cast still runs, its output shown at once', str_contains($said, 'WORKED'));
+  trial('no step of it is written to the arcane', !str_contains((string) @file_get_contents($echoes . 'arcane.txt'), 'Keeper.manifest.item'));
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

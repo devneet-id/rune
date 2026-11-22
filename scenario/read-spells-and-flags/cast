@@ -5,6 +5,7 @@
  * How Chanter reads a spell: a bare flag (--loud), a value (--times=1), zero (--times=0),
  * and how a cast hands its spells on to another cast (cast-in-cast).
  * A flag is true; a value is a string — "1" is a value, not a flag.
+ * A value is read as given: on the command line a %2F stays %2F; in a cast written in code a space is %20.
  * Runes: Aether, Whisper, Weaver, Chanter.
  *
  *   php cast probe --loud --times=1 --zero=0 --word=a+b
@@ -38,13 +39,19 @@ function spells_read( Array $names ) {
 }
 
 $GLOBALS['SPELLS_SEEN'] = [];
-Chanter::cast('probe --loud --times --zero --word --missing', function() {
-  $GLOBALS['SPELLS_SEEN'] = spells_read(['loud', 'times', 'zero', 'word', 'missing']);
-  Whisper::echo(json_encode($GLOBALS['SPELLS_SEEN']) . '{{nl}}');
+Chanter::cast('probe --loud --times --zero --word --missing --api --text', function() {
+  $GLOBALS['SPELLS_SEEN'] = spells_read(['loud', 'times', 'zero', 'word', 'missing', 'api', 'text']);
+  print('SEEN=' . json_encode($GLOBALS['SPELLS_SEEN']) . "\n");
 }, 'Show how each spell is read.');
 
+// casts this scenario on the command line, in its own process: what probe saw
+function spells_command( String $spells, String $cast = 'probe' ) {
+  $out = (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__FILE__) . ' ' . $cast . ' ' . $spells . ' 2>&1');
+  return preg_match('/SEEN=(\{.*\})/', $out, $m) ? json_decode($m[1], true) : [];
+}
+
 // hands its own spells on to probe, the way a cast-in-cast does
-Chanter::cast('relay --loud --times', function() {
+Chanter::cast('relay --loud --times --api --text', function() {
   Chanter::cast('probe ' . chanter_spell_chain())();
 }, 'Hand the spells on to probe.');
 
@@ -70,6 +77,23 @@ Chanter::cast('test', function() {
   $seen = $GLOBALS['SPELLS_SEEN'];
   trial('a flag handed on stays a flag', ($seen['loud'][0] ?? null) === true);
   trial('a value handed on stays the value', ($seen['times'][0] ?? null) === '1');
+
+  trial_section('A value is read as given (devneet-id/rune#22)');
+  $seen = spells_command('--api=https://x.test/a%2Fb --word=a+b --text=50%25');
+  trial('command line: --api=…/a%2Fb stays a%2Fb', ($seen['api'][0] ?? null) === 'https://x.test/a%2Fb');
+  trial('command line: --text=50%25 stays 50%25', ($seen['text'][0] ?? null) === '50%25');
+  trial('command line: a + stays a +', ($seen['word'][0] ?? null) === 'a+b');
+  $seen = spells_command(escapeshellarg('--text=Rune Lore'));
+  trial('command line: a quoted space stays a space', ($seen['text'][0] ?? null) === 'Rune Lore');
+  $GLOBALS['SPELLS_SEEN'] = [];
+  trial_cast('probe --text=Rune%20Lore');
+  trial('in code: %20 is a space', ($GLOBALS['SPELLS_SEEN']['text'][0] ?? null) === 'Rune Lore');
+  $seen = spells_command('--api=https://x.test/a%2Fb --text=50%25', 'relay');
+  trial('cast in cast: the value is handed on unchanged', ($seen['api'][0] ?? null) === 'https://x.test/a%2Fb' && ($seen['text'][0] ?? null) === '50%25');
+  Chanter::spell('api', 'https://x.test/a%2Fb');
+  $GLOBALS['SPELLS_SEEN'] = [];
+  trial_cast('probe');
+  trial('a spell set from code is read as given', ($GLOBALS['SPELLS_SEEN']['api'][0] ?? null) === 'https://x.test/a%2Fb');
 
   trial_report();
 }, 'Trial of this scenario.');

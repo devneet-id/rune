@@ -1,0 +1,96 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — SEAL AND OPEN A RELIC
+ * A runite and its shards travel as one .rune file: seal it in one folder, open it in another.
+ * The memory (items in .echoes) does not travel — only the runite and the files it named as shards.
+ * Both runites are probes in .proof/, each cast in its own process.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper (in the probes); Reliquary (runite).
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+// a probe runite with Forger, Cipher and Keeper awake; $casts are its own casts
+function probe_write( String $path, String $casts ) {
+  $probe = trial_proof($path);
+  if (!is_dir(dirname($probe))) {
+    mkdir(dirname($probe), 0777, true);
+  }
+  $autoload = var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true);
+  file_put_contents($probe, "<?php\nrequire_once $autoload;\nuse Rune\\Aether\\Manifest as Aether;\nuse Rune\\Whisper\\Manifest as Whisper;\nuse Rune\\Weaver\\Manifest as Weaver;\nuse Rune\\Chanter\\Manifest as Chanter;\nuse Rune\\Forger\\Manifest as Forger;\nuse Rune\\Cipher\\Manifest as Cipher;\nuse Rune\\Keeper\\Manifest as Keeper;\n#sentinel-manifest\nAether::ether()::essence()::entity();\nWhisper::ether()::essence()::entity();\nWeaver::ether()::essence()::entity();\nChanter::ether()::essence()::entity();\nForger::ether()::essence()::entity();\nCipher::ether()::essence()::entity();\nKeeper::ether()::essence()::entity();\n#sentinel-awaken\nAether::begin();\nChanter::begin();\nKeeper::begin();\n#sentinel-flow-begin\n$casts\n#sentinel-codex\nChanter::end();\nKeeper::end();\n#sentinel-flow-end\nAether::end();\n");
+  return $probe;
+}
+
+// casts a probe in its own process: its plain output
+function probe_cast( String $probe, String $spells = '' ) {
+  return trial_plain((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' ' . $spells . ' 2>&1'));
+}
+
+Chanter::cast('test', function() {
+  trial_proof_clean('home');
+  trial_proof_clean('away');
+  $casts = <<<'PHP'
+Chanter::cast('pack', function() {
+  Forger::repo(__DIR__ . '/data');
+  Forger::item(__DIR__ . '/data/hello.txt', 'hello from home');
+  Keeper::shard(['data']);
+  Keeper::item('secret', ['kept' => 'at home']);
+  print("PACKED\n");
+});
+Chanter::cast('show', function() {
+  print('FILE=' . (is_file(__DIR__ . '/data/hello.txt') ? file_get_contents(__DIR__ . '/data/hello.txt') : '-') . "\n");
+  print('ITEM=' . (Keeper::item('secret')->kept ?? '-') . "\n");
+});
+PHP;
+  $home = probe_write('home/cast', $casts);
+  $away = probe_write('away/cast', "Chanter::cast('away', function() { print(\"AWAY\n\"); });");
+
+  trial_section('Seal at home (reliquary --runite-relic)');
+  trial('the home runite packs a file and names it a shard', str_contains(probe_cast($home, 'pack'), 'PACKED'));
+  $said = probe_cast($home, 'reliquary --runite-relic');
+  $relic = dirname($home) . '/cast.rune';
+  trial('a relic is made next to the runite', str_contains($said, 'Relic made: cast.rune') && is_file($relic));
+  trial('--runite-inspect reads it: its shard is listed', str_contains(probe_cast($home, 'reliquary --runite-inspect'), 'data/hello.txt'));
+
+  trial_section('Open away (reliquary --relic-runite)');
+  copy($relic, dirname($away) . '/home.rune');
+  $said = probe_cast($away, 'reliquary --relic-runite=home.rune');
+  trial('without --yes it asks, and nothing changes on a no', str_contains($said, 'will be replaced') && str_contains((string) file_get_contents($away), "'away'"));
+  $said = probe_cast($away, 'reliquary --relic-runite=home.rune --yes');
+  trial('with --yes the relic opens into the runite', str_contains($said, 'opened into cast') && str_contains((string) file_get_contents($away), "'pack'"));
+  $shown = probe_cast($away, 'show');
+  trial('the shard came with it', str_contains($shown, 'FILE=hello from home'));
+  trial('the memory did not: items never travel', str_contains($shown, 'ITEM=-'));
+  trial('at home the memory is still there', str_contains(probe_cast($home, 'show'), 'ITEM=at home'));
+
+  trial_section('A file that is not a relic');
+  file_put_contents(dirname($away) . '/broken.rune', 'not a relic');
+  $before = (string) file_get_contents($away);
+  $said = probe_cast($away, 'reliquary --relic-runite=broken.rune --yes');
+  trial('it is refused and the runite stays', str_contains($said, 'is not a relic') && (string) file_get_contents($away) === $before);
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();

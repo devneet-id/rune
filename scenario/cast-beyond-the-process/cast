@@ -5,6 +5,7 @@
  * Specter runs a command in another process. Hidden and non-blocking, the runite must go on at once
  * while the command works on its own; hidden and blocking, the runite waits for it.
  * The command is a small php job written in .proof/: it sleeps, then writes a file.
+ * Souls (Specter::soul) are memory one process writes and another reads.
  * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Specter.
  *
  *   php cast test
@@ -57,6 +58,11 @@ function beyond_wait( String $file, Int $seconds ) {
   return is_file($file);
 }
 
+// reads a soul in this process: run by the trial in another process
+Chanter::cast('soul-read --name', function() {
+  print('SOUL=' . json_encode(Specter::soul((string) Chanter::spell('name'))) . "\n");
+}, 'Print a soul. --name=<name>');
+
 Chanter::cast('test', function() {
   trial_proof_clean('jobs');
 
@@ -76,6 +82,19 @@ Chanter::cast('test', function() {
   trial_section('Specter remembers its casts');
   $casts = Keeper::item('cast');
   trial('every cast is kept in .echoes (cast.json)', is_object($casts) && count((array) $casts) >= 2);
+
+  trial_section('Souls: memory shared across processes');
+  $before = Keeper::item('soul');
+  Specter::soul('mood', 'calm');
+  trial('a soul is read back in this process', Specter::soul('mood') === 'calm');
+  trial('it is kept in .echoes (soul.json)', (Keeper::item('soul')->mood ?? null) === 'calm');
+  $out = (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__FILE__) . ' soul-read --name=mood 2>&1');
+  trial('another process of this runite reads the same soul', str_contains($out, 'SOUL="calm"'));
+  Specter::soul('mood', 'stormy');
+  $out = (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__FILE__) . ' soul-read --name=mood 2>&1');
+  trial('a new value reaches it too', str_contains($out, 'SOUL="stormy"'));
+  trial('a soul never set is false', Specter::soul('never-set') === false);
+  Keeper::item('soul', $before ?: []);
 
   trial_report();
 }, 'Trial of this scenario.');
