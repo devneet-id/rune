@@ -11,18 +11,20 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  // create next static method
+  #NOTE: Asks the familiar (AI spirit) and returns its answer
+  public static function ask( Array|String $texts ) {
+    $return = minister_ask((array) $texts);
 
-  public static function _arise() {
-    global $MINISTER_SPIRIT;
-
-    if (keeper_has('familiar.json')) {
-      $MINISTER_SPIRIT = true;  
-    }
+    aether_arcane('Minister.manifest.ask');
+    return $return;
   }
 
-  public static function test() {
-    
+  #NOTE: Returns every answer collected from the familiar
+  public static function say() {
+    $return = minister_say();
+
+    aether_arcane('Minister.manifest.say');
+    return $return;
   }
 
 }

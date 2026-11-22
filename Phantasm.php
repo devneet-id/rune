@@ -18,6 +18,9 @@ class Phantasm {
 
   public $link = [];
 
+  #NOTE: true when the rune has a begin() and an end() the runite must call (Sentinel writes them at #sentinel-flow-begin / -end).
+  public $flow = false;
+
   public $node = [];
 
 }

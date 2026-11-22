@@ -83,8 +83,14 @@ $GLOBALS['WHISPER_LABELS'] = [
   'DEBUG'     => "DEBUG: ",
 ];
 
+#NOTE: Whether Whisper speaks in colour; a runite sets $WHISPER_COLOR = false; for plain text (NO_COLOR in the environment does the same).
+$GLOBALS['WHISPER_COLOR'] = true;
+
 #NOTE: Buffer to store whisper output when in drain mode
 $GLOBALS['WHISPER_DRAIN'] = [];
 
 #NOTE: State toggle to determine whether whisper is in drain mode
 $GLOBALS['WHISPER_DRAIN_STATE'] = false;
+
+#NOTE: global pointer for flash progress
+$GLOBAL['CHANTER_FLASH_POINT'] = 0;

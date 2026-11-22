@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.11';
+  public $version = '1.16';
   
   public $main = 'Crafter';
 
@@ -20,11 +20,11 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Focused on dynamic creation and composition—designed to build, shape, and assemble various data structures or logic units through modular, seed-based, and spark-driven processes.';
 
   public $link = [
-    ['Aether', 'ether', '1.16'],
-    ['Weaver', 'ether:essence', '1.6'],
-    ['Cipher', 'entity', '1.5'],
-    ['Forger', 'entity', '1.13'],
-    ['Keeper', 'ether:essence', '1.10'],
+    ['Aether', 'ether', '1.20'],
+    ['Cipher', 'entity', '1.6'],
+    ['Forger', 'entity', '1.16'],
+    ['Weaver', 'entity', '1.9'],
+    ['Whisper', 'entity', '1.13'],
   ];
 
   public $node = [
@@ -130,37 +130,37 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_seed_set( String $name, Mixed $value )',
+      'call' => 'crafter_seed_set(String $name, Mixed $value)',
       'note' => 'Store a value into the global CRAFTER_SEED array using the given name as key.',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_seed_get( String $name )',
+      'call' => 'crafter_seed_get(String $name)',
       'note' => 'Get a value from the global CRAFTER_SEED array using the given name as key.',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_item_set( String $name, ?Callable $callable )',
+      'call' => 'crafter_item_set(String $name, ?Callable $callable)',
       'note' => 'Register a callable into the global CRAFTER_ITEM array using the given name as key.',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_item_get( String $name )',
+      'call' => 'crafter_item_get(String $name)',
       'note' => 'Execute a registered crafter item callable by name and update CRAFTER_SPARK with current state.',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_shard_set( String $file_path, ?Callable $injection = NULL )',
+      'call' => 'crafter_shard_set(String $file_path, ?Callable $injection = NULL)',
       'note' => 'Register a shard file with optional injection, and store its info and path in global shard arrays.',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_shard_get( String $file_path, ?Callable $injection = NULL )',
+      'call' => 'crafter_shard_get(String $file_path, ?Callable $injection = NULL)',
       'note' => 'Retrieve a shard file info, registering it first if not already listed.',
     ],
     [
       'type' => 'entity',
-      'call' => 'crafter_spark( String $name, ?Callable $injection = NULL )',
+      'call' => 'crafter_spark(String $name, ?Callable $injection = NULL)',
       'note' => 'Run full crafting pipeline — validate readiness, process shards, apply injection, and finalize crafting result.',
     ],
     [
@@ -171,12 +171,17 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'crafter_spark_clustering()',
-      'note' => 'Inject and group each shard’s content into the appropriate cluster based on name or file type.',
+      'note' => 'Inject and group each shard’s content into the appropriate cluster based on name or file type; only the languages of the seed are read, other shards are skipped.',
     ],
     [
       'type' => 'entity',
       'call' => 'crafter_spark_cleaning()',
       'note' => 'Clean each cluster by removing unwanted patterns using language-specific cleaning rules.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'crafter_spark_encoding( String $encryption )',
+      'note' => 'The encoder of a sealed bundle (TYPE function/class): base64, or gzip kept as base64 text so it fits a quoted PHP string.',
     ],
     [
       'type' => 'entity',
@@ -190,22 +195,22 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'item( String $name, ?Callable $callable = NULL )',
+      'call' => 'item(string $name, ?callable $callable = null)',
       'note' => 'Registers or retrieves a crafter item by name; sets the active name if callable is provided.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'seed( String $name, Mixed $value = NULL )',
+      'call' => 'seed(string $name, mixed $value = null)',
       'note' => 'Sets or retrieves a value from the crafter seed configuration.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'shard( String $source, ?Callable $injection = NULL )',
+      'call' => 'shard(string $source, ?callable $injection = null)',
       'note' => 'Retrieves or registers a shard source with optional injection logic.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'spark( Mixed $name_or_callable = NULL, ?Callable $injection = NULL )',
+      'call' => 'spark(mixed $name_or_callable = null, ?callable $injection = null)',
       'note' => 'Executes the full crafting process using item name or callable, then resets the crafter state and shows crafting summary.',
     ],
   ];

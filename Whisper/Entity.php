@@ -9,12 +9,16 @@ function whisper() {
  *  */
 #NOTE: Clear terminal screen using ANSI escape codes
 function whisper_clear() {
+  if (!whisper_color()) return;
   echo "\033[2J\033[0;0H";
 }
 #NOTE: Force clear terminal using system commands (Linux & Windows)
 function whisper_clear_force() {
-  system('clear');
-  system('cls');
+  if (PHP_OS_FAMILY === 'Windows') {
+    system('cls');
+  }else {
+    system('clear');
+  }
   whisper_clear();
 }
 #NOTE: Delay output for a given number of milliseconds
@@ -62,7 +66,13 @@ function whisper_echo_set( String $message ) {
   aether_arcane('Whisper.entity.whisper_echo_set');
   return true;
 }
-#NOTE: Apply all whisper formatting to the text (colors, icons, labels)
+#NOTE: Whether Whisper speaks in colour: $WHISPER_COLOR is not false and NO_COLOR is not set in the environment.
+function whisper_color() {
+  global $WHISPER_COLOR;
+  $no_color = getenv('NO_COLOR');
+  return $WHISPER_COLOR !== false && ($no_color === false || $no_color === '');
+}
+#NOTE: Apply all whisper formatting to the text (colors, icons, labels); without colour the ANSI codes are left out
 function whisper_echo_imbue( String $text ) {
   global $WHISPER_VARS;
   global $WHISPER_COLORS;
@@ -84,8 +94,36 @@ function whisper_echo_imbue( String $text ) {
       $maps[ $key.'-'.$key2 ] = $value;
     }
   }
-  $text = weaver_bind_multiple($text, $maps);
+  // plain text: every colour, background, bold and reset becomes nothing; words, icons and labels stay
+  if (!whisper_color()) {
+    foreach ($maps as $key => $value) {
+      if (is_string($value) && str_contains($value, "\033[")) {
+        $maps[$key] = '';
+      }
+    }
+  }
+  if (aether_has_entity('weaver_bind_multiple')) {
+    // Weaver awake: Whisper's tokens and the user's own bonds; style variables must not leak into Weaver's global bond
+    $text = weaver_bind_multiple($text, $maps, false);
+  }else {
+    // Weaver is a complement (soft bond): Whisper replaces its own tokens itself
+    $text = whisper_echo_tokens($text, $maps);
+  }
   aether_arcane('Whisper.entity.whisper_echo_imbue');
+  return $text;
+}
+#NOTE: Replace the own tokens of Whisper ({{nl}}, {{color-x}}, {{icon-x}}…, lower or upper case) without Weaver
+function whisper_echo_tokens( String $text, Array $maps ) {
+  $pairs = [];
+  foreach ($maps as $key => $value) {
+    if (is_string($value)) {
+      $pairs['{{' . strtolower($key) . '}}'] = $value;
+      $pairs['{{' . strtoupper($key) . '}}'] = $value;
+    }
+  }
+  $text = strtr($text, $pairs);
+
+  aether_arcane('Whisper.entity.whisper_echo_tokens');
   return $text;
 }
 
@@ -138,4 +176,42 @@ function whisper_drain_end() {
 /* IMBUE
  * todo set default variable to text */
 
+/* FLASH
+ * todo set default variable to text */
 
+#NOTE: init flash, reset pointer, start buffer
+function whisper_flash_start() {
+    global $CHANTER_FLASH_POINT;
+    
+    $CHANTER_FLASH_POINT = 0;
+    ob_start();
+}
+
+#NOTE: run one flash step, update pointer, flush output
+function whisper_flash_run() {
+    global $CHANTER_FLASH_POINT;
+    
+    if (aether_has_entity('whisper')) {
+        whisper_echo("\r");
+        whisper_echo(str_repeat("{{color-warning}}/", $CHANTER_FLASH_POINT));
+        whisper_echo(str_repeat("{{color-secondary}}/", 50 - $CHANTER_FLASH_POINT));
+    }
+
+    if ($CHANTER_FLASH_POINT == 50) {
+        $CHANTER_FLASH_POINT = 0;
+    }
+
+    $CHANTER_FLASH_POINT += 1;
+
+    flush();
+    ob_flush();
+}
+
+#NOTE: stop flash, end buffer, add newline
+function whisper_flash_stop() {
+    @ob_end_flush();
+    
+    if (aether_has_entity('whisper')) {
+      whisper_echo("\n");
+    }
+}

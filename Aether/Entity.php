@@ -30,16 +30,18 @@ function aether_memoryusage() {
   return $output;
 }
 
+#NOTE: Gets or sets the zero-trust state of the flow.
 function aether_zero_trust( Mixed $state = '' ) {
   global $AETHER_ZERO_TRUST;
-  if (!is_bool($state)) {
+  // bool -> set, empty -> read
+  if (is_bool($state)) {
     $AETHER_ZERO_TRUST = $state;
-  }else {
-    return $AETHER_ZERO_TRUST;
   }
+  return $AETHER_ZERO_TRUST;
 }
-#NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper)
-function aether_exit( $force = false ) {
+#NOTE: Exit the program with execution time and memory usage summary (supports pretty output with whisper); $code is the exit code for the shell (0 = success)
+function aether_exit( $force = false, Int $code = 0 ) {
+  global $AETHER_FOOTER;
   $memory = aether_memoryusage();
   $stopwatch = aether_stopwatch();
   
@@ -48,9 +50,12 @@ function aether_exit( $force = false ) {
   $peak = aether_formatFileSize($memory[1]);
 
   
-  if (aether_has_entity('whisper')) {
+  if ($AETHER_FOOTER === false) {
+    // no footer: the runite asked for it ($AETHER_FOOTER = false;), e.g. its output is read by a machine
+  }else if (aether_has_entity('whisper')) {
     $icon_execute = "{{color-danger}}ϟ{{color-secondary}}";
     $icon_memory = "{{color-primary}}Ξ{{color-secondary}}";
+    $icon_version = '{{color-default}}◇{{color-secondary}}';
     
     if (aether_has_entity('chanter')) {
       if (chanter_spell('zero-trust')) {
@@ -58,16 +63,19 @@ function aether_exit( $force = false ) {
         $icon_memory = "{{color-danger}}Ξ{{color-secondary}}";
       }
     }
+    
+    // every rune counted, evolution runes too (the release tag counts origin runes only)
+    $version = aether_version(true);
 
-    $total_rune = count(aether_arised());
-    whisper_echo("\n{{COLOR-SECONDARY}}{{ICON-INFO}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
+    // whisper_echo("\n{{text-secondary}}{{icon-info}}EXIT: {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
+    whisper_echo("\n{$icon_version}Version={{text-secondary}}$version:{{end}} {$icon_execute}Execute={$end}s, {$icon_memory}Memory=$usage - ^$peak");
   }else {
     print("\n\nRUNE: Execute={$end}s, Memory=$usage - ^$peak");
   }
 
   if ($force) {
     aether_arcane_reset();
-    exit; die;
+    exit($code);
   }
 }
 
@@ -132,6 +140,7 @@ function aether_dd( $data, $force=false ) {
 
 
 /* PHANTASM OF WHISPER */
+#NOTE: Prints text without Whisper (style tokens removed).
 function aether_whisper( $text ) {
   // if (aether_has_entity('whisper')) {
   //   whisper_echo($text);
@@ -139,6 +148,7 @@ function aether_whisper( $text ) {
   // }
   print(preg_replace('/\{\{.*?\}\}/', '', $text).PHP_EOL);
 }
+#NOTE: Echoes through Whisper when awakened, otherwise prints plain text.
 function aether_whisper_echo( $text ) {
   if (aether_has_entity('whisper')) {
     whisper_echo($text);
@@ -200,6 +210,7 @@ function aether_arcane(String $text, String $value = '') {
     }
   }
 }
+#NOTE: Old arcane recorder (kept for reference).
 function aether_arcane_old(String $text, String $value = '') {
   if (aether_zero_trust()) return;
   
@@ -253,6 +264,7 @@ function aether_arcane_disable() {
   return true;
 }
 
+#NOTE: Prints the arcane records of this flow (development).
 function aether_arcane_pretty_print() {
   global $AETHER_ARCANE;
 
@@ -291,18 +303,46 @@ function aether_arcane_pretty_print() {
 
 
 
+#NOTE: Version of Rune: <major AETHER_VERSION>.<minor AETHER_VERSION + sum of rune majors>.<sum of rune minors>, read as integers; $all adds evolution runes.
+function aether_version( Bool $all = false ) {
+  list($major, $minor) = array_pad(explode('.', AETHER_VERSION), 2, '0');
+  $runes_major = 0;
+  $runes_minor = 0;
+  foreach (aether_list_runes() as $rune) {
+    // origin runes only, unless $all
+    if (!$all && !in_array($rune, AETHER_RUNES)) {
+      continue;
+    }
+    $phantasm = 'Rune\\'.$rune.'\\Phantasm';
+    if (!class_exists($phantasm)) {
+      continue; // a rune folder without Phantasm is not counted
+    }
+    $phantasm = new $phantasm();
+    list($rune_major, $rune_minor) = array_pad(explode('.', (string) $phantasm->version), 2, '0');
+    $runes_major += (int) $rune_major;
+    $runes_minor += (int) $rune_minor;
+  }
+  aether_arcane('Aether.entity.aether_version');
+  return (int) $major . '.' . ((int) $minor + $runes_major) . '.' . $runes_minor;
+}
+#NOTE: Lists origin runes (one by one) plus @evolution runes in evolution mode.
 function aether_list_runes() {
-  $manifests = [];
-  // internal rune
-  foreach (glob(AETHER_RUNE_LOCATION . '/*') as $manifest) {
-    if (is_dir($manifest)) {
-      $manifests[] = basename($manifest);
+  // origin runes
+  $manifests = AETHER_RUNES;
+  // evolution runes (evolution mode only, never the same name as an origin rune)
+  foreach (aether_list_evolution() as $manifest) {
+    if (!in_array($manifest, $manifests)) {
+      $manifests[] = $manifest;
     }
   }
-  // external rune
-  if (file_exists(AETHER_REPO . '/.bindrune')) {
-    foreach (glob(AETHER_REPO . '/.bindrune/*') as $manifest) {
-      if (is_dir($manifest)) {
+  return $manifests;
+}
+#NOTE: Lists the runes in @evolution/ (evolution mode only): every folder with a PascalCase name.
+function aether_list_evolution() {
+  $manifests = [];
+  if (defined('EVOLUTION') && file_exists(EVOLUTION)) {
+    foreach (glob(EVOLUTION . '*', GLOB_ONLYDIR) as $manifest) {
+      if (preg_match('/^[A-Z][A-Za-z0-9]*$/', basename($manifest))) {
         $manifests[] = basename($manifest);
       }
     }

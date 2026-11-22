@@ -69,7 +69,7 @@ function weaver_wrap_letter($text, $wrap = 50, $divider = '', $cutFirst = false)
  * todo binding string
  *  */
 #NOTE: Replace a variable placeholder in a template with given data
-function weaver_bind( $template, $search, String $data = '' ) {
+function weaver_bind( $template, $search, String $data = '', Bool $bond = true ) {
   global $WEAVER_BOND;
 
   $template = (!empty($template)) ? $template : '';
@@ -81,7 +81,10 @@ function weaver_bind( $template, $search, String $data = '' ) {
   $template = str_replace( strtoupper("{{ ".$search." }}"), $data, $template);
   $template = str_replace( strtoupper("{{".$search."}}"), $data, $template);
 
-  weaver_bond_set($search, $data);
+  // $bond = false: replace only, don't remember the value in the global bond
+  if ($bond) {
+    weaver_bond_set($search, $data);
+  }
 
   aether_arcane('Weaver.entity.weaver_bind');
   return $template;
@@ -97,11 +100,14 @@ function weaver_bind_extract( $value ) {
   return $vars;
 }
 #NOTE: Bind multiple placeholders in a template using key-value data
-function weaver_bind_multiple( $template, $datas ) {
-  $datas = weaver_bond_combine($datas);
+function weaver_bind_multiple( $template, $datas, Bool $bond = true ) {
+  global $WEAVER_BOND;
+
+  // $bond = false: still read the global bond, but don't write these datas into it
+  $datas = ($bond) ? weaver_bond_combine($datas) : array_replace_recursive($WEAVER_BOND, $datas);
 
   foreach ($datas as $search => $value) {
-    $template = weaver_bind($template, $search, $value);
+    $template = weaver_bind($template, $search, $value, $bond);
   }
 
   aether_arcane('Weaver.entity.weaver_bind_multiple');
@@ -155,7 +161,10 @@ function weaver_bond_get( $key ) {
 #NOTE: Load and bind a template file with dynamic data replacements
 function weaver_item( $source, $datas = [] ) {
   $item = file_get_contents($source);
-  $item = weaver_bind($item, $datas);
+  // every key of $datas replaces its {{key}}
+  if (!empty($datas)) {
+    $item = weaver_bind_multiple($item, (array) $datas);
+  }
 
   aether_arcane('Weaver.entity.weaver_item');
   return $item;
@@ -352,25 +361,46 @@ function weaver_min_html($input) {
 
   return $input;
 }
-#NOTE: Minify PHP code by trimming extra whitespace and cleaning up the syntax
-function weaver_min_php($input) {
-  // Hapus komentar baris (//) tanpa menghapus karakter lain di dalam string
-  $input = preg_replace('/(?<!:|\'|")\/\/[^\n]*/', '', $input);
+#NOTE: Minify PHP code with the PHP tokenizer: comments and extra whitespace go, strings (also heredoc/nowdoc) stay byte for byte
+function weaver_min_php( $input ) {
+  if (trim($input) === '') return $input;
 
-  // Hapus komentar blok (/* ... */) dengan hati-hati
-  $input = preg_replace('/\/\*[\s\S]*?\*\//', '', $input);
+  // code without an open tag (e.g. a Crafter php cluster) is read as php, the tag is dropped again
+  $wrapped = !preg_match('/^\s*<\?php/i', $input);
+  $tokens = token_get_all($wrapped ? "<?php\n" . $input : $input);
 
-  // Hapus spasi dan tab berlebih, tetapi biarkan spasi tunggal di antara kata-kata
-  $input = preg_replace('/\s+/', ' ', $input);
+  // a space is kept only where two tokens would otherwise melt into one
+  $glue = function( $last, $next ) {
+    $word = '/[A-Za-z0-9_\\\\$\x80-\xff]/';
+    return (preg_match($word, $last) && preg_match($word, $next))
+      || ($last === $next && in_array($last, ['+', '-', '.']))
+      || (ctype_digit($last) && $next === '.') || ($last === '.' && ctype_digit($next));
+  };
 
-  // Hapus spasi di sekitar tanda kurung, kurung kurawal, titik koma, dan koma
-  $input = preg_replace('/\s*([\(\)\{\};,])\s*/', '$1', $input);
+  $output = '';
+  $space = false;
+  foreach ($tokens as $index => $token) {
+    [$id, $text] = is_array($token) ? $token : [null, $token];
+    if ($wrapped && $index === 0 && $id === T_OPEN_TAG) {
+      continue;
+    }
+    if ($id === T_COMMENT || $id === T_DOC_COMMENT || $id === T_WHITESPACE) {
+      $space = true;
+      continue;
+    }
+    if ($id === T_OPEN_TAG) {
+      $text = rtrim($text) . ' ';
+    }
+    if ($space && $output !== '' && $glue(substr($output, -1), $text[0])) {
+      $output .= ' ';
+    }
+    $output .= $text;
+    // a heredoc/nowdoc closer must end its line
+    if ($id === T_END_HEREDOC) {
+      $output .= "\n";
+    }
+    $space = false;
+  }
 
-  // Hapus baris kosong yang mungkin tersisa
-  $input = preg_replace('/\n\s*\n/', "\n", $input);
-
-  // Hapus baris kosong di awal dan akhir
-  $input = trim($input);
-
-  return $input;
+  return trim($output);
 }

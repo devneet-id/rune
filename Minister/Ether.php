@@ -7,3 +7,6 @@
  * example:
  * define('STARTER', '');
  */
+
+#NOTE: Flag to indicate the Minister system is active.
+define('MINISTER', true);

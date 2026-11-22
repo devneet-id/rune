@@ -8,39 +8,74 @@ class Ethereal {
 
   public static $energy = 0;
 
-  public static $bindrune = __DIR__ . '/@bindrune/';
+  #NOTE: The built-in runites of Rune (awakening, rune, grimoire, sentinel, reliquary).
+  public static $runite = __DIR__ . '/@runite/';
 
-  public static function liberation() {
+  #NOTE: Old name of $runite, kept so older code still finds the built-in runites.
+  public static $bindrune = __DIR__ . '/@runite/';
+
+  #NOTE: The folder next to the runite, wherever it is cast from.
+  public static function home() {
+    $runite = realpath($_SERVER['SCRIPT_FILENAME'] ?? '');
+    return ($runite !== false && is_file($runite)) ? dirname($runite) : getcwd();
+  }
+
+  #NOTE: Opens a mode folder next to the runite (@evolution/, @federation/, @liberation/) with its README.
+  public static function mode( String $folder, String $readme ) {
+    $path = self::home() . '/' . $folder . '/';
+    if (!file_exists($path)) {
+      mkdir($path, 0777, true);
+    }
+    if (!file_exists($path . 'README.md') && file_exists($readme)) {
+      copy($readme, $path . 'README.md');
+    }
+    return $path;
+  }
+
+  #NOTE: Evolution mode: runes of your own in @evolution/ (The Evolution of Eidos).
+  public static function evolution() {
+    if (defined('EVOLUTION')) {
+      return;
+    }
+
     // rebase autoloader composer
     $loader = new \Composer\Autoload\ClassLoader();
 
-    // replace the origin
-    self::$origin = getcwd() . '/@ethereal/';
+    // @evolution/ lives next to the runite, wherever it is cast from
+    self::$origin = self::mode('@evolution', self::$runite . 'sentinel/evolution.md');
 
-    // if not exists repo
-    if (!file_exists(self::$origin)) {
-      // create repo
-      mkdir(self::$origin, 0777, true);
-    }
-    // if not exits item
-    if (!file_exists(self::$origin . '/README.md')) {
-      file_put_contents(self::$origin . '/README.md', 'RUNE LIBERATION.');
-    }
-
-    // add bindrune
+    // the runes of @evolution/
     $loader->addPsr4('Rune\\', self::$origin);
 
-    // register
-    $loader->register(true);
+    // register after the origin loader (append): an evolution rune never replaces an origin rune
+    $loader->register(false);
 
     // define to system
-    define('LIBERATION', self::$origin);
+    define('EVOLUTION', self::$origin);
   }
 
+  #NOTE: Liberation mode: portable runtimes kept in @liberation/ — PHP, Node, Python… (The Liberation of Forte).
+  public static function liberation() {
+    if (defined('LIBERATION')) {
+      return;
+    }
+    define('LIBERATION', self::mode('@liberation', self::$runite . 'sentinel/liberation.md'));
+  }
+
+  #NOTE: Federation mode: your own reliquary, relics kept in @federation/ (The Federation of Fides).
+  public static function federation() {
+    if (defined('FEDERATION')) {
+      return;
+    }
+    define('FEDERATION', self::mode('@federation', self::$runite . 'sentinel/federation.md'));
+  }
+
+  #NOTE: Awakening: writes the first runite (a blank template or a relic from the reliquary).
   public static function awakening() {
-    require_once self::$bindrune . '/awakening/cast.php';
+    require_once self::$runite . 'awakening/cast.php';
   }
 
+  #NOTE: Gives the next bit of energy (1, 2, 4, 8, ...).
   public static function energy() {
     // set bit system
     static $bit = 0;

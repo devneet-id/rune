@@ -38,7 +38,10 @@ function chanter_arg_extract( String $newArg = '' ) {
   $CHANTER_ARG_CAST = [];
   $CHANTER_ARG_SPELL = $CHANTER_SPELL;
   
-  if (!empty($newArg)) {
+  // a cast written in code is split on spaces, so a space in its values is written %20 and decoded here;
+  // the command line already gives each value whole, so it is kept as typed (a %2F stays %2F)
+  $fromCode = !empty($newArg);
+  if ($fromCode) {
     $args = explode(' ', $newArg);
   }else {
     $args = $CHANTER_ARGS;
@@ -49,9 +52,13 @@ function chanter_arg_extract( String $newArg = '' ) {
     if (strpos($arg, '--')!==false) {
       if (preg_match('/^--([a-zA-Z0-9_-]+)(?:=(.*))?$/', $arg, $match)) {
         $key = str_replace('--', '', $match[1]);
-        $value = (isset($match[2])) ? $match[2] : false;
-        $value = (!empty($value)) ? urldecode($value) : true;
-        $CHANTER_ARG_SPELL[$key] = urlencode($value);
+        // `--x` (no value) is a flag: true (bool); `--x=1` is the value "1", `--x=0` the value "0"
+        if (isset($match[2]) && $match[2] !== '') {
+          // a value is kept encoded and decoded once on read; raw* keeps a literal '+' (e.g. How+to+Casting.rune)
+          $CHANTER_ARG_SPELL[$key] = rawurlencode($fromCode ? rawurldecode($match[2]) : $match[2]);
+        }else {
+          $CHANTER_ARG_SPELL[$key] = true;
+        }
       }
     }else {
       $CHANTER_ARG_CAST[] = $arg;
@@ -72,7 +79,8 @@ function chanter_arg_rebase() {
   $arg .= $CHANTER_ARG_CAST;
   foreach ($CHANTER_ARG_SPELL as $spell_name=>$spell_value) {
     $arg .= ' --'.$spell_name;
-    if ($spell_value) {
+    // a flag (true) is written bare
+    if ($spell_value !== true) {
       $arg .= "='".$spell_value."'";
     }
   }
@@ -159,6 +167,7 @@ function chanter_cast_get( String $arg ) {
 #NOTE: Checks if a cast function exists for the given arguments
 function chanter_cast_has( String $arg ) {
   global $CHANTER_ARG_CAST;
+  global $CHANTER_CAST;
 
   chanter_arg_extract( $arg );
 
@@ -178,7 +187,7 @@ function chanter_cast_has( String $arg ) {
 
 #NOTE: Gets or sets a spell by name depending on whether values are provided
 function chanter_spell( String $name, $values = NULL ) {
-  if (empty($values)) {
+  if ($values === NULL) {
     $return = chanter_spell_get($name);
   }else {
     chanter_spell_set($name, $values);
@@ -193,18 +202,20 @@ function chanter_spell( String $name, $values = NULL ) {
 function chanter_spell_set( String $name, String $value ) {
   global $CHANTER_SPELL;
 
-  $CHANTER_SPELL[$name] = $value;
+  // kept encoded, like a parsed spell, so it is read back as given
+  $CHANTER_SPELL[$name] = rawurlencode($value);
   
   aether_arcane("Chanter.entity.chanter_spell_set");
   return true;
 }
 
-#NOTE: Retrieves the value of a spell argument if it exists
+#NOTE: Retrieves a spell: true for a bare flag (--x), the value as a string (--x=1 gives "1"), false when not given
 function chanter_spell_get( String $name ) {
   global $CHANTER_ARG_SPELL;
 
   if (isset($CHANTER_ARG_SPELL[$name])) {
-    $return = urldecode($CHANTER_ARG_SPELL[$name]);
+    // a flag is true (bool); a value is a string
+    $return = ($CHANTER_ARG_SPELL[$name] === true) ? true : rawurldecode($CHANTER_ARG_SPELL[$name]);
   }else {
     $return = false;
   };
@@ -219,7 +230,8 @@ function chanter_spell_chain() {
 
   $spell = '';
   foreach ($CHANTER_ARG_SPELL as $key=>$value) {
-    $spell .= '--'.$key.'='.$value.' ';
+    // a flag is handed on bare, so it stays a flag
+    $spell .= ($value === true) ? '--'.$key.' ' : '--'.$key.'='.$value.' ';
   }
   
   $spell = trim($spell);
@@ -227,15 +239,17 @@ function chanter_spell_chain() {
   return $spell;
 }
 
-#NOTE: Missing return statement – function does not return the result.
+#NOTE: Checks whether a spell is given with a value (not only as a flag)
 function chanter_spell_has( String $name ) {
   global $CHANTER_ARG_SPELL;
 
-  if (isset($CHANTER_ARG_SPELL[$name]) && $CHANTER_ARG_SPELL[$name] !== '1') {
+  if (isset($CHANTER_ARG_SPELL[$name]) && $CHANTER_ARG_SPELL[$name] !== true) {
     $return = true;
   }else {
     $return = false;
   };
+
+  return $return;
 }
 
 
@@ -243,10 +257,20 @@ function chanter_spell_has( String $name ) {
 /* ECHO
  * todo set echo in chanter */
 
+#NOTE: Takes the cast name from a cast signature (`quest --add --rank` -> `quest`)
+function chanter_echo_name( String $arg ) {
+  $words = array_filter(explode(' ', trim($arg)), function($word) {
+    return $word !== '' && strpos($word, '--') !== 0;
+  });
+
+  return trim(implode(' ', $words));
+}
+
 #NOTE: Adds notes to the echo data if the entry doesn’t exist yet.
 function chanter_echo_set( String $arg, String $notes ) {
   global $CHANTER_ECHO;
 
+  $arg = chanter_echo_name($arg);
   if (isset($CHANTER_ECHO[$arg])) {
     $CHANTER_ECHO[$arg][2] = $notes;
   }
@@ -259,6 +283,7 @@ function chanter_echo_set( String $arg, String $notes ) {
 function chanter_echo_get( String $arg ) {
   global $CHANTER_ECHO;
 
+  $arg = chanter_echo_name($arg);
   $return = (isset($CHANTER_ECHO[$arg])) ? $CHANTER_ECHO[$arg] : false;
   
   aether_arcane("Chanter.entity.chanter_echo_get");
@@ -268,6 +293,7 @@ function chanter_echo_get( String $arg ) {
 
 
 /* WHISPER LATCH */
+#NOTE: Runs a cast while draining Whisper output, then echoes it at once (zero-trust).
 function chanter_whisper_drain( $run ) {
   whisper_drain_start();
   $x = $run();

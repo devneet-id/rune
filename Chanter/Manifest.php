@@ -11,12 +11,14 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
+  #NOTE: Begins Chanter: loads the built-in runites from @runite/ (awakening only through Rune\Ethereal::awakening).
   public static function begin() {
-    // bindrune
-    $bindrunes = glob(\Rune\Ethereal::$bindrune . "/chanter/*");
-    foreach ($bindrunes as $app) {
-      if (file_exists($app . "/cast.php")) {
-        require_once $app . "/cast.php";
+    foreach (glob(\Rune\Ethereal::$runite . '*', GLOB_ONLYDIR) as $runite) {
+      if (basename($runite) === 'awakening') {
+        continue;
+      }
+      if (file_exists($runite . '/cast.php')) {
+        require_once $runite . '/cast.php';
       }
     }
   }
@@ -31,8 +33,11 @@ class Manifest extends \Rune\Manifest {
     $spell = chanter_spell_chain();
     $cast = $CHANTER_ARG_CAST . ' ' . $spell;
 
-    if ($CHANTER_ARG == AETHER_FILE) {
+    if ($CHANTER_ARG == ($_SERVER['argv'][0] ?? AETHER_FILE)) {
       $run = chanter_cast_get('rune');
+    }else if ($CHANTER_ARG_CAST === '') {
+      // only spells given (e.g. `php cast --resonance`) -> base rune cast with those spells
+      $run = chanter_cast_get(trim('rune ' . $spell));
     }else {
       $run = chanter_cast_get($cast);
     }
@@ -80,7 +85,7 @@ class Manifest extends \Rune\Manifest {
 
   #NOTE: Gets or sets a spell definition by key and returns the result.
   public static function spell( String $key, Mixed $value = NULL, Mixed $fail = false ) {
-    if (empty($value)) {
+    if ($value === NULL) {
       $return = chanter_spell_get($key);
     }else {
       chanter_spell_set($key, $value);

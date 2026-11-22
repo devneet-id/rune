@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.11';
+  public $version = '1.16';
   
   public $main = 'Whisper';
 
@@ -15,8 +15,8 @@ class Phantasm extends \Rune\Phantasm {
   public $note = 'Handles user-facing output through styled messages, prompts, and echoes—focused on delivering clear, customizable system feedback and visual communication.';
 
   public $link = [
-    ['Aether', 'essence:entity', '1.15'],
-    ['Crafter', 'ether:essence', '1.6'],
+    ['Aether', 'entity', '1.22'],
+    ['Weaver', 'entity', '1.10'],
   ];
 
   public $node = [
@@ -59,6 +59,11 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'essence',
       'call' => 'WHISPER_LABELS',
       'note' => 'Default label prefixes for whisper messages',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'WHISPER_COLOR',
+      'note' => 'Whether Whisper speaks in colour; a runite sets $WHISPER_COLOR = false; for plain text (NO_COLOR in the environment does the same).',
     ],
     [
       'type' => 'essence',
@@ -107,8 +112,18 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
+      'call' => 'whisper_color()',
+      'note' => 'Whether Whisper speaks in colour: $WHISPER_COLOR is not false and NO_COLOR is not set in the environment.',
+    ],
+    [
+      'type' => 'entity',
       'call' => 'whisper_echo_imbue( String $text )',
-      'note' => 'Apply all whisper formatting to the text (colors, icons, labels)',
+      'note' => 'Apply all whisper formatting to the text (colors, icons, labels); without colour the ANSI codes are left out',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'whisper_echo_tokens( String $text, Array $maps )',
+      'note' => 'Replace the own tokens of Whisper ({{nl}}, {{color-x}}, {{icon-x}}…, lower or upper case) without Weaver',
     ],
     [
       'type' => 'entity',
@@ -152,18 +167,8 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => 'Optional lifecycle method for internal post-arise logic.',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_end()',
-      'note' => 'Special hook for aether-based awakening phase, executed at the end of the crafter process.',
-    ],
-    [
-      'type' => 'manifest',
       'call' => 'end()',
-      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
+      'note' => 'Ends Whisper"s part of the flow (nothing to close yet).',
     ],
     [
       'type' => 'manifest',

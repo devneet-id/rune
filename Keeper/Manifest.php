@@ -11,7 +11,7 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  #NOTE: Special hook for aether-based awakening phase, executed at the start of the crafter process.
+  #NOTE: Begins Keeper: makes the .echoes folder of the runite (arcane, shards) and starts the glitch handler.
   public static function begin( $flags = 0 ) {
     forger_fix([
       [
@@ -39,7 +39,7 @@ class Manifest extends \Rune\Manifest {
     keeper_glitch_boot();
   }
   
-  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
+  #NOTE: Ends Keeper: writes the arcane of this flow into .echoes.
   public static function end() {
     aether_arcane('Keeper.manifest.end');
 
@@ -49,7 +49,7 @@ class Manifest extends \Rune\Manifest {
 
   #NOTE: Reads or writes a raw file inside the given repo depending on value.
   public static function echo( String $repo, String $name, $value = '' ) {
-    if (empty($value)) {
+    if ($value === '' || $value === null) {
       $return = keeper_echo_get($repo, $name);
     }else {
       $return = keeper_echo_set($repo, $name, $value);
@@ -59,15 +59,25 @@ class Manifest extends \Rune\Manifest {
     return $return;
   }
   
-  #NOTE: Gets or sets a structured keeper item in JSON format.
+  #NOTE: Gets or sets a structured keeper item in JSON format; given a closure, reads, changes and writes it under one lock.
   public static function item( String $name, $value = false ) {
     if ($value === false) {
       $return = keeper_item_get($name);
+    }else if ($value instanceof \Closure) {
+      $return = keeper_item_update($name, $value);
     }else {
       $return = keeper_item_set($name, $value);
     }
 
     aether_arcane('Keeper.manifest.item');
+    return $return;
+  }
+
+  #NOTE: Tolerates warnings in this flow: levels kept in the arcane and passed (['warning', 'notice', 'deprecated']), or 'throw' to make them an ErrorException.
+  public static function tolerate( Array|String $levels ) {
+    $return = keeper_tolerate($levels);
+
+    aether_arcane('Keeper.manifest.tolerate');
     return $return;
   }
 

@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.11';
+  public $version = '1.19';
   
   public $main = 'Keeper';
 
@@ -19,13 +19,15 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Handles persistent message tracking, data logging, and structured memory management—acts as a system-level manager for recording, retrieving, and organizing information across operations.';
 
+  public $flow = true;
+
   public $link = [
-    ['Aether', 'ether', '1.16'],
-    ['Chanter', 'essence', '1.12'],
-    ['Cipher', 'ether:entity', '1.5'],
-    ['Forger', 'entity', '1.13'],
-    ['Specter', 'ether:essence', '1.7'],
-    ['Crafter', 'ether:essence', '1.11'],
+    ['Aether', 'ether', '1.22'],
+    ['Chanter', 'entity', '1.18'],
+    ['Cipher', 'entity', '1.7'],
+    ['Forger', 'entity', '1.17'],
+    ['Specter', 'entity', '1.12'],
+    ['Whisper', 'entity', '1.16'],
   ];
 
   public $node = [
@@ -37,7 +39,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'ether',
       'call' => 'KEEPER_ECHOES',
-      'note' => 'Base directory for all Keeper-related output files and logs.',
+      'note' => 'Base directory for all Keeper-related output files and logs (next to the runite).',
     ],
     [
       'type' => 'ether',
@@ -70,6 +72,21 @@ class Phantasm extends \Rune\Phantasm {
       'note' => 'Directory for encoded shard backups.',
     ],
     [
+      'type' => 'ether',
+      'call' => 'KEEPER_ECHOES_SHARD',
+      'note' => 'Shard list of the runite (files carried into the artefact).',
+    ],
+    [
+      'type' => 'ether',
+      'call' => 'KEEPER_SAVING_ECHOES',
+      'note' => 'Flag bit for Keeper::begin(): save echoes.',
+    ],
+    [
+      'type' => 'ether',
+      'call' => 'KEEPER_SHOW_GLITCH',
+      'note' => 'Flag bit for Keeper::begin(): show glitch screen.',
+    ],
+    [
       'type' => 'essence',
       'call' => 'KEEPER',
       'note' => 'main essence',
@@ -80,9 +97,29 @@ class Phantasm extends \Rune\Phantasm {
       'note' => 'Defines stepwatch thresholds for classifying performance stages in arcane processing (e.g., BURST to OVERCLOCK).',
     ],
     [
+      'type' => 'essence',
+      'call' => 'KEEPER_SAVING_ACTIVE',
+      'note' => 'Whether Keeper is saving echoes in this flow.',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'KEEPER_TOLERATE',
+      'note' => 'The warnings tolerated in this flow (levels: warning, notice, deprecated), or "throw" to turn them into an ErrorException.',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'KEEPER_LOCK',
+      'note' => 'Which items are read and written under a file lock (flock): false (none, the default), true (all), or a list of item names; a runite sets it for items shared by several processes.',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'KEEPER_LOCK_WAIT',
+      'note' => 'Seconds to wait for the lock of an item; past it, a glitch names the item.',
+    ],
+    [
       'type' => 'entity',
       'call' => 'keeper()',
-      'note' => '',
+      'note' => 'Main entity',
     ],
     [
       'type' => 'entity',
@@ -111,6 +148,31 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
+      'call' => 'keeper_item_update( String $name, Callable $change )',
+      'note' => 'Reads, changes and writes an item under one lock: the callback gets the old value (null when missing) and returns the new one, given back as a read would.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_item_encode( $value )',
+      'note' => 'Encodes an item value as the JSON Keeper writes (two-space indent, unicode kept).',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_lock_wanted( String $name )',
+      'note' => 'Whether an item is read and written under lock: $KEEPER_LOCK is true, or a list that names it.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_lock_run( String $name, Int $mode, Callable $work )',
+      'note' => 'Opens an item, holds its lock (LOCK_SH to read, LOCK_EX to write) while the callback runs, then lets it go; waits $KEEPER_LOCK_WAIT seconds at most, then glitches.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_lock_write( $handle, String $datas )',
+      'note' => 'Replaces the whole content of a locked item file.',
+    ],
+    [
+      'type' => 'entity',
       'call' => 'keeper_echo( String $repo, String $name, $value = "" )',
       'note' => 'Reads or writes a raw file inside a given repository, depending on whether a value is provided.',
     ],
@@ -126,28 +188,18 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
-      'call' => 'keeper_shard( Array $file_maps, Bool $is_revoke = false )',
-      'note' => 'Handles shard storage or restoration based on revoke flag.',
+      'call' => 'keeper_shard_place( String $path )',
+      'note' => 'Places a shard path in the runite folder: a relative path is read from AETHER_REPO, an absolute one is kept.',
     ],
     [
       'type' => 'entity',
-      'call' => 'keeper_shard_set( Array $file_maps )',
-      'note' => 'Traces files, collects valid items, and stores them as encoded rune shards.',
+      'call' => 'keeper_shard_set( String $source_path )',
+      'note' => 'Adds one file to the shard list (only files inside the runite folder, stored relative to it).',
     ],
     [
       'type' => 'entity',
-      'call' => 'keeper_shard_invoke( Object $forger_info )',
-      'note' => 'Encodes file metadata and content into base64 then runic format, and saves it as a shard.',
-    ],
-    [
-      'type' => 'entity',
-      'call' => 'keeper_shard_get( Array $file_maps )',
-      'note' => 'Retrieves and restores files from saved rune shards by name.',
-    ],
-    [
-      'type' => 'entity',
-      'call' => 'keeper_shard_revoke( String $raw_source )',
-      'note' => 'Decodes and rewrites a file from its stored runic shard format.',
+      'call' => 'keeper_shard_set_all( Array $file_maps )',
+      'note' => 'Adds many files and folders to the shard list at once (paths relative to the runite folder).',
     ],
     [
       'type' => 'entity',
@@ -156,8 +208,23 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'entity',
+      'call' => 'keeper_tolerate( Array|String $levels )',
+      'note' => 'Sets the warnings this flow tolerates — a list of levels (warning, notice, deprecated) or "throw" — and returns what is tolerated.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_glitch_level( Int $errno )',
+      'note' => 'The level of a PHP error number: warning, notice, deprecated, or error.',
+    ],
+    [
+      'type' => 'entity',
       'call' => 'keeper_glitch_boot()',
       'note' => 'Initializes custom error, exception, and shutdown handlers to capture and log all glitches into a file.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_glitch_message( $glitch )',
+      'note' => 'Shows the glitch screen (severity, line, file, message).',
     ],
     [
       'type' => 'entity',
@@ -171,18 +238,13 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_awaken_after()',
-      'note' => '',
+      'call' => 'begin( $flags = 0 )',
+      'note' => 'Begins Keeper: makes the .echoes folder of the runite (arcane, shards) and starts the glitch handler.',
     ],
     [
       'type' => 'manifest',
       'call' => 'end()',
-      'note' => 'Final phase of the class lifecycle, called after all manifest components are registered and ready.',
+      'note' => 'Ends Keeper: writes the arcane of this flow into .echoes.',
     ],
     [
       'type' => 'manifest',
@@ -192,11 +254,16 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'item( String $name, $value = false )',
-      'note' => 'Gets or sets a structured keeper item in JSON format.',
+      'note' => 'Gets or sets a structured keeper item in JSON format; given a closure, reads, changes and writes it under one lock.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'shard( Array $file_maps, Bool $is_revoke = false )',
+      'call' => 'tolerate( Array|String $levels )',
+      'note' => 'Tolerates warnings in this flow: levels kept in the arcane and passed (["warning", "notice", "deprecated"]), or "throw" to make them an ErrorException.',
+    ],
+    [
+      'type' => 'manifest',
+      'call' => 'shard(Array|String $source)',
       'note' => 'Saves rune shard(s) from string or array source.',
     ],
   ];

@@ -6,7 +6,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.12';
+  public $version = '1.18';
   
   public $main = 'Chanter';
 
@@ -14,10 +14,12 @@ class Phantasm extends \Rune\Phantasm {
 
   public $note = 'Encapsulates processes and CLI-style operations to maintain immutability—structures input, spell logic, and execution flow into controlled, traceable, and reusable command definitions.';
 
+  public $flow = true;
+
   public $link = [
-    ['Aether', 'essence:entity', '1.16'],
-    ['Whisper', 'ether:essence', '1.10'],
-    ['Specter', 'ether:essence', '1.7'],
+    ['Aether', 'entity', '1.22'],
+    ['Whisper', 'entity', '1.15'],
+    ['Specter', 'entity', '1.11'],
   ];
 
   public $node = [
@@ -69,7 +71,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'essence',
       'call' => 'CHANTER_SPELL',
-      'note' => '',
+      'note' => 'Spells set from code (Chanter::spell(key, value)), read on the next cast.',
     ],
     [
       'type' => 'essence',
@@ -129,7 +131,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_spell_get( String $name )',
-      'note' => 'Retrieves the value of a spell argument if it exists',
+      'note' => 'Retrieves a spell: true for a bare flag (--x), the value as a string (--x=1 gives "1"), false when not given',
     ],
     [
       'type' => 'entity',
@@ -139,12 +141,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_spell_has( String $name )',
-      'note' => 'Missing return statement – function does not return the result.',
+      'note' => 'Checks whether a spell is given with a value (not only as a flag)',
     ],
     [
       'type' => 'entity',
-      'call' => 'chanter_echo( String $echo )',
-      'note' => '',
+      'call' => 'chanter_echo_name( String $arg )',
+      'note' => 'Takes the cast name from a cast signature (`quest --add --rank` -> `quest`)',
     ],
     [
       'type' => 'entity',
@@ -159,17 +161,12 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'entity',
       'call' => 'chanter_whisper_drain( $run )',
-      'note' => '',
+      'note' => 'Runs a cast while draining Whisper output, then echoes it at once (zero-trust).',
     ],
     [
       'type' => 'manifest',
-      'call' => '_arise()',
-      'note' => '',
-    ],
-    [
-      'type' => 'manifest',
-      'call' => '_aether_awaken_before()',
-      'note' => '',
+      'call' => 'begin()',
+      'note' => 'Begins Chanter: loads the built-in runites from @runite/ (awakening only through Rune\Ethereal::awakening).',
     ],
     [
       'type' => 'manifest',
@@ -178,17 +175,17 @@ class Phantasm extends \Rune\Phantasm {
     ],
     [
       'type' => 'manifest',
-      'call' => 'cast( String $args, ?Callable $callable = NULL )',
+      'call' => 'cast( String $arg, ?Callable $execute = NULL, String $echo = "" )',
       'note' => 'Gets or sets a spell cast definition based on input and returns the result.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'spell( String $name, $values = NULL )',
+      'call' => 'spell( String $key, Mixed $value = NULL, Mixed $fail = false )',
       'note' => 'Gets or sets a spell definition by key and returns the result.',
     ],
     [
       'type' => 'manifest',
-      'call' => 'echo( String $cast, String $notes = "" )',
+      'call' => 'echo( String $arg, String $note = "" )',
       'note' => 'Outputs the given text and returns it',
     ],
   ];

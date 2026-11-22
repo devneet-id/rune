@@ -15,12 +15,14 @@
     -Rune/Manifest.php
     -Rune/Phantasm.php
   ::CORE -- 
-    Ethereal.php: core but not primary do for liberation the rune, conditional if user want build own rune
+    Ethereal.php: core but not primary: modes evolution (own runes), federation (own reliquary), liberation (PHP runtime)
     Manifest.php: core parent for all rune manifest, have ether(), essence(), entity() load method
     Phantasm.php: core parent for all rune phantasm, conditional normally not in process
   ::MODE -- 
     user avaliable rune: conventional user use rune for create a project
-    liberation mode rune: expertise in rune can binding system rune with own rune with repository @ethereal
+    evolution mode rune: expertise in rune can binding system rune with own rune with repository @evolution (sentinel --evolution)
+    federation mode: own reliquary, relics kept in @federation (sentinel --federation, reliquary --initiate)
+    liberation mode: PHP runtime kept in @liberation/php@<version> (sentinel --liberation, sentinel --runtime-install)
 
 [#] RULES & FLOW: --
   ::INTRO
@@ -186,8 +188,8 @@ Chanter::cast('ready', function() {
   Chanter::cast('build')();
   // run store
   Chanter::cast('store')();
-  // create artefact look this will blocking execution
-  Chanter::cast('artefact --invoke')();
+  // create relic look this will blocking execution
+  Chanter::cast('reliquary --runite-relic')();
   // then move to repo ready/
   Forger::move([
     [ 'type'=>'item', 'from'=>'dist/index.php', 'target'=>'ready/index.php' ],

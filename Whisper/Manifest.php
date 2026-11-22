@@ -6,13 +6,7 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
   
-  #NOTE: Optional lifecycle method for internal post-arise logic.
-  public static function _arise() {}
-
-  #NOTE: Special hook for aether-based awakening phase, executed at the end of the crafter process.
-  public static function _aether_end() {}
-
-  #NOTE: Final phase of the class lifecycle, called after all manifest components are registered and ready.
+  #NOTE: Ends Whisper's part of the flow (nothing to close yet).
   public static function end() {}
 
   #NOTE: Print or return a formatted whisper message with color support
@@ -76,4 +70,28 @@ class Manifest extends \Rune\Manifest {
     aether_arcane('Whisper.manifest.clear');
     return self::class;
   }
+
+  #NOTE: wrapper to control flash with callbacks
+  public static function flash( Callable $execute ) {
+    whisper_flash_start();
+    
+    #NOTE: define helpers for continue, stop, animation
+    $continue = fn() => whisper_flash_start();
+    $stop = fn() => whisper_flash_stop();
+    $animation = fn() => whisper_flash_run();
+    
+    #NOTE: run user callback with helpers
+    $return = $execute( 
+        animation: $animation, 
+        stop: $stop, 
+        continue: $continue
+    );
+
+    #NOTE: finalize flash
+    whisper_flash_stop();
+    aether_arcane('Whisper.manifest.clear');
+
+    return $return;
+  }
+
 }

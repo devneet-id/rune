@@ -9,22 +9,18 @@ namespace Rune\{{name-capital}};
 
 class Phantasm extends \Rune\Phantasm {
 
-  public $version = 0.1;
+  public $origin = __DIR__;
+
+  public $version = '0.1';
   
   public $main = '{{name-capital}}';
 
   public $mark = 'BETA';
 
+  public $flow = false;
+
   public $link = [];
 
-  public $node = [
-    [
-      'type' => 'manifest',
-      'call' => '_arise()',
-      'note'=> '',
-    ],
-  ];
+  public $node = [];
 
-  public function awakening() {}
-  
 }

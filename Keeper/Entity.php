@@ -5,6 +5,7 @@
  * Represents functions related to this domain.
  */
 
+#NOTE: Main entity
 function keeper() {
   return true;
 }
@@ -77,9 +78,14 @@ function keeper_item( String $name, $value = '' ) {
 
 #NOTE: Saves a value as a formatted JSON file under the given name.
 function keeper_item_set( String $name, $value ) {
-  $datas = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-  $datas = str_replace("    ", "  ", $datas);
-  forger_item(KEEPER_ECHOES . '/' . $name . '.json', $datas);
+  $datas = keeper_item_encode($value);
+  if (keeper_lock_wanted($name)) {
+    keeper_lock_run($name, LOCK_EX, function( $handle ) use ($datas) {
+      keeper_lock_write($handle, $datas);
+    });
+  }else {
+    forger_item(KEEPER_ECHOES . '/' . $name . '.json', $datas);
+  }
   
   aether_arcane('Keeper.entity.keeper_item_set');
   return true;
@@ -87,11 +93,87 @@ function keeper_item_set( String $name, $value ) {
 
 #NOTE: Retrieves and decodes a JSON file by name into a usable value.
 function keeper_item_get( String $name ) {
-  $datas = forger_item(KEEPER_ECHOES . '/' . $name . '.json');
-  $return = json_decode($datas);
+  if (keeper_lock_wanted($name) && is_file(KEEPER_ECHOES . '/' . $name . '.json')) {
+    $datas = keeper_lock_run($name, LOCK_SH, fn( $handle ) => stream_get_contents($handle));
+  }else {
+    $datas = forger_item(KEEPER_ECHOES . '/' . $name . '.json');
+  }
+  $return = json_decode((string) $datas);
 
   aether_arcane('Keeper.entity.keeper_item_get');
   return $return;
+}
+
+
+#NOTE: Reads, changes and writes an item under one lock: the callback gets the old value (null when missing) and returns the new one, given back as a read would.
+function keeper_item_update( String $name, Callable $change ) {
+  $return = keeper_lock_run($name, LOCK_EX, function( $handle ) use ($change) {
+    $datas = keeper_item_encode($change(json_decode((string) stream_get_contents($handle))));
+    keeper_lock_write($handle, $datas);
+    // returned the way a read gives it back (objects, not arrays)
+    return json_decode($datas);
+  });
+
+  aether_arcane('Keeper.entity.keeper_item_update');
+  return $return;
+}
+
+#NOTE: Encodes an item value as the JSON Keeper writes (two-space indent, unicode kept).
+function keeper_item_encode( $value ) {
+  return str_replace("    ", "  ", json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+
+
+/* LOCK
+ * flock for items shared by several processes ($KEEPER_LOCK, $KEEPER_LOCK_WAIT)
+ *  */
+#NOTE: Whether an item is read and written under lock: $KEEPER_LOCK is true, or a list that names it.
+function keeper_lock_wanted( String $name ) {
+  global $KEEPER_LOCK;
+
+  return $KEEPER_LOCK === true || (is_array($KEEPER_LOCK) && in_array($name, $KEEPER_LOCK, true));
+}
+
+#NOTE: Opens an item, holds its lock (LOCK_SH to read, LOCK_EX to write) while the callback runs, then lets it go; waits $KEEPER_LOCK_WAIT seconds at most, then glitches.
+function keeper_lock_run( String $name, Int $mode, Callable $work ) {
+  global $KEEPER_LOCK_WAIT;
+
+  $path = KEEPER_ECHOES . '/' . $name . '.json';
+  if (!is_dir(dirname($path))) {
+    return null;
+  }
+  $handle = fopen($path, $mode === LOCK_SH ? 'r' : 'c+');
+  if ($handle === false) {
+    return null;
+  }
+
+  $deadline = microtime(true) + max(0, (float) $KEEPER_LOCK_WAIT);
+  while (!flock($handle, $mode | LOCK_NB)) {
+    if (microtime(true) >= $deadline) {
+      fclose($handle);
+      throw new \RuntimeException("Keeper item '$name' stayed locked longer than {$KEEPER_LOCK_WAIT}s (\$KEEPER_LOCK_WAIT).");
+    }
+    usleep(20000);
+  }
+
+  try {
+    $return = $work($handle);
+  } finally {
+    flock($handle, LOCK_UN);
+    fclose($handle);
+  }
+
+  aether_arcane('Keeper.entity.keeper_lock_run');
+  return $return;
+}
+
+#NOTE: Replaces the whole content of a locked item file.
+function keeper_lock_write( $handle, String $datas ) {
+  ftruncate($handle, 0);
+  rewind($handle);
+  fwrite($handle, $datas);
+  fflush($handle);
 }
 
 
@@ -101,7 +183,8 @@ function keeper_item_get( String $name ) {
  *  */
 #NOTE: Reads or writes a raw file inside a given repository, depending on whether a value is provided.
 function keeper_echo( String $repo, String $name, $value = '' ) {
-  if (empty($value)) {
+  // no value = read ('0' is a value to write)
+  if ($value === '' || $value === null) {
     $return = keeper_echo_get($repo, $name);
   }else {
     $return = keeper_echo_set($repo, $name, $value);
@@ -112,7 +195,7 @@ function keeper_echo( String $repo, String $name, $value = '' ) {
 }
 #NOTE: Ensures the target repository exists, then saves the given value as a plain file.
 function keeper_echo_set( String $repo, String $name, $value ) {
-  forger_fix([ 'target'=> $repo, 'type'=> 'repo' ]);
+  forger_fix([[ 'target'=> $repo, 'type'=> 'repo' ]]);
   forger_item($repo . '/' . $name, $value);
 
   aether_arcane('Keeper.entity.keeper_echo_set');
@@ -128,32 +211,50 @@ function keeper_echo_get( String $repo, String $name ) {
 /* SHARDS
  * todo managements file as shards
  *  */
+#NOTE: Places a shard path in the runite folder: a relative path is read from AETHER_REPO, an absolute one is kept.
+function keeper_shard_place( String $path ) {
+  if (preg_match('#^([A-Za-z]:[\\\\/]|/)#', $path)) {
+    return $path;
+  }
+  return AETHER_REPO . DIRECTORY_SEPARATOR . $path;
+}
+#NOTE: Adds one file to the shard list (only files inside the runite folder, stored relative to it).
 function keeper_shard_set( String $source_path ) {
   if (!str_contains($source_path, '.echoes')) {
-    $source_path = str_replace(AETHER_REPO, '', $source_path);
-    if (realpath($source_path)) {
-      $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
-      $name = cipher_hash($source_path);
-      $source = forger_info($source_path);
-      $shard[$name] = $source;
+    $absolute = realpath($source_path);
+    $repo = AETHER_REPO . DIRECTORY_SEPARATOR;
+    if ($absolute && is_file($absolute) && str_starts_with($absolute, $repo)) {
+      // stored with / on every OS, so a relic sealed on Windows opens on Linux
+      $relative = str_replace('\\', '/', substr($absolute, strlen($repo)));
+      $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true) ?: [];
+      $source = forger_info($absolute);
+      $source->target = $relative;
+      $source->path = dirname($relative);
+      $shard[cipher_hash($relative)] = $source;
       file_put_contents(KEEPER_ECHOES_SHARD, str_replace('    ', '  ', json_encode($shard, JSON_PRETTY_PRINT)));
     }
   }
 }
+#NOTE: Adds many files and folders to the shard list at once (paths relative to the runite folder).
 function keeper_shard_set_all( Array $file_maps ) {
   $map = [];
   foreach ($file_maps as $row) {
-    $map = array_merge($map, forger_trace_recursive($row));
+    $map = array_merge($map, forger_trace_recursive(keeper_shard_place($row)));
   }
 
-  $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true);
+  $repo = AETHER_REPO . DIRECTORY_SEPARATOR;
+  $shard = json_decode(file_get_contents(KEEPER_ECHOES_SHARD), true) ?: [];
   foreach ($map as $row) {
     if ($row['type'] == 'item') {
       if ($row['ready'] == true) {
         if (!str_contains($row['target'], '.echoes')) {
           $file = forger_info($row['target']);
-          $shard_key = str_replace(AETHER_REPO, '', $file->target);
-          $shard[cipher_hash($shard_key)] = $file;
+          // stored relative to the runite folder with / on every OS, so the relic opens anywhere
+          if (str_starts_with($file->target, $repo)) {
+            $file->target = str_replace('\\', '/', substr($file->target, strlen($repo)));
+            $file->path = dirname($file->target);
+          }
+          $shard[cipher_hash($file->target)] = $file;
         }
       }
     }
@@ -253,6 +354,22 @@ function keeper_shard_clean() {
 /* GLITCH
  * todo hidden error end report to keeper
  *  */
+#NOTE: Sets the warnings this flow tolerates — a list of levels (warning, notice, deprecated) or 'throw' — and returns what is tolerated.
+function keeper_tolerate( Array|String $levels ) {
+  global $KEEPER_TOLERATE;
+
+  $KEEPER_TOLERATE = array_values(array_map('strtolower', (array) $levels));
+
+  aether_arcane('Keeper.entity.keeper_tolerate', implode(',', $KEEPER_TOLERATE));
+  return $KEEPER_TOLERATE;
+}
+#NOTE: The level of a PHP error number: warning, notice, deprecated, or error.
+function keeper_glitch_level( Int $errno ) {
+  if (in_array($errno, [E_WARNING, E_USER_WARNING, E_CORE_WARNING, E_COMPILE_WARNING])) return 'warning';
+  if (in_array($errno, [E_NOTICE, E_USER_NOTICE])) return 'notice';
+  if (in_array($errno, [E_DEPRECATED, E_USER_DEPRECATED])) return 'deprecated';
+  return 'error';
+}
 #NOTE: Initializes custom error, exception, and shutdown handlers to capture and log all glitches into a file.
 function keeper_glitch_boot() {  
   forger_item(KEEPER_ECHOES_GLITCH, '');
@@ -275,11 +392,26 @@ function keeper_glitch_boot() {
       specter_exit('php '.chanter_arg());
     }
 
-    aether_exit(true);
+    // a glitch tells the shell it failed
+    aether_exit(true, 1);
   };
 
   // Tangkap error
   set_error_handler(function($errno, $errstr, $errfile, $errline) use ($handler) {
+    // silenced with @ (or left out of error_reporting()): not a glitch, PHP goes on
+    if (!(error_reporting() & $errno)) {
+      return false;
+    }
+    // tolerated by the runite (Keeper::tolerate): thrown for the cast to catch, or kept in the arcane and passed
+    global $KEEPER_TOLERATE;
+    $level = keeper_glitch_level($errno);
+    if ($level !== 'error' && in_array('throw', $KEEPER_TOLERATE)) {
+      throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+    }
+    if (in_array($level, $KEEPER_TOLERATE)) {
+      aether_arcane('Keeper.glitch.tolerated', strtoupper($level) . ': ' . $errstr . ' (' . basename($errfile) . ':' . $errline . ')');
+      return true;
+    }
     $handler('error', $errstr, $errfile, $errline, debug_backtrace());
     return true;
   });
@@ -300,6 +432,7 @@ function keeper_glitch_boot() {
   ini_set('display_errors', '0');
   error_reporting(E_ALL);
 }
+#NOTE: Shows the glitch screen (severity, line, file, message).
 function keeper_glitch_message( $glitch ) {
   whisper_clear();
   whisper_echo("{{text-secondary}}///////////////////////////////////{{text-end}}\n");
@@ -310,9 +443,9 @@ function keeper_glitch_message( $glitch ) {
   whisper_echo("{{text-secondary}} ♦ Severity: \n");
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->type \n");
   whisper_echo("{{text-secondary}} ♦ On Line Number: \n");
-  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->file \n");
-  whisper_echo("{{text-secondary}} ♦ File Location: \n");
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->line \n");
+  whisper_echo("{{text-secondary}} ♦ File Location: \n");
+  whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->file \n");
   whisper_echo("{{text-secondary}} ♦ Message: \n");
   whisper_echo("{{tab}}{{tab}}{{text-danger}}»{{text-end}} $glitch->message  \n");
   whisper_echo("\n{{bg-danger}} # {{bg-end}} T R A C E \n");
@@ -320,7 +453,10 @@ function keeper_glitch_message( $glitch ) {
   if (is_array($glitch->trace)) {
     foreach ($glitch->trace as $trace) {
       $trace = (object) $trace;
-      whisper_echo("{{text-secondary}} ♦ $trace->file [$trace->line] \n");
+      // internal frames (closures, call_user_func) have no file/line
+      $file = $trace->file ?? '[internal]';
+      $line = $trace->line ?? '-';
+      whisper_echo("{{text-secondary}} ♦ $file [$line] \n");
     }
   }
 }

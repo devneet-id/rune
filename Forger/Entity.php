@@ -20,8 +20,14 @@ function forger_trace( String $source_path, ?Callable $callback = null ) {
   $targets = [];
   $current = '';
 
+  // absolute Unix path ("/home/..."): keep the leading separator, but don't trace the root itself
+  if ($source_path !== '' && $source_path[0] === DIRECTORY_SEPARATOR) {
+    $current = DIRECTORY_SEPARATOR;
+    array_shift($pathParts);
+  }
+
   foreach ($pathParts as $part) {
-    $current .= ($current === '' ? '' : DIRECTORY_SEPARATOR) . $part;
+    $current .= ($current === '' || $current === DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR) . $part;
     if (!empty($current)) {
       $stack['target'] = $current;
       $stack['ready'] = (file_exists($current));
@@ -86,7 +92,8 @@ function forger_scan( String $source_path, ?Callable $callback ) {
   $return = [];
   foreach (glob( $source_path . '/*' ) as $item) {
     $reitem = pathinfo($item);
-    $reitem['target'] = $source_path . DIRECTORY_SEPARATOR . $reitem['basename'];
+    // joined with / on every OS (PHP on Windows reads / too), so a target travels in a relic
+    $reitem['target'] = rtrim($source_path, '/\\') . '/' . $reitem['basename'];
     if ($callback) {
       $reitem = $callback( (object) $reitem );
     }
@@ -215,7 +222,6 @@ function forger_clean( String $source_path, $force_repo = false ) {
  * todo working with folder */
 #NOTE: Ensures the repository path exists, fixes missing parts, and optionally scans items with a callback.
 function forger_repo(string $source_path, bool $isRecursion = false) {
-  global $FORGER_KEEPER_SHARD;
   $return = true;
 
   if (!is_dir($source_path)) {
@@ -228,12 +234,6 @@ function forger_repo(string $source_path, bool $isRecursion = false) {
     forger_fix(forger_trace($source_path));
   }
 
-  if (aether_has_entity('keeper')) {
-    if ($FORGER_KEEPER_SHARD) {
-      keeper_shard_set_all([$source_path]);
-    }
-  }
-
   return $return + aether_arcane('Forger.entity.forger_repo');
 }
 
@@ -243,7 +243,6 @@ function forger_repo(string $source_path, bool $isRecursion = false) {
  *  */
 #NOTE: Ensures the file exists, optionally writes content to it, and returns its contents.
 function forger_item(string $source_path, mixed $content = false, int $flags = 0) {
-  global $FORGER_KEEPER_SHARD;
   $return = false;
 
   if ($content === false) {
@@ -261,12 +260,7 @@ function forger_item(string $source_path, mixed $content = false, int $flags = 0
     }
   }
 
-  if (aether_has_entity('keeper')) {
-    if ($FORGER_KEEPER_SHARD) {
-      keeper_shard_set($source_path);
-    }
-  }
-
+  // a file becomes a shard only through Keeper::shard()
   aether_arcane('Forger.entity.forger_item');
   return $return;
 }
@@ -284,9 +278,8 @@ function forger_info( String $source_path ) {
     $return['type'] = (is_dir($source_path)) ? 'repo' : 'item';
     $return['base'] = $file['basename'];
     $return['name'] = $file['filename'];
-    if (isset($file['extension'])) {
-      $return['ext'] = (isset($file['extension'])) ? $file['extension'] : '';
-    }
+    // always set: a file without extension (e.g. the runite `cast`) has ext ''
+    $return['ext'] = $file['extension'] ?? '';
     $return['path'] = $file['dirname'];
   }else {
     $return = false;

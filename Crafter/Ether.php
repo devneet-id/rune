@@ -45,6 +45,11 @@ define('CRAFTER_WEAVER', [
     'plain', 1,
     __DIR__ . '/weaver/plain--php.txt',
   ],
+  [
+    ['html'],
+    'plain', 1,
+    __DIR__ . '/weaver/plain--html.txt',
+  ],
 ]);
 
 #NOTE: Maps cluster types to variable placeholders used during template binding.
