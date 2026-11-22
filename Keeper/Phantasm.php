@@ -11,7 +11,7 @@ class Phantasm extends \Rune\Phantasm {
 
   public $origin = __DIR__;
 
-  public $version = '1.18';
+  public $version = '1.19';
   
   public $main = 'Keeper';
 
@@ -23,11 +23,11 @@ class Phantasm extends \Rune\Phantasm {
 
   public $link = [
     ['Aether', 'ether', '1.22'],
-    ['Chanter', 'entity', '1.17'],
+    ['Chanter', 'entity', '1.18'],
     ['Cipher', 'entity', '1.7'],
     ['Forger', 'entity', '1.17'],
-    ['Specter', 'entity', '1.11'],
-    ['Whisper', 'entity', '1.14'],
+    ['Specter', 'entity', '1.12'],
+    ['Whisper', 'entity', '1.16'],
   ];
 
   public $node = [
@@ -107,6 +107,16 @@ class Phantasm extends \Rune\Phantasm {
       'note' => 'The warnings tolerated in this flow (levels: warning, notice, deprecated), or "throw" to turn them into an ErrorException.',
     ],
     [
+      'type' => 'essence',
+      'call' => 'KEEPER_LOCK',
+      'note' => 'Which items are read and written under a file lock (flock): false (none, the default), true (all), or a list of item names; a runite sets it for items shared by several processes.',
+    ],
+    [
+      'type' => 'essence',
+      'call' => 'KEEPER_LOCK_WAIT',
+      'note' => 'Seconds to wait for the lock of an item; past it, a glitch names the item.',
+    ],
+    [
       'type' => 'entity',
       'call' => 'keeper()',
       'note' => 'Main entity',
@@ -135,6 +145,31 @@ class Phantasm extends \Rune\Phantasm {
       'type' => 'entity',
       'call' => 'keeper_item_get( String $name )',
       'note' => 'Retrieves and decodes a JSON file by name into a usable value.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_item_update( String $name, Callable $change )',
+      'note' => 'Reads, changes and writes an item under one lock: the callback gets the old value (null when missing) and returns the new one, given back as a read would.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_item_encode( $value )',
+      'note' => 'Encodes an item value as the JSON Keeper writes (two-space indent, unicode kept).',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_lock_wanted( String $name )',
+      'note' => 'Whether an item is read and written under lock: $KEEPER_LOCK is true, or a list that names it.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_lock_run( String $name, Int $mode, Callable $work )',
+      'note' => 'Opens an item, holds its lock (LOCK_SH to read, LOCK_EX to write) while the callback runs, then lets it go; waits $KEEPER_LOCK_WAIT seconds at most, then glitches.',
+    ],
+    [
+      'type' => 'entity',
+      'call' => 'keeper_lock_write( $handle, String $datas )',
+      'note' => 'Replaces the whole content of a locked item file.',
     ],
     [
       'type' => 'entity',
@@ -219,7 +254,7 @@ class Phantasm extends \Rune\Phantasm {
     [
       'type' => 'manifest',
       'call' => 'item( String $name, $value = false )',
-      'note' => 'Gets or sets a structured keeper item in JSON format.',
+      'note' => 'Gets or sets a structured keeper item in JSON format; given a closure, reads, changes and writes it under one lock.',
     ],
     [
       'type' => 'manifest',
