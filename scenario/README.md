@@ -17,7 +17,7 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario'
 | `craft-single-files-minified` | Crafter builds **one file of one language** from a folder of every language — a stylesheet (like exuracss), a script (like exurajs), a php library — with and without `MINIFIED`; the php library is linted and required | Crafter, Weaver, Forger |
 | `craft-web-page-by-type` | Crafter bundles **one web page** (head, html, css, js, php) into one php file with each `TYPE` — `plain` (readable), `function` and `class` (sealed in base64, named by the app hash) — then serves it; two sealed bundles side by side, minified inside a sealed page, `ENCRYPTION`, a TYPE without a template | Crafter, Weaver, Forger, Cipher |
 | `survive-glitches-and-exit` | how a runite with Keeper awake meets a PHP warning and what it tells the shell: probe runites in `.proof/`, each cast in its own process — a normal end exits 0, `@mkdir` survives without a glitch, an unsilenced warning glitches and exits non-zero; `Keeper::tolerate()` passes a level (kept in the arcane) or throws it | Keeper, Aether |
-| `cast-beyond-the-process` | Specter runs a small php job in another process: hidden and non-blocking the runite goes on at once while the job finishes on its own; hidden and blocking it waits; casts are kept in `cast.json`; souls (`Specter::soul`) written in one process are read in another | Specter, Keeper |
+| `cast-beyond-the-process` | Specter runs a small php job in another process: hidden and non-blocking the runite goes on at once while the job finishes on its own; hidden and blocking it waits; casts are kept in `cast.json`; souls (`Specter::soul`) written in one process are read in another, keep any value (0, `''`, false) and `null` removes one | Specter, Keeper |
 | `engrave-with-sentinel` | Sentinel writes runes into a probe runite in `.proof/` and takes them out: insert a rune, refuse an unknown one; remove refuses an unknown rune or one not in the runite; a rune with a flow (Keeper) gets `begin()` / `end()` at the `#sentinel-flow-*` markers, an older runite without them gets a warning | Sentinel (runite), Forger |
 | `keep-the-contract` | reads the origin runes as files and Phantasms and checks the Laws readers rely on: marks VOID/BETA/EXIST, no legacy hooks, the Grimoire header, composer links, the Liberation words — changes nothing | Aether, Forger |
 | `read-spells-and-flags` | how Chanter reads a spell: a bare flag is `true`, `--x=1` is the value `"1"`, `--x=0` is `"0"`, `+` stays `+`; a value is read as given (a `%2F` on the command line stays, `%20` in a cast written in code is a space); `chanter_spell_has()`; a cast-in-cast hands flags and values on unchanged | Chanter |
@@ -74,7 +74,7 @@ A scenario that makes files writes them with `trial_proof('dist/…')` and empti
 A glitch (exception or PHP warning) fails one check instead of ending the run.
 
 ## Status
-On Rune 1.21.139 (devneet-id/rune#31, #29): **22 scenarios, 287/287 checks** (`php cast scenario --here`, Linux). Node coverage **73/299 (24%)** (`php cast coverage` in `scenario/coverage`).
+On Rune 1.21.140 (devneet-id/rune#31, #29, #46): **22 scenarios, 292/292 checks** (`php cast scenario --here`, Linux). Node coverage **73/299 (24%)** (`php cast coverage` in `scenario/coverage`).
 
 Not covered yet: Minister (needs a familiar: URL + token), The Federation of Fides and The Liberation of Forte (they reach the network: a reliquary on GitHub, a PHP runtime download) — explored by hand in `exploration/`.
 
