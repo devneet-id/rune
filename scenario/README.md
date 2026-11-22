@@ -28,6 +28,7 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario'
 | `read-the-arcane` | the arcane of a run: `arcane.txt`, one copy per run in `arcanes/`, the states of each step, `grimoire --arcane`, and `--zero-trust` writing no step | Keeper, Aether |
 | `speak-without-weaver` | Weaver is a complement to Whisper (soft bond): a probe runite without Weaver still speaks in colour with icons and labels (lower and upper case), returns text, prints the footer, and plain text works; a user's own bond (`{{name}}`) needs Weaver | Whisper, Weaver |
 | `keep-items-under-lock` | items shared by several processes: `Keeper::item('x', fn($old) => $new)` reads, changes and writes under one lock — 4 processes × 25 increments give exactly 100; `$KEEPER_LOCK` (`true` / a list) locks reads and writes; `$KEEPER_LOCK_WAIT` turns a lock held too long into a glitch that names the item | Keeper |
+| `serve-beyond-the-runite` | a runite as a server service: `Specter::cast(…, ['detach'=> true, 'title'=> …])` returns the PID of a worker that outlives the runite, one title one process, `Specter::alive()` / `Specter::kill()` (by title or PID, kept in `cast.json`); `Specter::loop()` (tick, pause, stop, heartbeat soul); `Specter::run()` (exit code, log of stdout and stderr, timeout, onBeat); souls written by 4 processes at once | Specter, Keeper |
 | `coverage` | node coverage of all scenarios (a tool, not a scenario) | Forger, Weaver |
 
 ## Run
@@ -75,7 +76,7 @@ A scenario that makes files writes them with `trial_proof('dist/…')` and empti
 A glitch (exception or PHP warning) fails one check instead of ending the run.
 
 ## Status
-On Rune 1.21.141 (devneet-id/rune#31, #29, #46, #27): **23 scenarios, 302/302 checks** (`php cast scenario --here`, Linux). Node coverage **73/299 (24%)** (`php cast coverage` in `scenario/coverage`).
+On Rune 1.21.142 (devneet-id/rune#31, #29, #46, #27, #26): **24 scenarios, 320/320 checks** (`php cast scenario --here`, Linux). Node coverage **73/299 (24%)** (`php cast coverage` in `scenario/coverage`).
 
 Not covered yet: Minister (needs a familiar: URL + token), The Federation of Fides and The Liberation of Forte (they reach the network: a reliquary on GitHub, a PHP runtime download) — explored by hand in `exploration/`.
 
