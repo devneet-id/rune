@@ -94,6 +94,21 @@ Chanter::cast('test', function() {
   $out = (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__FILE__) . ' soul-read --name=mood 2>&1');
   trial('a new value reaches it too', str_contains($out, 'SOUL="stormy"'));
   trial('a soul never set is false', Specter::soul('never-set') === false);
+
+  trial_section('Souls keep any value (devneet-id/rune#46)');
+  Specter::soul('count', 5);
+  Specter::soul('count', 0);
+  trial('a soul set to 0 is 0', Specter::soul('count') === 0);
+  Specter::soul('ready', true);
+  Specter::soul('ready', false);
+  trial('a soul set to false is false, and kept (soul.json)', Specter::soul('ready') === false && property_exists((object) Keeper::item('soul'), 'ready'));
+  Specter::soul('word', 'x');
+  Specter::soul('word', '');
+  trial("a soul set to '' is ''", Specter::soul('word') === '');
+  Specter::soul('count', null);
+  trial('null removes a soul', !property_exists((object) Keeper::item('soul'), 'count') && Specter::soul('count') === false);
+  $out = (string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__FILE__) . ' soul-read --name=word 2>&1');
+  trial("another process reads the '' too", str_contains($out, 'SOUL=""'));
   Keeper::item('soul', $before ?: []);
 
   trial_report();
