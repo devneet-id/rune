@@ -78,9 +78,14 @@ function keeper_item( String $name, $value = '' ) {
 
 #NOTE: Saves a value as a formatted JSON file under the given name.
 function keeper_item_set( String $name, $value ) {
-  $datas = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-  $datas = str_replace("    ", "  ", $datas);
-  forger_item(KEEPER_ECHOES . '/' . $name . '.json', $datas);
+  $datas = keeper_item_encode($value);
+  if (keeper_lock_wanted($name)) {
+    keeper_lock_run($name, LOCK_EX, function( $handle ) use ($datas) {
+      keeper_lock_write($handle, $datas);
+    });
+  }else {
+    forger_item(KEEPER_ECHOES . '/' . $name . '.json', $datas);
+  }
   
   aether_arcane('Keeper.entity.keeper_item_set');
   return true;
@@ -88,11 +93,87 @@ function keeper_item_set( String $name, $value ) {
 
 #NOTE: Retrieves and decodes a JSON file by name into a usable value.
 function keeper_item_get( String $name ) {
-  $datas = forger_item(KEEPER_ECHOES . '/' . $name . '.json');
-  $return = json_decode($datas);
+  if (keeper_lock_wanted($name) && is_file(KEEPER_ECHOES . '/' . $name . '.json')) {
+    $datas = keeper_lock_run($name, LOCK_SH, fn( $handle ) => stream_get_contents($handle));
+  }else {
+    $datas = forger_item(KEEPER_ECHOES . '/' . $name . '.json');
+  }
+  $return = json_decode((string) $datas);
 
   aether_arcane('Keeper.entity.keeper_item_get');
   return $return;
+}
+
+
+#NOTE: Reads, changes and writes an item under one lock: the callback gets the old value (null when missing) and returns the new one, given back as a read would.
+function keeper_item_update( String $name, Callable $change ) {
+  $return = keeper_lock_run($name, LOCK_EX, function( $handle ) use ($change) {
+    $datas = keeper_item_encode($change(json_decode((string) stream_get_contents($handle))));
+    keeper_lock_write($handle, $datas);
+    // returned the way a read gives it back (objects, not arrays)
+    return json_decode($datas);
+  });
+
+  aether_arcane('Keeper.entity.keeper_item_update');
+  return $return;
+}
+
+#NOTE: Encodes an item value as the JSON Keeper writes (two-space indent, unicode kept).
+function keeper_item_encode( $value ) {
+  return str_replace("    ", "  ", json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+
+
+/* LOCK
+ * flock for items shared by several processes ($KEEPER_LOCK, $KEEPER_LOCK_WAIT)
+ *  */
+#NOTE: Whether an item is read and written under lock: $KEEPER_LOCK is true, or a list that names it.
+function keeper_lock_wanted( String $name ) {
+  global $KEEPER_LOCK;
+
+  return $KEEPER_LOCK === true || (is_array($KEEPER_LOCK) && in_array($name, $KEEPER_LOCK, true));
+}
+
+#NOTE: Opens an item, holds its lock (LOCK_SH to read, LOCK_EX to write) while the callback runs, then lets it go; waits $KEEPER_LOCK_WAIT seconds at most, then glitches.
+function keeper_lock_run( String $name, Int $mode, Callable $work ) {
+  global $KEEPER_LOCK_WAIT;
+
+  $path = KEEPER_ECHOES . '/' . $name . '.json';
+  if (!is_dir(dirname($path))) {
+    return null;
+  }
+  $handle = fopen($path, $mode === LOCK_SH ? 'r' : 'c+');
+  if ($handle === false) {
+    return null;
+  }
+
+  $deadline = microtime(true) + max(0, (float) $KEEPER_LOCK_WAIT);
+  while (!flock($handle, $mode | LOCK_NB)) {
+    if (microtime(true) >= $deadline) {
+      fclose($handle);
+      throw new \RuntimeException("Keeper item '$name' stayed locked longer than {$KEEPER_LOCK_WAIT}s (\$KEEPER_LOCK_WAIT).");
+    }
+    usleep(20000);
+  }
+
+  try {
+    $return = $work($handle);
+  } finally {
+    flock($handle, LOCK_UN);
+    fclose($handle);
+  }
+
+  aether_arcane('Keeper.entity.keeper_lock_run');
+  return $return;
+}
+
+#NOTE: Replaces the whole content of a locked item file.
+function keeper_lock_write( $handle, String $datas ) {
+  ftruncate($handle, 0);
+  rewind($handle);
+  fwrite($handle, $datas);
+  fflush($handle);
 }
 
 
