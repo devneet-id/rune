@@ -11,7 +11,4 @@ class Manifest extends \Rune\Manifest {
 
   protected static $origin = __DIR__;
 
-  public static function _arise()
-  {}
-
 }
