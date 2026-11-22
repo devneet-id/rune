@@ -1,0 +1,139 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — SERVE BEYOND THE RUNITE
+ * A runite as a server service (devneet-id/rune#26): Specter starts a worker that outlives the runite
+ * (detach, by title), tells whether it is alive and kills it; loops with a pause, a stop and a heartbeat;
+ * runs a child command with a timeout, a streamed log and a beat; and keeps souls safe across processes.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Specter.
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Specter\Manifest as Specter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Specter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+
+
+// a php job in .proof/jobs/: $code runs in it
+function serve_job( String $name, String $code ) {
+  $job = trial_proof("jobs/$name.php");
+  if (!is_dir(dirname($job))) {
+    mkdir(dirname($job), 0777, true);
+  }
+  file_put_contents($job, "<?php\n$code\n");
+  $quote = fn($path) => PHP_OS_FAMILY === 'Windows' ? '"' . $path . '"' : escapeshellarg($path);
+  return $quote(PHP_BINARY) . ' ' . $quote($job);
+}
+
+function serve_wait( Callable $until, Float $seconds ) {
+  $deadline = microtime(true) + $seconds;
+  while (!$until() && microtime(true) < $deadline) {
+    usleep(50000);
+  }
+  return $until();
+}
+
+// sets a soul in this runite, in its own process
+Chanter::cast('soul-set --name --value', function() {
+  Specter::soul((string) Chanter::spell('name'), (string) Chanter::spell('value'));
+}, 'Set a soul. --name --value');
+
+Chanter::cast('test', function() {
+  trial_proof_clean('jobs');
+  $beat = trial_proof('jobs/beat.txt');
+
+  trial_section('Detach a worker by title (devneet-id/rune#26)');
+  Specter::kill('worker');
+  $worker = serve_job('worker', 'while (true) { file_put_contents(' . var_export($beat, true) . ', (string) time()); usleep(100000); }');
+  $pid = Specter::cast($worker, ['detach'=> true, 'title'=> 'worker']);
+  trial('detach returns the PID of the worker', is_int($pid) && $pid > 0);
+  trial('the worker runs on its own', serve_wait(fn() => is_file($beat), 3));
+  trial('Specter::alive(title) is true', Specter::alive('worker') === true);
+  trial('Specter::alive(pid) is true', Specter::alive($pid) === true);
+  trial('one title, one process: a second worker with the same title is refused', Specter::cast($worker, ['detach'=> true, 'title'=> 'worker']) === false);
+  $kept = Keeper::item('cast');
+  $entry = null;
+  foreach ((array) $kept as $row) {
+    if (($row->title ?? '') === 'worker') { $entry = $row; }
+  }
+  trial('cast.json keeps its title and PID', $entry && (int) ($entry->pid ?? 0) === $pid && ($entry->alive ?? false) === true);
+  trial('Specter::kill(title) ends it', Specter::kill('worker') === true && serve_wait(fn() => Specter::alive('worker') === false, 3));
+  clearstatcache();
+  $last = @filemtime($beat);
+  usleep(400000);
+  clearstatcache();
+  trial('the worker is really gone (no more beats)', @filemtime($beat) === $last);
+  trial('killing it again is false', Specter::kill('worker') === false);
+
+  trial_section('Loop: tick, pause, stop, heartbeat');
+  $ticks = 0;
+  $start = microtime(true);
+  $count = Specter::loop(function() use (&$ticks) { $ticks++; }, sleep: 50, stop: fn($n) => $n >= 6, beat: 0, title: 'trial');
+  $took = microtime(true) - $start;
+  trial('it stops when stop() says so: 6 ticks', $count === 6 && $ticks === 6);
+  trial('it pauses between ticks (no loop without a pause)', $took >= 0.25);
+  trial('it writes its heartbeat as a soul', is_object(Specter::soul('beat:trial')) && (Specter::soul('beat:trial')->ticks ?? 0) >= 1);
+  $count = Specter::loop(fn() => false, sleep: 10);
+  trial('a tick that returns false stops the loop', $count === 1);
+
+  trial_section('Run: a child with a timeout, a log and a beat');
+  $log = trial_proof('jobs/run.log');
+  $result = Specter::run(serve_job('talk', 'echo "one\n"; fwrite(STDERR, "two\n"); echo "three\n"; exit(3);'), timeout: 10, log: $log);
+  trial('it gives the exit code', ($result['code'] ?? null) === 3 && ($result['timeout'] ?? null) === false);
+  $written = (string) @file_get_contents($log);
+  trial('stdout and stderr are streamed to the log', str_contains($written, 'one') && str_contains($written, 'two') && str_contains($written, 'three'));
+  $beats = 0;
+  $start = microtime(true);
+  $result = Specter::run(serve_job('slow', 'sleep(5); echo "late\n";'), timeout: 1, onBeat: function() use (&$beats) { $beats++; }, beat: 0.2);
+  $took = microtime(true) - $start;
+  trial('a child past its timeout is stopped', ($result['timeout'] ?? null) === true && $took < 3);
+  trial('onBeat is called while it runs', $beats >= 2);
+
+  trial_section('Souls across processes, under lock');
+  Specter::soul('a', null);
+  Specter::soul('b', null);
+  $runs = [];
+  foreach (['a', 'b', 'c', 'd'] as $name) {
+    $runs[] = proc_open([PHP_BINARY, __FILE__, 'soul-set', "--name=s-$name", "--value=$name"], [1=> ['pipe', 'w'], 2=> ['pipe', 'w']], $pipes);
+    $runs[count($runs) - 1] = [$runs[count($runs) - 1], $pipes];
+  }
+  foreach ($runs as [$process, $pipes]) {
+    stream_get_contents($pipes[1]);
+    proc_close($process);
+  }
+  $soul = Keeper::item('soul');
+  trial('4 processes write 4 souls at once: none is lost', ($soul->{'s-a'} ?? '') === 'a' && ($soul->{'s-b'} ?? '') === 'b' && ($soul->{'s-c'} ?? '') === 'c' && ($soul->{'s-d'} ?? '') === 'd');
+  foreach (['a', 'b', 'c', 'd'] as $name) {
+    Specter::soul("s-$name", null);
+  }
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Keeper::end();
+Aether::end();
