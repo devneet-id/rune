@@ -2,8 +2,15 @@
 <?php
 /*
  * RUNE DEV — THE WORKSHOP
- * The main runite of rune-dev.
+ * The main runite of the dev branch of devneet-id/rune.
  * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper, Specter.
+ *
+ * Rune itself lives in core/ (git-ignored): a clone of this repo on 1.x, or on an agent's branch.
+ *
+ *   php cast init                         clone Rune into core/ (on 1.x) and write the autoloader
+ *   php cast init --branch=<branch>       the same, on another branch (e.g. an agent's)
+ *   php cast use --branch=<branch>        switch core/ to a branch (an agent's) — no branch: back to 1.x
+ *   php cast update                       pull this dev branch and core/, then write the autoloader again
  *
  *   php cast scenario                     every scenario, one by one, each in a new terminal (Specter)
  *   php cast scenario --here              every scenario in this terminal (no window: headless, agents)
@@ -13,6 +20,53 @@
  * Each scenario writes its proof in scenario/<name>/.proof/ (git-ignored):
  * report.txt, report.json and what it made. This cast reads report.json.
  */
+// init runs before Rune exists: it brings Rune into core/, so it is plain PHP
+function workshop_shell( String $line ) {
+  echo "  > $line\n";
+  passthru($line, $code);
+  return $code === 0;
+}
+
+function workshop_option( Array $argv, String $key, String $default ) {
+  foreach ($argv as $arg) {
+    if (str_starts_with($arg, "--$key=")) {
+      return substr($arg, strlen($key) + 3);
+    }
+  }
+  return $default;
+}
+
+function workshop_init( Array $argv ) {
+  $core = __DIR__ . DIRECTORY_SEPARATOR . 'core';
+  $branch = workshop_option($argv, 'branch', '1.x');
+  echo "\nI N I T  Rune into core/ on $branch\n\n";
+  if (is_dir($core . DIRECTORY_SEPARATOR . '.git')) {
+    echo "core/ is already there. Switch it with: php cast use --branch=<branch>\n";
+  } else {
+    $repo = workshop_option($argv, 'repo', trim((string) shell_exec('git -C ' . escapeshellarg(__DIR__) . ' remote get-url origin')));
+    if ($repo === '') {
+      echo "No git remote 'origin' here: give the repo with --repo=<url>\n";
+      return 1;
+    }
+    if (!workshop_shell('git clone --branch ' . escapeshellarg($branch) . ' ' . escapeshellarg($repo) . ' ' . escapeshellarg($core))) {
+      return 1;
+    }
+  }
+  if (!workshop_shell('composer dump-autoload --working-dir=' . escapeshellarg(__DIR__))) {
+    echo "Composer is needed: install it, then run composer dump-autoload here.\n";
+    return 1;
+  }
+  echo "\nReady. Run every scenario with: php cast scenario --here\n";
+  return 0;
+}
+
+if (($argv[1] ?? '') === 'init') {
+  exit(workshop_init($argv));
+}
+if (!is_file(__DIR__ . '/core/Aether/Manifest.php') || !is_file(__DIR__ . '/vendor/autoload.php')) {
+  echo "Rune is not in core/ yet. Run: php cast init\n";
+  exit(1);
+}
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Rune\Aether\Manifest as Aether;
@@ -120,6 +174,41 @@ Chanter::cast('scenario --here --only --timeout', function() {
   Whisper::echo("{{nl}}{{color-info}}Total {$all[0]}/{$all[1]} checks passed{{color-end}}  {{color-secondary}}proof: scenario/<name>/.proof/{{color-end}}{{nl}}");
 }, 'Run every scenario one by one (Specter) and read its proof. --here --only=<name> --timeout=<s>');
 
+
+// git inside core/ (Rune), from the root of the workshop
+function workshop_core( String $args ) {
+  return workshop_shell('git -C ' . escapeshellarg(AETHER_REPO . '/core') . ' ' . $args);
+}
+
+// the branch and commit core/ stands on
+function workshop_core_state() {
+  $git = 'git -C ' . escapeshellarg(AETHER_REPO . '/core');
+  $branch = trim((string) shell_exec("$git rev-parse --abbrev-ref HEAD"));
+  $head = trim((string) shell_exec("$git log -1 --format=%h"));
+  Whisper::echo("{{nl}}{{color-info}}core/{{color-end}} on {{color-success}}$branch{{color-end}} {{color-secondary}}($head){{color-end}}{{nl}}");
+}
+
+Chanter::cast('use --branch', function() {
+  $branch = (string) (Chanter::spell('branch') ?: '1.x');
+  Whisper::echo("{{nl}}{{color-info}}U S E{{color-end}}  {{color-secondary}}core/ → $branch{{color-end}}{{nl}}{{nl}}");
+  if (workshop_core('fetch origin') && workshop_core('switch ' . escapeshellarg($branch)) && workshop_core('pull --ff-only')) {
+    workshop_core_state();
+    Whisper::echo("{{color-secondary}}Now: php cast scenario --here — back to Rune with: php cast use{{color-end}}{{nl}}");
+  } else {
+    Whisper::echo("{{nl}}{{color-danger}}core/ could not switch to $branch{{color-end}}{{nl}}");
+  }
+}, 'Switch core/ to a branch (an agent\'s). --branch=<branch>, none: 1.x');
+
+Chanter::cast('update', function() {
+  Whisper::echo("{{nl}}{{color-info}}U P D A T E{{color-end}}  {{color-secondary}}this dev branch and core/{{color-end}}{{nl}}{{nl}}");
+  $ok = workshop_shell('git -C ' . escapeshellarg(AETHER_REPO) . ' pull --ff-only')
+    && workshop_core('pull --ff-only')
+    && workshop_shell('composer dump-autoload --working-dir=' . escapeshellarg(AETHER_REPO));
+  workshop_core_state();
+  if (!$ok) {
+    Whisper::echo("{{color-danger}}Update stopped: read the git output above{{color-end}}{{nl}}");
+  }
+}, 'Pull this dev branch and core/, then write the autoloader again');
 
 #sentinel-codex
 Chanter::end();

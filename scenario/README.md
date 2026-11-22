@@ -2,7 +2,7 @@
 
 Runites that use Rune the way a user would, from easy to complex. Every scenario has its own `test` cast (the **trial**), and together they aim to touch every Phantasm node of the origin runes.
 
-Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario's own casts **inside its folder**; run them all with `php cast scenario` at the root of rune-dev. Every runite starts with the `#!/usr/bin/env php` shebang (format rule for `cast` files without `.php`).
+Rune comes from `core/` (through the workshop's `vendor/`). Run a scenario's own casts **inside its folder**; run them all with `php cast scenario` at the root of the workshop. Every runite starts with the `#!/usr/bin/env php` shebang (format rule for `cast` files without `.php`).
 
 | Scenario | What it is | Runes |
 |---|---|---|
@@ -33,7 +33,7 @@ Rune comes from the local `../rune` (through `rune-dev/vendor`). Run a scenario'
 
 ## Run
 ```bash
-# every scenario, one by one (from the root of rune-dev)
+# every scenario, one by one (from the root of the workshop)
 php cast scenario                     # each in a new terminal (Specter), then read its proof
 php cast scenario --here              # all in this terminal (headless, agents)
 php cast scenario --only=keep-notes   # one scenario

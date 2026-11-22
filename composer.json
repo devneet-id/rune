@@ -1,7 +1,10 @@
 {
+  "name": "devneet/rune-dev",
+  "description": "The workshop of Rune: the dev branch of devneet-id/rune, never a package.",
+  "type": "project",
   "autoload": {
     "psr-4": {
-      "Rune\\": "../rune/"
+      "Rune\\": "core/"
     }
   }
 }
