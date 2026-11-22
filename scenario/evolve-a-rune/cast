@@ -1,0 +1,90 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — EVOLVE A RUNE
+ * The Evolution of Eidos: a runite shapes a rune of its own in @evolution/ with Sentinel,
+ * engraves it, repairs its Phantasm, reads it in the Grimoire, and deletes it again.
+ * Sentinel edits the runite that casts it, so the trial works on a probe runite in .proof/
+ * (the blank runite of Awakening, in evolution mode, with Forger).
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger.
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// a probe runite in evolution mode: the blank runite with Forger and the autoload of rune-dev
+function evolve_probe() {
+  $blank = (string) file_get_contents(\Rune\Ethereal::$runite . 'awakening/blank.txt');
+  $runite = str_replace("require_once __DIR__ . '/vendor/autoload.php';", 'require_once ' . var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true) . ";\nRune\\Ethereal::evolution();", $blank);
+  $runite = str_replace("#sentinel-manifest", "use Rune\\Forger\\Manifest as Forger;\n#sentinel-manifest", $runite);
+  $runite = str_replace("#sentinel-awaken", "Forger::ether()::essence()::entity();\n#sentinel-awaken", $runite);
+  $probe = trial_proof('evolve/cast');
+  if (!is_dir(dirname($probe))) {
+    mkdir(dirname($probe), 0777, true);
+  }
+  file_put_contents($probe, $runite);
+  return $probe;
+}
+
+// casts the probe in its own process and returns its plain output
+function evolve_cast( String $probe, String $spells ) {
+  return trial_plain((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($probe) . ' ' . $spells . ' 2>&1'));
+}
+
+Chanter::cast('test', function() {
+  trial_proof_clean('evolve');
+  $probe = evolve_probe();
+  $rune = dirname($probe) . '/@evolution/Lantern/';
+  $read = fn($file) => (string) @file_get_contents($rune . $file);
+
+  trial_section('Shape a rune (sentinel --runic-create)');
+  $said = evolve_cast($probe, 'sentinel --runic-create=Lantern');
+  trial('Sentinel says it created Lantern', str_contains($said, 'Rune created: @evolution/Lantern'));
+  trial('the rune has its five files', count(array_filter(['Ether.php', 'Essence.php', 'Entity.php', 'Manifest.php', 'Phantasm.php'], fn($f) => is_file($rune . $f))) === 5);
+  trial('its Manifest has no legacy _arise() (devneet-id/rune#43)', $read('Manifest.php') !== '' && !str_contains($read('Manifest.php'), '_arise'));
+  trial('its Phantasm has no _arise() node and no awakening() (devneet-id/rune#43)', $read('Phantasm.php') !== '' && !str_contains($read('Phantasm.php'), '_arise') && !str_contains($read('Phantasm.php'), 'awakening'));
+  trial('its Phantasm is BETA, 0.1, without a flow', str_contains($read('Phantasm.php'), "'BETA'") && str_contains($read('Phantasm.php'), "'0.1'") && str_contains($read('Phantasm.php'), '$flow = false'));
+  $said = evolve_cast($probe, 'sentinel --runic-create=Lantern');
+  trial('the same name twice is refused', str_contains($said, 'already exists'));
+  $said = evolve_cast($probe, 'sentinel --runic-create=Keeper');
+  trial('an origin rune name is refused', str_contains($said, 'is an origin rune') && !is_dir(dirname($probe) . '/@evolution/Keeper'));
+
+  trial_section('Engrave it and read it');
+  $said = evolve_cast($probe, 'sentinel --runite-insert=Lantern');
+  trial('Sentinel engraves the evolution rune', str_contains($said, "Inserted 'Lantern'") && str_contains((string) file_get_contents($probe), 'Lantern::ether()::essence()::entity();'));
+  trial('the probe still runs with it', str_contains(evolve_cast($probe, ''), 'Version='));
+  evolve_cast($probe, 'sentinel --phantasm-repair=Lantern');
+  trial('--phantasm-repair writes the entity into the node', str_contains($read('Phantasm.php'), "'lantern()'"));
+  trial('the Grimoire reads its contract', str_contains(evolve_cast($probe, 'grimoire --runic=Lantern'), 'Lantern'));
+
+  trial_section('Delete it (sentinel --runic-delete)');
+  $said = evolve_cast($probe, 'sentinel --runic-delete=Lantern');
+  trial('Sentinel deletes the rune folder', str_contains($said, 'Rune deleted: @evolution/Lantern') && !is_dir($rune));
+  trial('and takes it out of the runite', !str_contains((string) file_get_contents($probe), 'Lantern'));
+  trial('the probe runs again without it', str_contains(evolve_cast($probe, ''), 'Version='));
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();
