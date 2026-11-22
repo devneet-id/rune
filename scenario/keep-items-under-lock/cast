@@ -1,0 +1,162 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — KEEP ITEMS UNDER LOCK
+ * Several processes of one runite share an item (a counter, a queue). Keeper can lock it (flock):
+ *   Keeper::item('x', fn($old) => $new)   read-modify-write under one lock — nothing is lost
+ *   $KEEPER_LOCK = true | ['x', …];        lock every item, or only these (default false: as before)
+ *   $KEEPER_LOCK_WAIT = 5;                 seconds to wait for a lock; past it, a glitch names the item
+ * Each case runs a probe runite in .proof/, in processes of its own, side by side.
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger, Cipher, Keeper (in the probe).
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+// the probe: its settings come from the environment (PROBE_LOCK, PROBE_WAIT), so every process shares one runite and one .echoes
+function lock_probe() {
+  $probe = trial_proof('lock/cast');
+  if (!is_dir(dirname($probe))) {
+    mkdir(dirname($probe), 0777, true);
+  }
+  $autoload = var_export(dirname(__DIR__, 2) . '/vendor/autoload.php', true);
+  file_put_contents($probe, <<<PHP
+<?php
+require_once $autoload;
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Cipher::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+if (getenv('PROBE_LOCK') === 'all') { \$KEEPER_LOCK = true; }
+if (getenv('PROBE_LOCK') === 'list') { \$KEEPER_LOCK = ['counter']; }
+if (getenv('PROBE_WAIT')) { \$KEEPER_LOCK_WAIT = (float) getenv('PROBE_WAIT'); }
+\$AETHER_FOOTER = false;
+Aether::begin();
+Chanter::begin();
+Keeper::begin();
+Chanter::cast('count --times', function() {
+  for (\$i = 0; \$i < (int) Chanter::spell('times'); \$i++) {
+    Keeper::item('counter', fn(\$old) => ['n'=> (\$old->n ?? 0) + 1]);
+  }
+  print("COUNTED\\n");
+});
+Chanter::cast('hold --seconds', function() {
+  Keeper::item('counter', function(\$old) { file_put_contents(__DIR__ . '/holding', '1'); sleep((int) Chanter::spell('seconds')); return \$old; });
+  print("HELD\\n");
+});
+Chanter::cast('set --n', function() {
+  Keeper::item('counter', ['n'=> (int) Chanter::spell('n')]);
+  Keeper::item('note', ['text'=> 'plain']);
+  print('N=' . (Keeper::item('counter')->n ?? '-') . ' NOTE=' . (Keeper::item('note')->text ?? '-') . "\\n");
+});
+Chanter::cast('peek', function() {
+  print('N=' . (Keeper::item('counter')->n ?? '-') . "\\n");
+});
+Chanter::cast('fresh', function() {
+  \$got = Keeper::item('fresh-one', fn(\$old) => ['was'=> \$old === null ? 'null' : 'set']);
+  print('WAS=' . \$got->was . "\\n");
+});
+Chanter::end();
+Keeper::end();
+Aether::end();
+
+PHP);
+  return $probe;
+}
+
+// starts a probe process with an environment; returns [process, stdout pipe]
+function lock_start( String $probe, String $cast, Array $env = [] ) {
+  $process = proc_open([PHP_BINARY, $probe, ...explode(' ', $cast)], [1=> ['pipe', 'w'], 2=> ['redirect', 1]], $pipes, dirname($probe), array_merge(getenv(), $env));
+  return [$process, $pipes[1]];
+}
+
+// waits for a probe process: [plain output, exit code]
+function lock_wait( Array $run ) {
+  $out = stream_get_contents($run[1]);
+  fclose($run[1]);
+  return [trial_plain((string) $out), proc_close($run[0])];
+}
+
+function lock_cast( String $probe, String $cast, Array $env = [] ) {
+  return lock_wait(lock_start($probe, $cast, $env));
+}
+
+Chanter::cast('test', function() {
+  trial_proof_clean('lock');
+  $probe = lock_probe();
+  $item = dirname($probe) . '/.echoes/cast/counter.json';
+
+  trial_section('Default: no lock, as before');
+  [$out] = lock_cast($probe, 'set --n=7');
+  trial('Keeper::item writes and reads as before', str_contains($out, 'N=7 NOTE=plain'));
+
+  trial_section('Read-modify-write under one lock (devneet-id/rune#27)');
+  lock_cast($probe, 'set --n=0');
+  $runs = [];
+  for ($p = 0; $p < 4; $p++) {
+    $runs[] = lock_start($probe, 'count --times=25');
+  }
+  $codes = array_map(fn($run) => lock_wait($run)[1], $runs);
+  [$out] = lock_cast($probe, 'peek');
+  trial('4 processes × 25 increments at once: exactly 100, nothing lost', str_contains($out, 'N=100'));
+  trial('every process ended well', $codes === [0, 0, 0, 0]);
+  trial('the item is still valid JSON', is_object(json_decode((string) @file_get_contents($item))));
+  [$out] = lock_cast($probe, 'fresh');
+  trial('a missing item reaches the callback as null', str_contains($out, 'WAS=null'));
+
+  trial_section('$KEEPER_LOCK = true / a list');
+  [$out, $code] = lock_cast($probe, 'set --n=3', ['PROBE_LOCK'=> 'all']);
+  trial('true: every item is written and read under lock', str_contains($out, 'N=3 NOTE=plain') && $code === 0);
+  [$out, $code] = lock_cast($probe, 'set --n=4', ['PROBE_LOCK'=> 'list']);
+  trial("['counter']: the listed item under lock, the others as before", str_contains($out, 'N=4 NOTE=plain') && $code === 0);
+
+  trial_section('$KEEPER_LOCK_WAIT: a lock held too long');
+  @unlink(dirname($probe) . '/holding');
+  $holder = lock_start($probe, 'hold --seconds=3');
+  $deadline = microtime(true) + 5;
+  while (!is_file(dirname($probe) . '/holding') && microtime(true) < $deadline) {
+    usleep(50000);
+  }
+  $start = microtime(true);
+  [$out, $code] = lock_cast($probe, 'count --times=1', ['PROBE_WAIT'=> '1']);
+  $took = microtime(true) - $start;
+  [$held] = lock_wait($holder);
+  trial('the waiting process gives up after about 1 s, not 3', $took >= 0.9 && $took < 2.5);
+  trial('it is a glitch: exit code not 0, the item is named', $code !== 0 && str_contains((string) @file_get_contents(dirname($probe) . '/.echoes/cast/glitch.txt'), 'counter'));
+  trial('the holder finishes its work', str_contains($held, 'HELD'));
+
+  trial_report();
+}, 'Trial of this scenario.');
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();
