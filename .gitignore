@@ -3,7 +3,5 @@ vendor/
 .echoes/
 .proof/
 
-exploration/@evolution/
-exploration/@federation/
-exploration/@liberation/
+
 exploration/relics/
