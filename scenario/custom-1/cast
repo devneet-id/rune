@@ -1,0 +1,54 @@
+#!/usr/bin/env php
+<?php
+/*
+ * SCENARIO — MULTI PROCESSING
+ * Sentinel writes runes into a runite and takes them out (--runite-insert / --runite-remove).
+ * It edits the runite that casts it, so the trial works on a probe runite in .proof/:
+ * a copy of the blank runite of Awakening, with Forger (which Sentinel needs).
+ * Runes: Aether, Whisper, Weaver, Chanter, Forger.
+ *
+ *   php cast test
+ */
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../trial.php';
+
+use Rune\Aether\Manifest as Aether;
+use Rune\Whisper\Manifest as Whisper;
+use Rune\Weaver\Manifest as Weaver;
+use Rune\Chanter\Manifest as Chanter;
+use Rune\Forger\Manifest as Forger;
+use Rune\Cipher\Manifest as Cipher;
+use Rune\Keeper\Manifest as Keeper;
+use Rune\Specter\Manifest as Specter;
+#sentinel-manifest
+Aether::ether()::essence()::entity();
+Whisper::ether()::essence()::entity();
+Weaver::ether()::essence()::entity();
+Chanter::ether()::essence()::entity();
+Forger::ether()::essence()::entity();
+Keeper::ether()::essence()::entity();
+Specter::ether()::essence()::entity();
+#sentinel-awaken
+
+Aether::begin();
+Chanter::begin();
+
+
+Chanter::cast('process --multi=[value]', function() {
+  $multi = Chanter::spell('multi');
+  if ($multi) {
+    for ($i=0; $i<$multi; $i++) {
+      Specter::cast('{{self}} process', [
+        'exit'=> true,
+        'title'=> 'RUNE:: process',
+      ]);
+    }
+  }else {
+    require_once 'core.php';
+  }
+});
+
+
+#sentinel-codex
+Chanter::end();
+Aether::end();
